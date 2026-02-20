@@ -59,6 +59,11 @@ export const skills = {
     ai: ['LLM', 'Agentic AI', 'Prompt Engineering', 'OpenAI API'],
 }
 
+// Skills that have a linked certificate — skill label → URL
+export const skillCertificates = {
+    'React': 'https://api.certificates.dev/certificates/a0622aa1-2611-46fa-ba77-7173caf9f0df/download?signature=ddbdc59e9f70d225818929ac741656cdd167c5a3ee901c1cfe92534ce31df2d2',
+}
+
 export const projects = [
     {
         title: 'ExoLegend',

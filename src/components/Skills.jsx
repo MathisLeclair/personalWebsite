@@ -1,7 +1,8 @@
 import { useTranslation } from 'react-i18next'
-import { Box, Container, Typography, Grid, Paper, Chip, Stack } from '@mui/material'
+import { Box, Container, Typography, Grid, Paper, Chip, Stack, Tooltip } from '@mui/material'
 import { useTheme } from '@mui/material/styles'
-import { skills, categoryColors, darkCategoryColors } from '../data/cvData'
+import WorkspacePremiumIcon from '@mui/icons-material/WorkspacePremium'
+import { skills, categoryColors, darkCategoryColors, skillCertificates } from '../data/cvData'
 
 export default function Skills() {
     const { t } = useTranslation()
@@ -35,14 +36,36 @@ export default function Skills() {
                                     {t(`skills.categories.${key}`)}
                                 </Typography>
                                 <Stack direction="row" flexWrap="wrap" gap={1}>
-                                    {tags.map((skill) => (
-                                        <Chip
-                                            key={skill}
-                                            label={skill}
-                                            variant="outlined"
-                                            sx={{ borderColor: COLORS[key], color: COLORS[key] }}
-                                        />
-                                    ))}
+                                    {tags.map((skill) => {
+                                        const certUrl = skillCertificates[skill]
+                                        return certUrl ? (
+                                            <Tooltip key={skill} title="View certificate" arrow>
+                                                <Chip
+                                                    label={skill}
+                                                    icon={<WorkspacePremiumIcon />}
+                                                    component="a"
+                                                    href={certUrl}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    clickable
+                                                    sx={{
+                                                        borderColor: COLORS[key],
+                                                        color: '#fff',
+                                                        bgcolor: COLORS[key],
+                                                        '& .MuiChip-icon': { color: '#fff' },
+                                                        '&:hover': { opacity: 0.85, boxShadow: 2 },
+                                                    }}
+                                                />
+                                            </Tooltip>
+                                        ) : (
+                                            <Chip
+                                                key={skill}
+                                                label={skill}
+                                                variant="outlined"
+                                                sx={{ borderColor: COLORS[key], color: COLORS[key] }}
+                                            />
+                                        )
+                                    })}
                                 </Stack>
                             </Paper>
                         </Grid>
