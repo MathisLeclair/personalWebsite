@@ -4,8 +4,6 @@ export const personalInfo = {
     email: 'mathis87270@gmail.com',
     phone: '+33 6 51 18 04 58',
     location: 'Paris, France',
-    github: '',
-    linkedin: 'https://linkedin.com/in/mathisleclair',
     github: 'https://github.com/MathisLeclair',
     avatarUrl: '/avatar.jpg',
     // CV download paths (served from /public/cv/)
@@ -35,6 +33,7 @@ export const categoryColors = {
     frontend: '#e94560',
     backend: '#0f3460',
     database_cloud: '#16213e',
+    ci_cd: '#b45309',
     tools: '#533483',
     ai: '#00695c',
 }
@@ -44,15 +43,17 @@ export const darkCategoryColors = {
     frontend: '#ff6b81',
     backend: '#64b5f6',
     database_cloud: '#4dd0e1',
+    ci_cd: '#fbbf24',
     tools: '#ce93d8',
     ai: '#80cbc4',
 }
 
 
 export const skills = {
-    frontend: ['React', 'Angular', 'Node.js', 'NestJS', 'HTML5', 'CSS3', 'TypeScript'],
+    frontend: ['React', 'Angular', 'Node.js', 'NestJS', 'TypeScript'],
     backend: ['Java', 'Python', 'C', 'C++', 'C#', 'JavaScript'],
-    database_cloud: ['MongoDB', 'AWS', 'Azure'],
+    database_cloud: ['MongoDB', 'AWS', 'Azure', 'Azure SQL Server'],
+    ci_cd: ['Git', 'GitHub Actions', 'Terraform', 'Docker'],
     tools: ['Git', 'CI/CD', 'Unity3D', 'Unreal Engine', 'Blender', 'Photoshop'],
     ai: ['LLM', 'Agentic AI', 'Prompt Engineering', 'OpenAI API'],
 }

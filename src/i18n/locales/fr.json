@@ -111,6 +111,7 @@
             "frontend": "Web / Front-End",
             "backend": "Langages / Back-End",
             "database_cloud": "Base de données & Cloud",
+            "ci_cd": "CI/CD & DevOps",
             "ai": "IA & Agentique",
             "tools": "Outils & Créatif"
         }
