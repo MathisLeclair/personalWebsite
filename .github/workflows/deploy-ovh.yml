@@ -1,0 +1,45 @@
+name: Deploy Vite app to OVH Web Starter
+
+on:
+  push:
+    branches: ["main"]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-main
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      # Deploy dist/ via SFTP over SSH
+      - name: Upload dist/ to OVH via SFTP
+        uses: wlixcc/SFTP-Deploy-Action@v1.2.4
+        with:
+          username: ${{ secrets.OVH_SSH_USER }}
+          password: ${{ secrets.OVH_SSH_PASSWORD }}
+          server: ${{ secrets.OVH_SSH_HOST }}
+          port: 22
+          local_path: "dist/*"
+          remote_path: ${{ secrets.OVH_REMOTE_DIR }}
+          delete_remote_files: true
+          sftp_only: true
