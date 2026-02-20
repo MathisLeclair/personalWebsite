@@ -31,7 +31,6 @@ jobs:
       - name: Build
         run: npm run build
 
-      # Deploy dist/ via SFTP over SSH
       - name: Upload dist/ to OVH via SFTP
         uses: wlixcc/SFTP-Deploy-Action@v1.2.4
         with:
@@ -40,6 +39,6 @@ jobs:
           server: ${{ secrets.OVH_SSH_HOST }}
           port: 22
           local_path: "dist/*"
-          remote_path: ${{ secrets.OVH_REMOTE_DIR }}
+          remote_path: "/home/mathisn/www/"
           delete_remote_files: true
           sftp_only: true
