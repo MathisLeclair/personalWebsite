@@ -11,7 +11,7 @@ export default function Hero() {
     const cvUrl = lang === 'fr' ? personalInfo.cvFr : personalInfo.cvEn
 
     const handleContact = () => {
-        document.querySelector('#contact')?.scrollIntoView({ behavior: 'smooth' })
+        window.open(`https://mail.google.com/mail/?view=cm&to=${personalInfo.email}`, '_blank')
     }
 
     return (

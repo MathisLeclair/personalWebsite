@@ -1,17 +1,18 @@
 import { useTranslation } from 'react-i18next'
-import { Box, Container, Typography, Link, Stack } from '@mui/material'
+import { Box, Container, Typography, Link, Stack, useTheme } from '@mui/material'
 import FavoriteIcon from '@mui/icons-material/Favorite'
 import { personalInfo } from '../data/cvData'
 
 export default function Footer() {
     const { t } = useTranslation()
+    const theme = useTheme()
 
     return (
         <Box
             component="footer"
             sx={{
                 py: 4,
-                bgcolor: 'primary.main',
+                bgcolor: theme.palette.mode === 'light' ? '#1a1a2e' : '#0d0d1a',
                 color: 'rgba(255,255,255,0.7)',
             }}
         >

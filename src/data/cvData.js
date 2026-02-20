@@ -5,6 +5,7 @@ export const personalInfo = {
     phone: '+33 6 51 18 04 58',
     location: 'Paris, France',
     github: 'https://github.com/MathisLeclair',
+    linkedin: 'https://www.linkedin.com/in/mathisleclair/',
     avatarUrl: '/avatar.jpg',
     // CV download paths (served from /public/cv/)
     cvEn: '/cv/Mathis_Leclair_EN_CV_V5.pdf',
