@@ -1,0 +1,166 @@
+{
+    "nav": {
+        "about": "À propos",
+        "experience": "Expérience",
+        "skills": "Compétences",
+        "education": "Formation",
+        "projects": "Projets",
+        "contact": "Contact"
+    },
+    "hero": {
+        "greeting": "Bonjour, je suis",
+        "title": "Ingénieur Logiciel",
+        "tagline": "Ingénieur logiciel passionné par la création d'applications fiables, scalables et à fort impact.",
+        "cta_contact": "Me contacter",
+        "cta_resume": "Télécharger le CV",
+        "scroll_hint": "Défiler vers le bas"
+    },
+    "about": {
+        "title": "À propos",
+        "description": "Passionné d'informatique et de développement, j'en ai fait mon métier — et un de mes hobbies. J'aime transformer des problèmes complexes en solutions élégantes, que ce soit pour déboguer un segfault ligne 459 d'un projet perso ou concevoir un outil interne en production. En dehors du code : drones, piano, impression 3D et jeux vidéo.",
+        "location": "Paris, France",
+        "available": "Ouvert aux opportunités"
+    },
+    "experience": {
+        "title": "Expérience",
+        "present": "Aujourd'hui",
+        "items": [
+            {
+                "role": "Full Stack Software Engineer",
+                "company": "TotalEnergies Digital Factory",
+                "location": "Paris, France",
+                "period": "Nov. 2022 – Aujourd'hui",
+                "bullets": [
+                    "Développement d'outils et d'applications internes (gestion de projet, gestion d'inventaire, prédiction de production).",
+                    "Développement full-stack sur plusieurs frameworks et langages : React, Angular, Python, Java.",
+                    "Infrastructure cloud et déploiements sur AWS et Azure."
+                ],
+                "tags": [
+                    "React",
+                    "Angular",
+                    "NestJS",
+                    "Python",
+                    "Java",
+                    "AWS",
+                    "Azure"
+                ]
+            },
+            {
+                "role": "Ingénieur Logiciel Embarqué",
+                "company": "Irdeto",
+                "location": "Paris, France",
+                "period": "Avr. 2020 – Oct. 2022",
+                "bullets": [
+                    "Développement de logiciel pour la transmission vidéo satellite (Java, C++).",
+                    "Développement et maintenance d'IHM web (Node.js).",
+                    "Gestion des pipelines CI/CD."
+                ],
+                "tags": [
+                    "Java",
+                    "C++",
+                    "Node.js",
+                    "CI/CD"
+                ]
+            },
+            {
+                "role": "Ingénieur Logiciel",
+                "company": "Conex",
+                "location": "Paris, France",
+                "period": "Juil. 2019 – Oct. 2019",
+                "bullets": [
+                    "Développement logiciel et scripting (C++, Python, Node.js, MongoDB).",
+                    "Création d'un dashboard (Node.js, MongoDB).",
+                    "Support niveau 2 et 3."
+                ],
+                "tags": [
+                    "C++",
+                    "Python",
+                    "Node.js",
+                    "MongoDB"
+                ]
+            },
+            {
+                "role": "Développeur VR",
+                "company": "OptimaReality",
+                "location": "Paris, France",
+                "period": "Juil. 2017 – Janv. 2018",
+                "bullets": [
+                    "Développement d'outils pour un fauteuil de réalité virtuelle (C, Python, C++).",
+                    "Création d'expériences de réalité virtuelle (Unreal Engine – C++, Unity3D – C#).",
+                    "Installation et présentation lors de salons et prestations en entreprise (Matignon, Galeries Lafayette, Johnson & Johnson…)."
+                ],
+                "tags": [
+                    "C",
+                    "C++",
+                    "C#",
+                    "Python",
+                    "Unreal Engine",
+                    "Unity3D"
+                ]
+            }
+        ]
+    },
+    "skills": {
+        "title": "Compétences",
+        "categories": {
+            "frontend": "Web / Front-End",
+            "backend": "Langages / Back-End",
+            "database_cloud": "Base de données & Cloud",
+            "ai": "IA & Agentique",
+            "tools": "Outils & Créatif"
+        }
+    },
+    "education": {
+        "title": "Formation",
+        "items": [
+            {
+                "degree": "Architecte en Technologie du Numérique",
+                "institution": "École 42",
+                "location": "Paris, France",
+                "period": "2016 – 2019",
+                "description": "École informatique par les pairs, basée sur des projets. Apprentissage par la pratique et la collaboration, sans cours ni professeurs."
+            },
+            {
+                "degree": "Baccalauréat Scientifique",
+                "institution": "Lycée Léonard Limosin",
+                "location": "Limoges, France",
+                "period": "2013 – 2016",
+                "description": ""
+            }
+        ]
+    },
+    "projects": {
+        "title": "Projets",
+        "view_code": "Code",
+        "view_demo": "Démo",
+        "items": [
+            {
+                "description": "Hackathon compétitif où de petits robots armés de ballons s'affrontent pour conquérir du territoire dans un labyrinthe miniature. Participation en 2024 et 2025 avec deux amis — conception et programmation complète des robots avec des ressources de calcul très limitées."
+            },
+            {
+                "description": "Ce CV interactif — un site personnel full responsive construit avec React et Material UI, avec navigation par scroll, changement de langue EN/FR et téléchargement du CV en un clic."
+            }
+        ]
+    },
+    "contact": {
+        "title": "Me Contacter",
+        "subtitle": "Un projet en tête ou simplement envie de discuter ? Ma boîte mail est toujours ouverte.",
+        "email_label": "E-mail",
+        "phone_label": "Téléphone",
+        "location_label": "Localisation",
+        "send_message": "Envoyer un message",
+        "form": {
+            "name": "Votre nom",
+            "email": "Votre e-mail",
+            "message": "Votre message",
+            "submit": "Envoyer le message",
+            "success": "Message envoyé ! Je vous répondrai rapidement.",
+            "error": "Une erreur est survenue. Veuillez réessayer."
+        }
+    },
+    "footer": {
+        "made_with": "Fait avec",
+        "and": "et",
+        "rights": "Tous droits réservés."
+    }
+}

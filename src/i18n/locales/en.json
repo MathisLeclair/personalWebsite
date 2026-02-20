@@ -1,0 +1,166 @@
+{
+    "nav": {
+        "about": "About",
+        "experience": "Experience",
+        "skills": "Skills",
+        "education": "Education",
+        "projects": "Projects",
+        "contact": "Contact"
+    },
+    "hero": {
+        "greeting": "Hi, I'm",
+        "title": "Software Engineer",
+        "tagline": "Software engineer passionate about building reliable, scalable and impactful applications.",
+        "cta_contact": "Get in touch",
+        "cta_resume": "Download CV",
+        "scroll_hint": "Scroll down"
+    },
+    "about": {
+        "title": "About Me",
+        "description": "Passionate about computing and development — it's both my job and one of my hobbies. I enjoy turning complex problems into elegant solutions, whether that's debugging a segfault at line 459 of a personal project or architecting a production-grade internal tool. Outside of code I fly drones, play piano, build things with a 3D printer and lose myself in video games.",
+        "location": "Paris, France",
+        "available": "Open to opportunities"
+    },
+    "experience": {
+        "title": "Experience",
+        "present": "Present",
+        "items": [
+            {
+                "role": "Full Stack Software Engineer",
+                "company": "TotalEnergies Digital Factory",
+                "location": "Paris, France",
+                "period": "Nov 2022 – Present",
+                "bullets": [
+                    "Development of internal tools and applications (project management, inventory management, production forecasting).",
+                    "Full-stack development across multiple frameworks and languages: React, Angular, Python, Java.",
+                    "Cloud infrastructure and deployments on AWS and Azure."
+                ],
+                "tags": [
+                    "React",
+                    "Angular",
+                    "NestJS",
+                    "Python",
+                    "Java",
+                    "AWS",
+                    "Azure"
+                ]
+            },
+            {
+                "role": "Embedded Software Engineer",
+                "company": "Irdeto",
+                "location": "Paris, France",
+                "period": "Apr 2020 – Oct 2022",
+                "bullets": [
+                    "Software development for satellite video transmission (Java, C++).",
+                    "Web UI development and maintenance (Node.js).",
+                    "CI/CD pipeline management."
+                ],
+                "tags": [
+                    "Java",
+                    "C++",
+                    "Node.js",
+                    "CI/CD"
+                ]
+            },
+            {
+                "role": "Software Engineer",
+                "company": "Conex",
+                "location": "Paris, France",
+                "period": "Jul 2019 – Oct 2019",
+                "bullets": [
+                    "Software development and scripting (C++, Python, Node.js, MongoDB).",
+                    "Dashboard creation (Node.js, MongoDB).",
+                    "Level 2 and 3 support."
+                ],
+                "tags": [
+                    "C++",
+                    "Python",
+                    "Node.js",
+                    "MongoDB"
+                ]
+            },
+            {
+                "role": "VR Developer",
+                "company": "OptimaReality",
+                "location": "Paris, France",
+                "period": "Jul 2017 – Jan 2018",
+                "bullets": [
+                    "Development of tools for a VR chair (C, Python, C++).",
+                    "Creation of VR experiences (Unreal Engine – C++, Unity3D – C#).",
+                    "On-site installation and presentation at trade shows and corporate events (Matignon, Galeries Lafayette, Johnson & Johnson…)."
+                ],
+                "tags": [
+                    "C",
+                    "C++",
+                    "C#",
+                    "Python",
+                    "Unreal Engine",
+                    "Unity3D"
+                ]
+            }
+        ]
+    },
+    "skills": {
+        "title": "Skills",
+        "categories": {
+            "frontend": "Web / Front-End",
+            "backend": "Languages / Back-End",
+            "database_cloud": "Database & Cloud",
+            "ai": "AI & Agentic",
+            "tools": "Tools & Creative"
+        }
+    },
+    "education": {
+        "title": "Education",
+        "items": [
+            {
+                "degree": "Digital Technology Architect",
+                "institution": "École 42",
+                "location": "Paris, France",
+                "period": "2016 – 2019",
+                "description": "Peer-to-peer project-based computer science school. No teachers, no courses — learning through practice and collaboration."
+            },
+            {
+                "degree": "Scientific Baccalaureate",
+                "institution": "Lycée Léonard Limosin",
+                "location": "Limoges, France",
+                "period": "2013 – 2016",
+                "description": ""
+            }
+        ]
+    },
+    "projects": {
+        "title": "Projects",
+        "view_code": "Code",
+        "view_demo": "Demo",
+        "items": [
+            {
+                "description": "Competitive hackathon where small robots armed with balloons fight for territory in a miniature maze. Participated in 2024 and 2025 with two friends — fully designed and programmed the robots under tight computing resource constraints."
+            },
+            {
+                "description": "This interactive CV — a fully responsive personal website built with React and Material UI, featuring smooth-scroll navigation, EN/FR language switching and a one-click CV download."
+            }
+        ]
+    },
+    "contact": {
+        "title": "Get In Touch",
+        "subtitle": "Have a project in mind or just want to say hello? My inbox is always open.",
+        "email_label": "Email",
+        "phone_label": "Phone",
+        "location_label": "Location",
+        "send_message": "Send a message",
+        "form": {
+            "name": "Your name",
+            "email": "Your email",
+            "message": "Your message",
+            "submit": "Send message",
+            "success": "Message sent! I'll get back to you soon.",
+            "error": "Something went wrong. Please try again."
+        }
+    },
+    "footer": {
+        "made_with": "Made with",
+        "and": "and",
+        "rights": "All rights reserved."
+    }
+}
