@@ -7,7 +7,7 @@ export default function Education() {
     const items = t('education.items', { returnObjects: true })
 
     return (
-        <Box id="education" sx={{ py: { xs: 8, md: 12 }, bgcolor: 'grey.50' }}>
+        <Box id="education" sx={{ py: { xs: 8, md: 12 }, bgcolor: 'background.paper' }}>
             <Container maxWidth="lg">
                 <Typography variant="h2" sx={{ fontSize: { xs: '2rem', md: '2.75rem' }, mb: 8, textAlign: 'center' }}>
                     {t('education.title')}

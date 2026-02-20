@@ -1,24 +1,54 @@
 import { useTranslation } from 'react-i18next'
 import { Box, Container, Typography, Card, CardContent, Chip, Stack, List, ListItem, ListItemIcon, ListItemText } from '@mui/material'
+import { useTheme } from '@mui/material/styles'
 import WorkIcon from '@mui/icons-material/Work'
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord'
-import { skills, categoryColors } from '../data/cvData'
+import { skills, categoryColors, darkCategoryColors, experienceDates } from '../data/cvData'
 
-// Build a tag → colour lookup from the skills categories
-const tagColorMap = Object.entries(skills).reduce((map, [category, tags]) => {
-    tags.forEach((tag) => { map[tag] = categoryColors[category] })
-    return map
-}, {})
+// Two tag→colour maps, one per mode
+const buildTagMap = (colors) =>
+    Object.entries(skills).reduce((map, [category, tags]) => {
+        tags.forEach((tag) => { map[tag] = colors[category] })
+        return map
+    }, {})
+
+const lightTagMap = buildTagMap(categoryColors)
+const darkTagMap = buildTagMap(darkCategoryColors)
+
+/** Returns total months between a YYYY-MM start and optional YYYY-MM end (null = now). */
+function monthsBetween(start, end) {
+    const [sy, sm] = start.split('-').map(Number)
+    const endDate = end ? end.split('-').map(Number) : [new Date().getFullYear(), new Date().getMonth() + 1]
+    const [ey, em] = endDate
+    return (ey - sy) * 12 + (em - sm)
+}
+
+function formatDuration(totalMonths, t) {
+    const years = Math.floor(totalMonths / 12)
+    const months = totalMonths % 12
+    const parts = []
+    if (years > 0) parts.push(`${years} ${years > 1 ? t('experience.yrs') : t('experience.yr')}`)
+    if (months > 0) parts.push(`${months} ${months > 1 ? t('experience.mos') : t('experience.mo')}`)
+    return parts.join(' ')
+}
 
 export default function Experience() {
     const { t } = useTranslation()
+    const theme = useTheme()
+    const tagColorMap = theme.palette.mode === 'dark' ? darkTagMap : lightTagMap
     const items = t('experience.items', { returnObjects: true })
 
+    const durations = experienceDates.map((d) => monthsBetween(d.start, d.end))
+    const totalMonths = durations.reduce((sum, d) => sum + d, 0)
+
     return (
-        <Box id="experience" sx={{ py: { xs: 8, md: 12 }, bgcolor: 'grey.50' }}>
+        <Box id="experience" sx={{ py: { xs: 8, md: 12 }, bgcolor: 'background.paper' }}>
             <Container maxWidth="lg">
-                <Typography variant="h2" sx={{ fontSize: { xs: '2rem', md: '2.75rem' }, mb: 8, textAlign: 'center' }}>
+                <Typography variant="h2" sx={{ fontSize: { xs: '2rem', md: '2.75rem' }, mb: 1, textAlign: 'center' }}>
                     {t('experience.title')}
+                </Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center', mb: 8 }}>
+                    {t('experience.total_experience', { duration: formatDuration(totalMonths, t) })}
                 </Typography>
 
                 <Box sx={{ position: 'relative', pl: { xs: 0, md: 5 } }}>
@@ -67,7 +97,12 @@ export default function Experience() {
                                                     {item.company} · {item.location}
                                                 </Typography>
                                             </Box>
-                                            <Chip label={item.period} size="small" variant="outlined" />
+                                            <Box sx={{ textAlign: 'right' }}>
+                                                <Chip label={item.period} size="small" variant="outlined" />
+                                                <Typography variant="caption" color="text.secondary" display="block" mt={0.5}>
+                                                    {formatDuration(durations[index], t)}
+                                                </Typography>
+                                            </Box>
                                         </Box>
 
                                         {/* Bullets */}

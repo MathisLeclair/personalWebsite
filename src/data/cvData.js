@@ -21,13 +21,31 @@ export const experienceTags = [
     ['C', 'C++', 'C#', 'Python', 'Unreal Engine', 'Unity3D'],
 ]
 
-// Category colours — used in both Skills.jsx and Experience.jsx
+// Experience date ranges (YYYY-MM). end: null means 'present'.
+// These are the source of truth for duration calculations in Experience.jsx.
+export const experienceDates = [
+    { start: '2022-11', end: null },
+    { start: '2020-04', end: '2022-10' },
+    { start: '2019-07', end: '2019-10' },
+    { start: '2017-07', end: '2018-01' },
+]
+
+// Category colours — light mode (rich/dark hues that pop on white)
 export const categoryColors = {
     frontend: '#e94560',
     backend: '#0f3460',
     database_cloud: '#16213e',
     tools: '#533483',
     ai: '#00695c',
+}
+
+// Category colours — dark mode (bright/pastel hues legible on dark backgrounds)
+export const darkCategoryColors = {
+    frontend: '#ff6b81',
+    backend: '#64b5f6',
+    database_cloud: '#4dd0e1',
+    tools: '#ce93d8',
+    ai: '#80cbc4',
 }
 
 

@@ -1,11 +1,12 @@
 import { useTranslation } from 'react-i18next'
 import { Box, Container, Typography, Grid, Paper, Chip, Stack } from '@mui/material'
-import { skills, categoryColors } from '../data/cvData'
-
-const CATEGORY_COLORS = categoryColors
+import { useTheme } from '@mui/material/styles'
+import { skills, categoryColors, darkCategoryColors } from '../data/cvData'
 
 export default function Skills() {
     const { t } = useTranslation()
+    const theme = useTheme()
+    const COLORS = theme.palette.mode === 'dark' ? darkCategoryColors : categoryColors
 
     return (
         <Box id="skills" sx={{ py: { xs: 8, md: 12 }, bgcolor: 'background.default' }}>
@@ -25,12 +26,12 @@ export default function Skills() {
                                     border: '1px solid',
                                     borderColor: 'divider',
                                     borderTop: '3px solid',
-                                    borderTopColor: CATEGORY_COLORS[key],
+                                    borderTopColor: COLORS[key],
                                     transition: 'box-shadow .2s',
                                     '&:hover': { boxShadow: 4 },
                                 }}
                             >
-                                <Typography variant="h6" sx={{ mb: 2, color: CATEGORY_COLORS[key] }}>
+                                <Typography variant="h6" sx={{ mb: 2, color: COLORS[key] }}>
                                     {t(`skills.categories.${key}`)}
                                 </Typography>
                                 <Stack direction="row" flexWrap="wrap" gap={1}>
@@ -39,7 +40,7 @@ export default function Skills() {
                                             key={skill}
                                             label={skill}
                                             variant="outlined"
-                                            sx={{ borderColor: CATEGORY_COLORS[key], color: CATEGORY_COLORS[key] }}
+                                            sx={{ borderColor: COLORS[key], color: COLORS[key] }}
                                         />
                                     ))}
                                 </Stack>

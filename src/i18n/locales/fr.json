@@ -24,6 +24,11 @@
     "experience": {
         "title": "Expérience",
         "present": "Aujourd'hui",
+        "yr": "an",
+        "yrs": "ans",
+        "mo": "mois",
+        "mos": "mois",
+        "total_experience": "{{duration}} d'expérience professionnelle",
         "items": [
             {
                 "role": "Full Stack Software Engineer",

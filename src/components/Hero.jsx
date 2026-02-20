@@ -1,7 +1,8 @@
 import { useTranslation } from 'react-i18next'
-import { Box, Typography, Button, Stack, Container, Avatar } from '@mui/material'
+import { Box, Typography, Button, Stack, Container, Avatar, IconButton } from '@mui/material'
 import EmailIcon from '@mui/icons-material/Email'
 import DownloadIcon from '@mui/icons-material/Download'
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import { personalInfo } from '../data/cvData'
 
 export default function Hero() {
@@ -87,6 +88,30 @@ export default function Hero() {
                     </Stack>
                 </Stack>
             </Container>
+
+            {/* Scroll-down arrow */}
+            <IconButton
+                onClick={() => document.querySelector('#about')?.scrollIntoView({ behavior: 'smooth' })}
+                aria-label="Scroll down"
+                sx={{
+                    position: 'absolute',
+                    bottom: 32,
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    color: 'text.secondary',
+                    border: '2px solid',
+                    borderColor: 'divider',
+                    borderRadius: '50%',
+                    p: 0.5,
+                    animation: 'bounce 2s infinite',
+                    '@keyframes bounce': {
+                        '0%, 100%': { transform: 'translateX(-50%) translateY(0)' },
+                        '50%': { transform: 'translateX(-50%) translateY(8px)' },
+                    },
+                }}
+            >
+                <KeyboardArrowDownIcon fontSize="large" />
+            </IconButton>
         </Box>
     )
 }
