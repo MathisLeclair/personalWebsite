@@ -67,7 +67,7 @@ export const projects = [
     {
         title: 'Personal Website',
         tags: ['React', 'Material UI', 'i18n', 'Vite'],
-        github: '',
+        github: 'https://github.com/MathisLeclair/personalWebsite',
         demo: '',
     },
 ]
