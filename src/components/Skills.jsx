@@ -1,14 +1,8 @@
 import { useTranslation } from 'react-i18next'
 import { Box, Container, Typography, Grid, Paper, Chip, Stack } from '@mui/material'
-import { skills } from '../data/cvData'
+import { skills, categoryColors } from '../data/cvData'
 
-const CATEGORY_COLORS = {
-    frontend: '#e94560',
-    backend: '#0f3460',
-    database_cloud: '#16213e',
-    tools: '#533483',
-    ai: '#00695c',
-}
+const CATEGORY_COLORS = categoryColors
 
 export default function Skills() {
     const { t } = useTranslation()

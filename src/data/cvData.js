@@ -1,5 +1,3 @@
-// ─── Personal information ────────────────────────────────────────────────────
-
 export const personalInfo = {
     name: 'Mathis Leclair',
     // title & tagline come from i18n translations (hero.title / hero.tagline)
@@ -8,15 +6,14 @@ export const personalInfo = {
     location: 'Paris, France',
     github: '',
     linkedin: 'https://linkedin.com/in/mathisleclair',
-    twitter: '',
+    github: 'https://github.com/MathisLeclair',
     avatarUrl: '/avatar.jpg',
     // CV download paths (served from /public/cv/)
     cvEn: '/cv/Mathis_Leclair_EN_CV_V5.pdf',
     cvFr: '/cv/Mathis_Leclair_FR_CV_V5.pdf',
 }
 
-// Experience data lives in i18n locale files (experience.items)
-// Tags are language-agnostic and kept here for reference only.
+
 export const experienceTags = [
     ['React', 'Angular', 'Python', 'Java', 'NestJS', 'AWS', 'Azure'],
     ['Java', 'C++', 'Node.js', 'CI/CD'],
@@ -24,8 +21,16 @@ export const experienceTags = [
     ['C', 'C++', 'C#', 'Python', 'Unreal Engine', 'Unity3D'],
 ]
 
-// Education & skills also live in i18n locale files.
-// Skill lists below are shown in Skills.jsx (tech names are language-agnostic).
+// Category colours — used in both Skills.jsx and Experience.jsx
+export const categoryColors = {
+    frontend: '#e94560',
+    backend: '#0f3460',
+    database_cloud: '#16213e',
+    tools: '#533483',
+    ai: '#00695c',
+}
+
+
 export const skills = {
     frontend: ['React', 'Angular', 'Node.js', 'NestJS', 'HTML5', 'CSS3', 'TypeScript'],
     backend: ['Java', 'Python', 'C', 'C++', 'C#', 'JavaScript'],
@@ -34,7 +39,6 @@ export const skills = {
     ai: ['LLM', 'Agentic AI', 'Prompt Engineering', 'OpenAI API'],
 }
 
-// Projects — language-agnostic fields here; translated description lives in locale files (projects.items[n].description)
 export const projects = [
     {
         title: 'ExoLegend',

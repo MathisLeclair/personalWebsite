@@ -2,6 +2,13 @@ import { useTranslation } from 'react-i18next'
 import { Box, Container, Typography, Card, CardContent, Chip, Stack, List, ListItem, ListItemIcon, ListItemText } from '@mui/material'
 import WorkIcon from '@mui/icons-material/Work'
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord'
+import { skills, categoryColors } from '../data/cvData'
+
+// Build a tag → colour lookup from the skills categories
+const tagColorMap = Object.entries(skills).reduce((map, [category, tags]) => {
+    tags.forEach((tag) => { map[tag] = categoryColors[category] })
+    return map
+}, {})
 
 export default function Experience() {
     const { t } = useTranslation()
@@ -72,7 +79,7 @@ export default function Experience() {
                                                     </ListItemIcon>
                                                     <ListItemText
                                                         primary={bullet}
-                                                        primaryTypographyProps={{ variant: 'body2', color: 'text.secondary' }}
+                                                        slotProps={{ primary: { variant: 'body2', color: 'text.secondary' } }}
                                                     />
                                                 </ListItem>
                                             ))}
@@ -85,7 +92,7 @@ export default function Experience() {
                                                     key={tag}
                                                     label={tag}
                                                     size="small"
-                                                    sx={{ bgcolor: 'primary.main', color: 'white', fontSize: '0.7rem' }}
+                                                    sx={{ bgcolor: tagColorMap[tag] ?? 'primary.main', color: 'white', fontSize: '0.7rem' }}
                                                 />
                                             ))}
                                         </Stack>

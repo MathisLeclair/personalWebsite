@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useContext } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
     AppBar,
@@ -12,15 +12,18 @@ import {
     ListItemButton,
     ListItemText,
     Box,
+    Tooltip,
     useScrollTrigger,
     Slide,
+    useTheme,
 } from '@mui/material'
 import MenuIcon from '@mui/icons-material/Menu'
 import CloseIcon from '@mui/icons-material/Close'
+import DarkModeIcon from '@mui/icons-material/DarkMode'
+import LightModeIcon from '@mui/icons-material/LightMode'
 import { personalInfo } from '../data/cvData'
 import LanguageSwitcher from './LanguageSwitcher'
-
-// Nav items are now derived from translations inside the component
+import { ColorModeContext } from '../App'
 
 function HideOnScroll({ children }) {
     const trigger = useScrollTrigger()
@@ -34,6 +37,8 @@ function HideOnScroll({ children }) {
 export default function Navbar() {
     const [drawerOpen, setDrawerOpen] = useState(false)
     const { t } = useTranslation()
+    const { mode, toggleColorMode } = useContext(ColorModeContext)
+    const theme = useTheme()
 
     const NAV_ITEMS = [
         { label: t('nav.about'), href: '#about' },
@@ -57,7 +62,9 @@ export default function Navbar() {
                     position="fixed"
                     elevation={0}
                     sx={{
-                        bgcolor: 'rgba(255,255,255,0.85)',
+                        bgcolor: theme.palette.mode === 'light'
+                            ? 'rgba(255,255,255,0.85)'
+                            : 'rgba(13,13,26,0.85)',
                         backdropFilter: 'blur(12px)',
                         borderBottom: '1px solid',
                         borderColor: 'divider',
@@ -97,6 +104,13 @@ export default function Navbar() {
 
                         {/* Language switcher (always visible) */}
                         <LanguageSwitcher />
+
+                        {/* Dark mode toggle */}
+                        <Tooltip title={mode === 'light' ? 'Dark mode' : 'Light mode'}>
+                            <IconButton onClick={toggleColorMode} sx={{ ml: 0.5, color: 'text.primary' }}>
+                                {mode === 'light' ? <DarkModeIcon fontSize="small" /> : <LightModeIcon fontSize="small" />}
+                            </IconButton>
+                        </Tooltip>
 
                         {/* Mobile burger */}
                         <IconButton
