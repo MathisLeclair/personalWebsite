@@ -40,5 +40,5 @@ jobs:
           port: 22
           local_path: "dist/"
           remote_path: ${{ secrets.OVH_REMOTE_DIR }}
-          delete_remote_files: false
+          delete_remote_files: true
           sftp_only: true
