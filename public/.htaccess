@@ -1,4 +1,7 @@
-Options -MultiViews
+﻿Options -MultiViews
+
+# Fallback for servers where mod_rewrite is restricted
+ErrorDocument 404 /index.html
 
 <IfModule mod_rewrite.c>
   RewriteEngine On
