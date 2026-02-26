@@ -31,14 +31,16 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Upload dist/ to OVH via SFTP
-        uses: wlixcc/SFTP-Deploy-Action@v1.2.4
-        with:
-          username: ${{ secrets.OVH_SSH_USER }}
-          password: ${{ secrets.OVH_SSH_PASSWORD }}
-          server: ${{ secrets.OVH_SSH_HOST }}
-          port: 22
-          local_path: "./dist/"
-          remote_path: ${{ secrets.OVH_REMOTE_DIR }}
-          delete_remote_files: true
-          sftp_only: true
+      - name: Deploy to OVH via lftp
+        env:
+          OVH_SSH_PASSWORD: ${{ secrets.OVH_SSH_PASSWORD }}
+          OVH_REMOTE_DIR: ${{ secrets.OVH_REMOTE_DIR }}
+          OVH_SSH_HOST: ${{ secrets.OVH_SSH_HOST }}
+          OVH_SSH_USER: ${{ secrets.OVH_SSH_USER }}
+        run: |
+          lftp -u "$OVH_SSH_USER","$OVH_SSH_PASSWORD" "sftp://$OVH_SSH_HOST" -e "
+            set sftp:auto-confirm yes;
+            set net:max-retries 3;
+            mirror --reverse --delete --verbose dist/ $OVH_REMOTE_DIR;
+            quit
+          "
