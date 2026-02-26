@@ -38,7 +38,7 @@ jobs:
           password: ${{ secrets.OVH_SSH_PASSWORD }}
           server: ${{ secrets.OVH_SSH_HOST }}
           port: 22
-          local_path: "dist/*"
+          local_path: "./dist/"
           remote_path: ${{ secrets.OVH_REMOTE_DIR }}
           delete_remote_files: true
           sftp_only: true
