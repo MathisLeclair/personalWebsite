@@ -18,7 +18,7 @@ export default defineConfig({
                         resolve(__dirname, 'public/.htaccess'),
                         resolve(__dirname, 'dist/.htaccess')
                     )
-                } catch {/* already copied */}
+                } catch {/* already copied */ }
             },
         },
     ],
