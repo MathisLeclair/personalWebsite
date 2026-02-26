@@ -1,4 +1,5 @@
 import { useState, useMemo, createContext, Suspense } from 'react'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { ThemeProvider, CssBaseline } from '@mui/material'
 import { createAppTheme } from './theme'
 import Navbar from './components/Navbar'
@@ -10,8 +11,27 @@ import Education from './components/Education'
 import Projects from './components/Projects'
 import Contact from './components/Contact'
 import Footer from './components/Footer'
+import FoodMatchPrivacy from './pages/FoodMatchPrivacy'
 
 export const ColorModeContext = createContext({ mode: 'light', toggleColorMode: () => { } })
+
+function MainSite() {
+    return (
+        <Suspense fallback={null}>
+            <Navbar />
+            <main>
+                <Hero />
+                <About />
+                <Experience />
+                <Skills />
+                <Education />
+                <Projects />
+                <Contact />
+            </main>
+            <Footer />
+        </Suspense>
+    )
+}
 
 export default function App() {
     const [mode, setMode] = useState(
@@ -33,19 +53,12 @@ export default function App() {
         <ColorModeContext.Provider value={colorMode}>
             <ThemeProvider theme={theme}>
                 <CssBaseline />
-                <Suspense fallback={null}>
-                    <Navbar />
-                    <main>
-                        <Hero />
-                        <About />
-                        <Experience />
-                        <Skills />
-                        <Education />
-                        <Projects />
-                        <Contact />
-                    </main>
-                    <Footer />
-                </Suspense>
+                <BrowserRouter>
+                    <Routes>
+                        <Route path="/foodMatch/privacy" element={<FoodMatchPrivacy />} />
+                        <Route path="*" element={<MainSite />} />
+                    </Routes>
+                </BrowserRouter>
             </ThemeProvider>
         </ColorModeContext.Provider>
     )
