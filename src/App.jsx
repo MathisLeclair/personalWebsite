@@ -12,6 +12,7 @@ import Projects from './components/Projects'
 import Contact from './components/Contact'
 import Footer from './components/Footer'
 import FoodMatchPrivacy from './pages/FoodMatchPrivacy'
+import StargatePage from './pages/StargatePage'
 
 export const ColorModeContext = createContext({ mode: 'light', toggleColorMode: () => { } })
 
@@ -56,6 +57,7 @@ export default function App() {
                 <BrowserRouter>
                     <Routes>
                         <Route path="/foodMatch/privacy" element={<FoodMatchPrivacy />} />
+                        <Route path="/stargate" element={<StargatePage />} />
                         <Route path="*" element={<MainSite />} />
                     </Routes>
                 </BrowserRouter>
