@@ -1,640 +1,835 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="utf-8">
-<title>SGC Room Calibrator</title>
-<style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: #040b18; color: #b3e5fc; font-family: 'Inter', system-ui, sans-serif; display: flex; height: 100vh; overflow: hidden; }
+    <meta charset="utf-8">
+    <title>SGC Room Calibrator</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-  /* ── Sidebar ── */
-  #sidebar {
-    width: 300px; flex-shrink: 0;
-    background: #060f1e;
-    border-right: 1px solid rgba(79,195,247,0.2);
-    display: flex; flex-direction: column; gap: 0;
-    overflow-y: auto;
-  }
-  .section { padding: 12px 14px; border-bottom: 1px solid rgba(79,195,247,0.1); }
-  .section-title { font-size: 10px; letter-spacing: 0.1em; color: rgba(79,195,247,0.5); margin-bottom: 8px; }
+        body {
+            background: #040b18;
+            color: #b3e5fc;
+            font-family: 'Inter', system-ui, sans-serif;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
 
-  select, input[type=text] {
-    background: #02060f; border: 1px solid rgba(79,195,247,0.3);
-    color: #b3e5fc; padding: 5px 8px; border-radius: 4px; font-size: 12px; width: 100%;
-  }
-  select:focus, input:focus { outline: 1px solid #4fc3f7; }
+        /* ── Sidebar ── */
+        #sidebar {
+            width: 300px;
+            flex-shrink: 0;
+            background: #060f1e;
+            border-right: 1px solid rgba(79, 195, 247, 0.2);
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            overflow-y: auto;
+        }
 
-  .btn-row { display: flex; gap: 6px; }
-  button {
-    background: rgba(79,195,247,0.08); border: 1px solid rgba(79,195,247,0.35);
-    color: #4fc3f7; padding: 5px 10px; border-radius: 4px; cursor: pointer;
-    font-size: 11px; font-weight: 600; letter-spacing: 0.05em; white-space: nowrap;
-    transition: background 0.15s;
-  }
-  button:hover { background: rgba(79,195,247,0.18); }
-  button.active { background: rgba(79,195,247,0.28); border-color: #4fc3f7; color: #e0f7fa; }
-  button.danger { border-color: rgba(255,80,80,0.4); color: #ff8a80; }
-  button.danger:hover { background: rgba(255,80,80,0.12); }
-  button.label-btn { border-color: rgba(179,229,252,0.3); color: rgba(179,229,252,0.6); }
-  button.label-btn:hover { background: rgba(179,229,252,0.1); color: #b3e5fc; }
-  body.placing-label { cursor: crosshair !important; }
-  body.placing-label #plan { cursor: crosshair !important; }
+        .section {
+            padding: 12px 14px;
+            border-bottom: 1px solid rgba(79, 195, 247, 0.1);
+        }
 
-  #coords {
-    font-family: monospace; font-size: 11px; color: rgba(79,195,247,0.6);
-    min-height: 16px; letter-spacing: 0.04em;
-  }
-  #hint { font-size: 11px; color: rgba(79,195,247,0.4); line-height: 1.5; }
+        .section-title {
+            font-size: 10px;
+            letter-spacing: 0.1em;
+            color: rgba(79, 195, 247, 0.5);
+            margin-bottom: 8px;
+        }
 
-  /* Zone list */
-  #zoneList { display: flex; flex-direction: column; gap: 6px; }
-  .zone-item {
-    border: 1px solid rgba(79,195,247,0.18); border-radius: 4px; padding: 7px 9px;
-    font-size: 11px; cursor: pointer; transition: border-color 0.15s;
-  }
-  .zone-item:hover { border-color: rgba(79,195,247,0.45); }
-  .zone-item.hovered { border-color: #4fc3f7; }
-  .zone-id { color: #4fc3f7; font-weight: 600; }
-  .zone-info { color: rgba(79,195,247,0.45); margin-top: 3px; font-family: monospace; font-size: 10px; }
-  .zone-actions { display: flex; gap: 4px; margin-top: 5px; }
-  .zone-edit-form { margin-top: 7px; display: flex; flex-direction: column; gap: 5px; }
-  .zone-edit-form input { font-size: 11px; padding: 3px 6px; }
-  .zone-edit-row { display: flex; gap: 4px; }
-  #groupBar {
-    background: rgba(255,152,0,0.1); border: 1px solid rgba(255,152,0,0.5);
-    border-radius: 6px; padding: 8px 10px; display: none; flex-direction: column; gap: 6px;
-    margin-top: 8px;
-  }
-  #groupBar.active { display: flex; }
-  #groupBar .gcount { font-size: 11px; color: #ff9800; font-weight: 600; }
-  #groupBar .gbtn-row { display: flex; gap: 5px; }
-  #groupBar button { flex: 1; }
-  #groupBar .commit { border-color: #ff9800; color: #ff9800; }
-  #groupBar .commit:hover { background: rgba(255,152,0,0.18); }
+        select,
+        input[type=text] {
+            background: #02060f;
+            border: 1px solid rgba(79, 195, 247, 0.3);
+            color: #b3e5fc;
+            padding: 5px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            width: 100%;
+        }
 
-  /* Output */
-  #output {
-    background: #02060f; border: 1px solid rgba(79,195,247,0.15); border-radius: 4px;
-    padding: 10px; font-size: 10px; font-family: monospace; white-space: pre;
-    overflow: auto; max-height: 220px; color: #4fc3f7; line-height: 1.5;
-  }
+        select:focus,
+        input:focus {
+            outline: 1px solid #4fc3f7;
+        }
 
-  /* ── Main canvas area ── */
-  #main { flex: 1; overflow: auto; display: flex; align-items: flex-start; justify-content: center; padding: 12px; background: #030912; }
-  #svgWrap { position: relative; }
-  #plan { display: block; max-width: 100%; cursor: crosshair; }
+        .btn-row {
+            display: flex;
+            gap: 6px;
+        }
 
-  .toast {
-    position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
-    background: rgba(79,195,247,0.2); border: 1px solid #4fc3f7;
-    color: #e0f7fa; padding: 8px 20px; border-radius: 6px; font-size: 12px;
-    pointer-events: none; opacity: 0; transition: opacity 0.3s;
-  }
-  .toast.show { opacity: 1; }
-</style>
+        button {
+            background: rgba(79, 195, 247, 0.08);
+            border: 1px solid rgba(79, 195, 247, 0.35);
+            color: #4fc3f7;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            white-space: nowrap;
+            transition: background 0.15s;
+        }
+
+        button:hover {
+            background: rgba(79, 195, 247, 0.18);
+        }
+
+        button.active {
+            background: rgba(79, 195, 247, 0.28);
+            border-color: #4fc3f7;
+            color: #e0f7fa;
+        }
+
+        button.danger {
+            border-color: rgba(255, 80, 80, 0.4);
+            color: #ff8a80;
+        }
+
+        button.danger:hover {
+            background: rgba(255, 80, 80, 0.12);
+        }
+
+        button.label-btn {
+            border-color: rgba(179, 229, 252, 0.3);
+            color: rgba(179, 229, 252, 0.6);
+        }
+
+        button.label-btn:hover {
+            background: rgba(179, 229, 252, 0.1);
+            color: #b3e5fc;
+        }
+
+        body.placing-label {
+            cursor: crosshair !important;
+        }
+
+        body.placing-label #plan {
+            cursor: crosshair !important;
+        }
+
+        #coords {
+            font-family: monospace;
+            font-size: 11px;
+            color: rgba(79, 195, 247, 0.6);
+            min-height: 16px;
+            letter-spacing: 0.04em;
+        }
+
+        #hint {
+            font-size: 11px;
+            color: rgba(79, 195, 247, 0.4);
+            line-height: 1.5;
+        }
+
+        /* Zone list */
+        #zoneList {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .zone-item {
+            border: 1px solid rgba(79, 195, 247, 0.18);
+            border-radius: 4px;
+            padding: 7px 9px;
+            font-size: 11px;
+            cursor: pointer;
+            transition: border-color 0.15s;
+        }
+
+        .zone-item:hover {
+            border-color: rgba(79, 195, 247, 0.45);
+        }
+
+        .zone-item.hovered {
+            border-color: #4fc3f7;
+        }
+
+        .zone-id {
+            color: #4fc3f7;
+            font-weight: 600;
+        }
+
+        .zone-info {
+            color: rgba(79, 195, 247, 0.45);
+            margin-top: 3px;
+            font-family: monospace;
+            font-size: 10px;
+        }
+
+        .zone-actions {
+            display: flex;
+            gap: 4px;
+            margin-top: 5px;
+        }
+
+        .zone-edit-form {
+            margin-top: 7px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .zone-edit-form input {
+            font-size: 11px;
+            padding: 3px 6px;
+        }
+
+        .zone-edit-row {
+            display: flex;
+            gap: 4px;
+        }
+
+        #groupBar {
+            background: rgba(255, 152, 0, 0.1);
+            border: 1px solid rgba(255, 152, 0, 0.5);
+            border-radius: 6px;
+            padding: 8px 10px;
+            display: none;
+            flex-direction: column;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        #groupBar.active {
+            display: flex;
+        }
+
+        #groupBar .gcount {
+            font-size: 11px;
+            color: #ff9800;
+            font-weight: 600;
+        }
+
+        #groupBar .gbtn-row {
+            display: flex;
+            gap: 5px;
+        }
+
+        #groupBar button {
+            flex: 1;
+        }
+
+        #groupBar .commit {
+            border-color: #ff9800;
+            color: #ff9800;
+        }
+
+        #groupBar .commit:hover {
+            background: rgba(255, 152, 0, 0.18);
+        }
+
+        /* Output */
+        #output {
+            background: #02060f;
+            border: 1px solid rgba(79, 195, 247, 0.15);
+            border-radius: 4px;
+            padding: 10px;
+            font-size: 10px;
+            font-family: monospace;
+            white-space: pre;
+            overflow: auto;
+            max-height: 220px;
+            color: #4fc3f7;
+            line-height: 1.5;
+        }
+
+        /* ── Main canvas area ── */
+        #main {
+            flex: 1;
+            overflow: auto;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 12px;
+            background: #030912;
+        }
+
+        #svgWrap {
+            position: relative;
+        }
+
+        #plan {
+            display: block;
+            max-width: 100%;
+            cursor: crosshair;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(79, 195, 247, 0.2);
+            border: 1px solid #4fc3f7;
+            color: #e0f7fa;
+            padding: 8px 20px;
+            border-radius: 6px;
+            font-size: 12px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .toast.show {
+            opacity: 1;
+        }
+    </style>
 </head>
+
 <body>
 
-<div id="sidebar">
-  <!-- Level -->
-  <div class="section">
-    <div class="section-title">LEVEL</div>
-    <select id="levelSel">
-      <option value="28">Level 28 — Gate Ops</option>
-      <option value="27">Level 27 — Admin</option>
-    </select>
-  </div>
+    <div id="sidebar">
+        <!-- Level -->
+        <div class="section">
+            <div class="section-title">LEVEL</div>
+            <select id="levelSel">
+                <option value="28">Level 28 — Gate Ops</option>
+                <option value="27">Level 27 — Admin</option>
+            </select>
+        </div>
 
-  <!-- Shape -->
-  <div class="section">
-    <div class="section-title">DRAW MODE</div>
-    <div class="btn-row">
-      <button id="btnRect" class="active" onclick="setShape('rect')">▭ Rect</button>
-      <button id="btnCircle" onclick="setShape('circle')">◯ Circle</button>
-      <button id="btnPoly" onclick="setShape('poly')">⬡ Polygon</button>
+        <!-- Shape -->
+        <div class="section">
+            <div class="section-title">DRAW MODE</div>
+            <div class="btn-row">
+                <button id="btnRect" class="active" onclick="setShape('rect')">▭ Rect</button>
+                <button id="btnCircle" onclick="setShape('circle')">◯ Circle</button>
+                <button id="btnPoly" onclick="setShape('poly')">⬡ Polygon</button>
+            </div>
+            <div id="hint" style="margin-top:8px;">Click + drag to draw a rectangle.</div>
+            <div id="groupBar">
+                <div class="gcount" id="groupCount">0 shapes in group</div>
+                <div style="font-size:10px;color:rgba(255,152,0,0.6)">Keep drawing to add more shapes.<br>Each draw adds
+                    to this group.</div>
+                <div class="gbtn-row">
+                    <button class="commit" onclick="commitGroup()">✓ Done — save group</button>
+                    <button class="danger" onclick="cancelGroup()" style="flex:0.4">✕</button>
+                </div>
+            </div>
+            <button id="btnGroup" onclick="toggleGroup()" style="margin-top:8px;width:100%;justify-content:center">⊞
+                Group mode (for corridors)</button>
+        </div>
+
+        <!-- Room ID / Label -->
+        <div class="section">
+            <div class="section-title">ROOM ID</div>
+            <input id="roomId" type="text" placeholder="e.g. l28-gateroom" />
+            <div class="section-title" style="margin-top:8px;">LABEL (displayed in SVG)</div>
+            <div style="display:flex;gap:6px;">
+                <input id="roomLabel1" type="text" placeholder="Line 1" style="flex:1" />
+                <input id="roomLabel2" type="text" placeholder="Line 2 (opt.)" style="flex:1" />
+            </div>
+        </div>
+
+        <!-- Live coords -->
+        <div class="section">
+            <div id="coords">x: — y: —</div>
+        </div>
+
+        <!-- Zones list -->
+        <div class="section" style="flex:1;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                <div class="section-title" style="margin-bottom:0">ZONES ({{count}})</div>
+                <button class="danger" onclick="clearAll()" style="padding:3px 8px;font-size:10px;">Clear all</button>
+            </div>
+            <div id="zoneList"></div>
+        </div>
+
+        <!-- Output -->
+        <div class="section">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                <div class="section-title" style="margin-bottom:0">JSX OUTPUT</div>
+                <div class="btn-row">
+                    <button onclick="copyOutput()" style="padding:3px 8px;font-size:10px;">📋 Copy</button>
+                    <button onclick="downloadJSON()" style="padding:3px 8px;font-size:10px;">💾 Save</button>
+                    <button onclick="document.getElementById('loadInput').click()"
+                        style="padding:3px 8px;font-size:10px;">📂 Load</button>
+                    <input id="loadInput" type="file" accept=".json" style="display:none" onchange="loadJSON(this)" />
+                </div>
+            </div>
+            <div id="output"></div>
+        </div>
     </div>
-    <div id="hint" style="margin-top:8px;">Click + drag to draw a rectangle.</div>
-    <div id="groupBar">
-      <div class="gcount" id="groupCount">0 shapes in group</div>
-      <div style="font-size:10px;color:rgba(255,152,0,0.6)">Keep drawing to add more shapes.<br>Each draw adds to this group.</div>
-      <div class="gbtn-row">
-        <button class="commit" onclick="commitGroup()">✓ Done — save group</button>
-        <button class="danger" onclick="cancelGroup()" style="flex:0.4">✕</button>
-      </div>
+
+    <div id="main">
+        <div id="svgWrap">
+            <svg id="plan" xmlns="http://www.w3.org/2000/svg">
+                <image id="planImg" href="sgc-plan.png" x="0" y="0" width="1119" height="960" preserveAspectRatio="none"
+                    style="filter:invert(1) sepia(1) saturate(4) hue-rotate(182deg) brightness(0.68)" />
+                <g id="zonesLayer"></g>
+                <g id="previewLayer"></g>
+                <!-- Crosshair -->
+                <line id="chH" x1="0" y1="0" x2="10000" y2="0" stroke="rgba(255,255,0,0.4)" stroke-width="0.6"
+                    pointer-events="none" />
+                <line id="chV" x1="0" y1="0" x2="0" y2="10000" stroke="rgba(255,255,0,0.4)" stroke-width="0.6"
+                    pointer-events="none" />
+            </svg>
+        </div>
     </div>
-    <button id="btnGroup" onclick="toggleGroup()" style="margin-top:8px;width:100%;justify-content:center">⊞ Group mode (for corridors)</button>
-  </div>
 
-  <!-- Room ID / Label -->
-  <div class="section">
-    <div class="section-title">ROOM ID</div>
-    <input id="roomId" type="text" placeholder="e.g. l28-gateroom" />
-    <div class="section-title" style="margin-top:8px;">LABEL (displayed in SVG)</div>
-    <div style="display:flex;gap:6px;">
-      <input id="roomLabel1" type="text" placeholder="Line 1" style="flex:1"/>
-      <input id="roomLabel2" type="text" placeholder="Line 2 (opt.)" style="flex:1"/>
-    </div>
-  </div>
+    <div class="toast" id="toast"></div>
 
-  <!-- Live coords -->
-  <div class="section">
-    <div id="coords">x: —  y: —</div>
-  </div>
+    <script>
+        // ── Config ──────────────────────────────────────────────────
+        const VIEWBOXES = {
+            28: [25, 188, 800, 737],
+            27: [838, 188, 264, 737],
+        };
+        const COLORS = [
+            'rgba(79,195,247,0.32)', 'rgba(255,152,0,0.32)', 'rgba(76,175,80,0.32)',
+            'rgba(156,39,176,0.32)', 'rgba(244,67,54,0.32)', 'rgba(255,235,59,0.32)',
+            'rgba(0,188,212,0.32)', 'rgba(255,87,34,0.32)',
+        ];
+        const STROKE = [
+            '#4fc3f7', '#ff9800', '#4caf50', '#9c27b0', '#f44336', '#ffeb3b', '#00bcd4', '#ff5722',
+        ];
 
-  <!-- Zones list -->
-  <div class="section" style="flex:1;">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-      <div class="section-title" style="margin-bottom:0">ZONES ({{count}})</div>
-      <button class="danger" onclick="clearAll()" style="padding:3px 8px;font-size:10px;">Clear all</button>
-    </div>
-    <div id="zoneList"></div>
-  </div>
+        // ── State ────────────────────────────────────────────────────
+        let shape = 'rect';
+        let zones = [];
+        let drawing = false;
+        let startPt = null;
+        let polyPoints = [];
+        let previewEl = null;
+        let hoveredIdx = -1;
+        let currentLevel = 28;
+        // Group mode
+        let groupMode = false;
+        let groupShapes = []; // accumulates sub-shapes before commit
+        // Label placement
+        let labelPlaceMode = null; // zone index being re-positioned, or null
 
-  <!-- Output -->
-  <div class="section">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-      <div class="section-title" style="margin-bottom:0">JSX OUTPUT</div>
-      <div class="btn-row">
-        <button onclick="copyOutput()" style="padding:3px 8px;font-size:10px;">📋 Copy</button>
-        <button onclick="downloadJSON()" style="padding:3px 8px;font-size:10px;">💾 Save</button>
-        <button onclick="document.getElementById('loadInput').click()" style="padding:3px 8px;font-size:10px;">📂 Load</button>
-        <input id="loadInput" type="file" accept=".json" style="display:none" onchange="loadJSON(this)" />
-      </div>
-    </div>
-    <div id="output"></div>
-  </div>
-</div>
+        // ── SVG setup ────────────────────────────────────────────────
+        const svg = document.getElementById('plan');
+        const zonesLayer = document.getElementById('zonesLayer');
+        const previewLayer = document.getElementById('previewLayer');
+        const coordsEl = document.getElementById('coords');
+        const chH = document.getElementById('chH');
+        const chV = document.getElementById('chV');
 
-<div id="main">
-  <div id="svgWrap">
-    <svg id="plan" xmlns="http://www.w3.org/2000/svg">
-      <image id="planImg"
-        href="sgc-plan.png"
-        x="0" y="0" width="1119" height="960"
-        preserveAspectRatio="none"
-        style="filter:invert(1) sepia(1) saturate(4) hue-rotate(182deg) brightness(0.68)" />
-      <g id="zonesLayer"></g>
-      <g id="previewLayer"></g>
-      <!-- Crosshair -->
-      <line id="chH" x1="0" y1="0" x2="10000" y2="0" stroke="rgba(255,255,0,0.4)" stroke-width="0.6" pointer-events="none"/>
-      <line id="chV" x1="0" y1="0" x2="0" y2="10000" stroke="rgba(255,255,0,0.4)" stroke-width="0.6" pointer-events="none"/>
-    </svg>
-  </div>
-</div>
+        function setViewBox(level) {
+            currentLevel = level;
+            const [x, y, w, h] = VIEWBOXES[level];
+            svg.setAttribute('viewBox', `${x} ${y} ${w} ${h}`);
+            // Fit SVG within available area, constrained by both width AND height
+            const aspect = w / h;  // viewBox aspect ratio
+            const maxW = Math.min(window.innerWidth - 320 - 24, 1100);
+            const maxH = window.innerHeight - 24;
+            // Try width-first, then clamp by height
+            let svgW = maxW;
+            let svgH = svgW / aspect;
+            if (svgH > maxH) { svgH = maxH; svgW = svgH * aspect; }
+            svg.style.width = svgW + 'px';
+            svg.style.height = svgH + 'px';
+        }
+        setViewBox(28);
 
-<div class="toast" id="toast"></div>
+        document.getElementById('levelSel').onchange = e => {
+            setViewBox(parseInt(e.target.value));
+        };
 
-<script>
-// ── Config ──────────────────────────────────────────────────
-const VIEWBOXES = {
-  28: [25, 188, 800, 737],
-  27: [838, 188, 264, 737],
-};
-const COLORS = [
-  'rgba(79,195,247,0.32)', 'rgba(255,152,0,0.32)', 'rgba(76,175,80,0.32)',
-  'rgba(156,39,176,0.32)', 'rgba(244,67,54,0.32)', 'rgba(255,235,59,0.32)',
-  'rgba(0,188,212,0.32)', 'rgba(255,87,34,0.32)',
-];
-const STROKE = [
-  '#4fc3f7', '#ff9800', '#4caf50', '#9c27b0', '#f44336', '#ffeb3b', '#00bcd4', '#ff5722',
-];
+        window.addEventListener('resize', () => setViewBox(currentLevel));
 
-// ── State ────────────────────────────────────────────────────
-let shape = 'rect';
-let zones = [];
-let drawing = false;
-let startPt = null;
-let polyPoints = [];
-let previewEl = null;
-let hoveredIdx = -1;
-let currentLevel = 28;
-// Group mode
-let groupMode = false;
-let groupShapes = []; // accumulates sub-shapes before commit
-// Label placement
-let labelPlaceMode = null; // zone index being re-positioned, or null
+        // ── Shape selector ───────────────────────────────────────────
+        const HINTS = {
+            rect: 'Click and drag to draw a rectangle.',
+            circle: 'Click center, drag to set radius.',
+            poly: 'Click to add points. Double-click to close. Escape to cancel.',
+        };
 
-// ── SVG setup ────────────────────────────────────────────────
-const svg = document.getElementById('plan');
-const zonesLayer = document.getElementById('zonesLayer');
-const previewLayer = document.getElementById('previewLayer');
-const coordsEl = document.getElementById('coords');
-const chH = document.getElementById('chH');
-const chV = document.getElementById('chV');
+        function setShape(s) {
+            shape = s;
+            polyPoints = [];
+            previewLayer.innerHTML = '';
+            previewEl = null;
+            drawing = false;
+            document.querySelectorAll('#btnRect,#btnCircle,#btnPoly').forEach(b => b.classList.remove('active'));
+            document.getElementById('btn' + s[0].toUpperCase() + s.slice(1)).classList.add('active');
+            document.getElementById('hint').textContent = HINTS[s];
+        }
 
-function setViewBox(level) {
-  currentLevel = level;
-  const [x, y, w, h] = VIEWBOXES[level];
-  svg.setAttribute('viewBox', `${x} ${y} ${w} ${h}`);
-  // Fit SVG within available area, constrained by both width AND height
-  const aspect = w / h;  // viewBox aspect ratio
-  const maxW = Math.min(window.innerWidth - 320 - 24, 1100);
-  const maxH = window.innerHeight - 24;
-  // Try width-first, then clamp by height
-  let svgW = maxW;
-  let svgH = svgW / aspect;
-  if (svgH > maxH) { svgH = maxH; svgW = svgH * aspect; }
-  svg.style.width = svgW + 'px';
-  svg.style.height = svgH + 'px';
-}
-setViewBox(28);
+        function toggleGroup() {
+            groupMode = !groupMode;
+            const btn = document.getElementById('btnGroup');
+            const bar = document.getElementById('groupBar');
+            if (groupMode) {
+                btn.classList.add('active');
+                bar.classList.add('active');
+                groupShapes = [];
+                updateGroupCount();
+                toast('Group mode ON — draw shapes, then click Done');
+            } else {
+                cancelGroup();
+            }
+        }
 
-document.getElementById('levelSel').onchange = e => {
-  setViewBox(parseInt(e.target.value));
-};
+        function cancelGroup() {
+            groupMode = false;
+            groupShapes = [];
+            document.getElementById('btnGroup').classList.remove('active');
+            document.getElementById('groupBar').classList.remove('active');
+            renderSVGZones(); // remove pending group previews
+        }
 
-window.addEventListener('resize', () => setViewBox(currentLevel));
+        function startLabelPlace(idx) {
+            labelPlaceMode = idx;
+            document.body.classList.add('placing-label');
+            document.getElementById('hint').textContent = `Click on the canvas to place the label for "${zones[idx].id}". Press Escape to cancel.`;
+            toast(`Click canvas to place label for ${zones[idx].id}`);
+        }
 
-// ── Shape selector ───────────────────────────────────────────
-const HINTS = {
-  rect: 'Click and drag to draw a rectangle.',
-  circle: 'Click center, drag to set radius.',
-  poly: 'Click to add points. Double-click to close. Escape to cancel.',
-};
+        function updateGroupCount() {
+            document.getElementById('groupCount').textContent =
+                groupShapes.length === 0 ? 'No shapes yet — draw one'
+                    : `${groupShapes.length} shape${groupShapes.length > 1 ? 's' : ''} in group`;
+        }
 
-function setShape(s) {
-  shape = s;
-  polyPoints = [];
-  previewLayer.innerHTML = '';
-  previewEl = null;
-  drawing = false;
-  document.querySelectorAll('#btnRect,#btnCircle,#btnPoly').forEach(b => b.classList.remove('active'));
-  document.getElementById('btn' + s[0].toUpperCase() + s.slice(1)).classList.add('active');
-  document.getElementById('hint').textContent = HINTS[s];
-}
+        function commitGroup() {
+            if (groupShapes.length === 0) { toast('Draw at least one shape first'); return; }
+            const id = document.getElementById('roomId').value.trim() || `zone-${zones.length + 1}`;
+            const l1 = document.getElementById('roomLabel1').value.trim();
+            const l2 = document.getElementById('roomLabel2').value.trim();
+            zones.push({ type: 'multi', id, lines: [l1, l2].filter(Boolean), shapes: [...groupShapes] });
+            groupShapes = [];
+            groupMode = false;
+            document.getElementById('btnGroup').classList.remove('active');
+            document.getElementById('groupBar').classList.remove('active');
+            renderAll();
+            toast(`Group saved: ${id}`);
+        }
 
-function toggleGroup() {
-  groupMode = !groupMode;
-  const btn = document.getElementById('btnGroup');
-  const bar = document.getElementById('groupBar');
-  if (groupMode) {
-    btn.classList.add('active');
-    bar.classList.add('active');
-    groupShapes = [];
-    updateGroupCount();
-    toast('Group mode ON — draw shapes, then click Done');
-  } else {
-    cancelGroup();
-  }
-}
+        // ── SVG coordinate conversion ────────────────────────────────
+        function getSVGPoint(e) {
+            const pt = svg.createSVGPoint();
+            pt.x = e.clientX;
+            pt.y = e.clientY;
+            return pt.matrixTransform(svg.getScreenCTM().inverse());
+        }
 
-function cancelGroup() {
-  groupMode = false;
-  groupShapes = [];
-  document.getElementById('btnGroup').classList.remove('active');
-  document.getElementById('groupBar').classList.remove('active');
-  renderSVGZones(); // remove pending group previews
-}
+        function round(n) { return Math.round(n); }
 
-function startLabelPlace(idx) {
-  labelPlaceMode = idx;
-  document.body.classList.add('placing-label');
-  document.getElementById('hint').textContent = `Click on the canvas to place the label for "${zones[idx].id}". Press Escape to cancel.`;
-  toast(`Click canvas to place label for ${zones[idx].id}`);
-}
+        // ── Mouse events ─────────────────────────────────────────────
+        svg.addEventListener('mousemove', e => {
+            const pt = getSVGPoint(e);
+            const rx = round(pt.x), ry = round(pt.y);
+            chH.setAttribute('y1', ry); chH.setAttribute('y2', ry);
+            chV.setAttribute('x1', rx); chV.setAttribute('x2', rx);
 
-function updateGroupCount() {
-  document.getElementById('groupCount').textContent =
-    groupShapes.length === 0 ? 'No shapes yet — draw one'
-    : `${groupShapes.length} shape${groupShapes.length > 1 ? 's' : ''} in group`;
-}
+            if (drawing && shape === 'rect' && startPt) {
+                const x = Math.min(startPt.x, pt.x), y = Math.min(startPt.y, pt.y);
+                const w = Math.abs(pt.x - startPt.x), h = Math.abs(pt.y - startPt.y);
+                updatePreviewRect(x, y, w, h);
+                coordsEl.textContent = `x:${round(x)} y:${round(y)} w:${round(w)} h:${round(h)}`;
+            } else if (drawing && shape === 'circle' && startPt) {
+                const r = Math.sqrt((pt.x - startPt.x) ** 2 + (pt.y - startPt.y) ** 2);
+                updatePreviewCircle(startPt.x, startPt.y, r);
+                coordsEl.textContent = `cx:${round(startPt.x)} cy:${round(startPt.y)} r:${round(r)}`;
+            } else if (shape === 'poly' && polyPoints.length > 0) {
+                const pts = [...polyPoints, { x: rx, y: ry }];
+                updatePreviewPoly(pts);
+                coordsEl.textContent = `x:${rx} y:${ry}  [${polyPoints.length} pts]`;
+            } else {
+                coordsEl.textContent = `x:${rx}  y:${ry}`;
+            }
+        });
 
-function commitGroup() {
-  if (groupShapes.length === 0) { toast('Draw at least one shape first'); return; }
-  const id = document.getElementById('roomId').value.trim() || `zone-${zones.length + 1}`;
-  const l1 = document.getElementById('roomLabel1').value.trim();
-  const l2 = document.getElementById('roomLabel2').value.trim();
-  zones.push({ type: 'multi', id, lines: [l1, l2].filter(Boolean), shapes: [...groupShapes] });
-  groupShapes = [];
-  groupMode = false;
-  document.getElementById('btnGroup').classList.remove('active');
-  document.getElementById('groupBar').classList.remove('active');
-  renderAll();
-  toast(`Group saved: ${id}`);
-}
+        svg.addEventListener('mousedown', e => {
+            if (e.button !== 0) return;
+            const pt = getSVGPoint(e);
+            const rx = round(pt.x), ry = round(pt.y);
 
-// ── SVG coordinate conversion ────────────────────────────────
-function getSVGPoint(e) {
-  const pt = svg.createSVGPoint();
-  pt.x = e.clientX;
-  pt.y = e.clientY;
-  return pt.matrixTransform(svg.getScreenCTM().inverse());
-}
+            // Label placement mode — click sets the label anchor
+            if (labelPlaceMode !== null) {
+                zones[labelPlaceMode].labelX = rx;
+                zones[labelPlaceMode].labelY = ry;
+                toast(`Label placed for ${zones[labelPlaceMode].id}`);
+                labelPlaceMode = null;
+                document.body.classList.remove('placing-label');
+                document.getElementById('hint').textContent = HINTS[shape];
+                renderAll();
+                return;
+            }
 
-function round(n) { return Math.round(n); }
+            if (shape === 'poly') {
+                const last = polyPoints[polyPoints.length - 1];
+                if (last && last.x === rx && last.y === ry) return; // ignore dblclick duplicate
+                polyPoints.push({ x: rx, y: ry });
+                return;
+            }
 
-// ── Mouse events ─────────────────────────────────────────────
-svg.addEventListener('mousemove', e => {
-  const pt = getSVGPoint(e);
-  const rx = round(pt.x), ry = round(pt.y);
-  chH.setAttribute('y1', ry); chH.setAttribute('y2', ry);
-  chV.setAttribute('x1', rx); chV.setAttribute('x2', rx);
+            drawing = true;
+            startPt = { x: pt.x, y: pt.y };
+            previewLayer.innerHTML = '';
+            previewEl = null;
+        });
 
-  if (drawing && shape === 'rect' && startPt) {
-    const x = Math.min(startPt.x, pt.x), y = Math.min(startPt.y, pt.y);
-    const w = Math.abs(pt.x - startPt.x), h = Math.abs(pt.y - startPt.y);
-    updatePreviewRect(x, y, w, h);
-    coordsEl.textContent = `x:${round(x)} y:${round(y)} w:${round(w)} h:${round(h)}`;
-  } else if (drawing && shape === 'circle' && startPt) {
-    const r = Math.sqrt((pt.x-startPt.x)**2 + (pt.y-startPt.y)**2);
-    updatePreviewCircle(startPt.x, startPt.y, r);
-    coordsEl.textContent = `cx:${round(startPt.x)} cy:${round(startPt.y)} r:${round(r)}`;
-  } else if (shape === 'poly' && polyPoints.length > 0) {
-    const pts = [...polyPoints, {x: rx, y: ry}];
-    updatePreviewPoly(pts);
-    coordsEl.textContent = `x:${rx} y:${ry}  [${polyPoints.length} pts]`;
-  } else {
-    coordsEl.textContent = `x:${rx}  y:${ry}`;
-  }
-});
+        svg.addEventListener('mouseup', e => {
+            if (!drawing || shape === 'poly') return;
+            const pt = getSVGPoint(e);
+            drawing = false;
 
-svg.addEventListener('mousedown', e => {
-  if (e.button !== 0) return;
-  const pt = getSVGPoint(e);
-  const rx = round(pt.x), ry = round(pt.y);
+            const id = document.getElementById('roomId').value.trim() || `zone-${zones.length + 1}`;
+            const l1 = document.getElementById('roomLabel1').value.trim();
+            const l2 = document.getElementById('roomLabel2').value.trim();
+            const lines = [l1, l2].filter(Boolean);
 
-  // Label placement mode — click sets the label anchor
-  if (labelPlaceMode !== null) {
-    zones[labelPlaceMode].labelX = rx;
-    zones[labelPlaceMode].labelY = ry;
-    toast(`Label placed for ${zones[labelPlaceMode].id}`);
-    labelPlaceMode = null;
-    document.body.classList.remove('placing-label');
-    document.getElementById('hint').textContent = HINTS[shape];
-    renderAll();
-    return;
-  }
+            let subShape; // raw shape data without id/lines (for group)
+            let zone;
+            if (shape === 'rect') {
+                const x = round(Math.min(startPt.x, pt.x)), y = round(Math.min(startPt.y, pt.y));
+                const w = round(Math.abs(pt.x - startPt.x)), h = round(Math.abs(pt.y - startPt.y));
+                if (w < 5 || h < 5) { previewLayer.innerHTML = ''; return; }
+                subShape = { type: 'rect', x, y, w, h };
+                zone = { type: 'rect', id, lines, x, y, w, h };
+            } else if (shape === 'circle') {
+                const r = round(Math.sqrt((pt.x - startPt.x) ** 2 + (pt.y - startPt.y) ** 2));
+                if (r < 5) { previewLayer.innerHTML = ''; return; }
+                subShape = { type: 'circle', cx: round(startPt.x), cy: round(startPt.y), r };
+                zone = { type: 'circle', id, lines, cx: round(startPt.x), cy: round(startPt.y), r };
+            }
 
-  if (shape === 'poly') {
-    const last = polyPoints[polyPoints.length - 1];
-    if (last && last.x === rx && last.y === ry) return; // ignore dblclick duplicate
-    polyPoints.push({x: rx, y: ry});
-    return;
-  }
+            if (groupMode && subShape) {
+                groupShapes.push(subShape);
+                updateGroupCount();
+                renderSVGZones(); // redraw group previews
+                toast(`Shape ${groupShapes.length} added to group`);
+            } else if (zone) {
+                commitZone(zone);
+            }
+            previewLayer.innerHTML = '';
+            previewEl = null;
+            startPt = null;
+        });
 
-  drawing = true;
-  startPt = {x: pt.x, y: pt.y};
-  previewLayer.innerHTML = '';
-  previewEl = null;
-});
+        svg.addEventListener('dblclick', e => {
+            if (shape !== 'poly') return;
+            e.preventDefault();
+            if (polyPoints.length < 3) { toast('Need at least 3 points'); return; }
 
-svg.addEventListener('mouseup', e => {
-  if (!drawing || shape === 'poly') return;
-  const pt = getSVGPoint(e);
-  drawing = false;
+            const id = document.getElementById('roomId').value.trim() || `zone-${zones.length + 1}`;
+            const l1 = document.getElementById('roomLabel1').value.trim();
+            const l2 = document.getElementById('roomLabel2').value.trim();
+            const pts = [...polyPoints];
+            polyPoints = [];
+            previewLayer.innerHTML = '';
+            previewEl = null;
 
-  const id = document.getElementById('roomId').value.trim() || `zone-${zones.length + 1}`;
-  const l1 = document.getElementById('roomLabel1').value.trim();
-  const l2 = document.getElementById('roomLabel2').value.trim();
-  const lines = [l1, l2].filter(Boolean);
+            if (groupMode) {
+                groupShapes.push({ type: 'poly', points: pts });
+                updateGroupCount();
+                renderSVGZones();
+                toast(`Polygon added to group`);
+            } else {
+                commitZone({ type: 'poly', id, lines: [l1, l2].filter(Boolean), points: pts });
+            }
+        });
 
-  let subShape; // raw shape data without id/lines (for group)
-  let zone;
-  if (shape === 'rect') {
-    const x = round(Math.min(startPt.x, pt.x)), y = round(Math.min(startPt.y, pt.y));
-    const w = round(Math.abs(pt.x - startPt.x)), h = round(Math.abs(pt.y - startPt.y));
-    if (w < 5 || h < 5) { previewLayer.innerHTML = ''; return; }
-    subShape = { type: 'rect', x, y, w, h };
-    zone = { type: 'rect', id, lines, x, y, w, h };
-  } else if (shape === 'circle') {
-    const r = round(Math.sqrt((pt.x-startPt.x)**2 + (pt.y-startPt.y)**2));
-    if (r < 5) { previewLayer.innerHTML = ''; return; }
-    subShape = { type: 'circle', cx: round(startPt.x), cy: round(startPt.y), r };
-    zone = { type: 'circle', id, lines, cx: round(startPt.x), cy: round(startPt.y), r };
-  }
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape') {
+                if (labelPlaceMode !== null) {
+                    labelPlaceMode = null;
+                    document.body.classList.remove('placing-label');
+                    document.getElementById('hint').textContent = HINTS[shape];
+                    toast('Label placement cancelled');
+                    return;
+                }
+                polyPoints = [];
+                previewLayer.innerHTML = '';
+                previewEl = null;
+                drawing = false;
+                toast('Cancelled');
+            }
+            if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
+                e.preventDefault();
+                if (zones.length > 0) { zones.pop(); renderAll(); toast('Undone'); }
+            }
+        });
 
-  if (groupMode && subShape) {
-    groupShapes.push(subShape);
-    updateGroupCount();
-    renderSVGZones(); // redraw group previews
-    toast(`Shape ${groupShapes.length} added to group`);
-  } else if (zone) {
-    commitZone(zone);
-  }
-  previewLayer.innerHTML = '';
-  previewEl = null;
-  startPt = null;
-});
+        // ── Preview helpers ───────────────────────────────────────────
+        function mkPreview(tag) {
+            const el = document.createElementNS('http://www.w3.org/2000/svg', tag);
+            el.setAttribute('fill', 'rgba(255,255,0,0.28)');
+            el.setAttribute('stroke', 'yellow');
+            el.setAttribute('stroke-width', '1');
+            el.setAttribute('stroke-dasharray', '4 2');
+            el.setAttribute('pointer-events', 'none');
+            return el;
+        }
+        function updatePreviewRect(x, y, w, h) {
+            if (!previewEl) { previewEl = mkPreview('rect'); previewLayer.appendChild(previewEl); }
+            previewEl.setAttribute('x', x); previewEl.setAttribute('y', y);
+            previewEl.setAttribute('width', w); previewEl.setAttribute('height', h);
+        }
+        function updatePreviewCircle(cx, cy, r) {
+            if (!previewEl) { previewEl = mkPreview('circle'); previewLayer.appendChild(previewEl); }
+            previewEl.setAttribute('cx', cx); previewEl.setAttribute('cy', cy); previewEl.setAttribute('r', r);
+        }
+        function updatePreviewPoly(pts) {
+            if (!previewEl) { previewEl = mkPreview('polygon'); previewLayer.appendChild(previewEl); }
+            previewEl.setAttribute('points', pts.map(p => `${p.x},${p.y}`).join(' '));
+        }
 
-svg.addEventListener('dblclick', e => {
-  if (shape !== 'poly') return;
-  e.preventDefault();
-  if (polyPoints.length < 3) { toast('Need at least 3 points'); return; }
+        // ── Zone management ───────────────────────────────────────────
+        function commitZone(zone) {
+            zones.push(zone);
+            // Auto-advance room id suffix only in non-group mode
+            if (!groupMode) {
+                const id = document.getElementById('roomId').value.trim();
+                const match = id.match(/^(.*?)(\d+)$/);
+                if (match) document.getElementById('roomId').value = match[1] + (parseInt(match[2]) + 1);
+            }
+            renderAll();
+            toast(`Added: ${zone.id}`);
+        }
 
-  const id = document.getElementById('roomId').value.trim() || `zone-${zones.length + 1}`;
-  const l1 = document.getElementById('roomLabel1').value.trim();
-  const l2 = document.getElementById('roomLabel2').value.trim();
-  const pts = [...polyPoints];
-  polyPoints = [];
-  previewLayer.innerHTML = '';
-  previewEl = null;
+        function deleteZone(idx) {
+            zones.splice(idx, 1);
+            renderAll();
+        }
 
-  if (groupMode) {
-    groupShapes.push({ type: 'poly', points: pts });
-    updateGroupCount();
-    renderSVGZones();
-    toast(`Polygon added to group`);
-  } else {
-    commitZone({ type: 'poly', id, lines: [l1, l2].filter(Boolean), points: pts });
-  }
-});
+        function clearAll() {
+            if (zones.length === 0) return;
+            if (!confirm('Clear all zones?')) return;
+            zones = [];
+            renderAll();
+        }
 
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') {
-    if (labelPlaceMode !== null) {
-      labelPlaceMode = null;
-      document.body.classList.remove('placing-label');
-      document.getElementById('hint').textContent = HINTS[shape];
-      toast('Label placement cancelled');
-      return;
-    }
-    polyPoints = [];
-    previewLayer.innerHTML = '';
-    previewEl = null;
-    drawing = false;
-    toast('Cancelled');
-  }
-  if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
-    e.preventDefault();
-    if (zones.length > 0) { zones.pop(); renderAll(); toast('Undone'); }
-  }
-});
+        // ── Render SVG zones + sidebar ────────────────────────────────
+        function renderAll() {
+            renderSVGZones();
+            renderSidebar();
+            renderOutput();
+        }
 
-// ── Preview helpers ───────────────────────────────────────────
-function mkPreview(tag) {
-  const el = document.createElementNS('http://www.w3.org/2000/svg', tag);
-  el.setAttribute('fill', 'rgba(255,255,0,0.28)');
-  el.setAttribute('stroke', 'yellow');
-  el.setAttribute('stroke-width', '1');
-  el.setAttribute('stroke-dasharray', '4 2');
-  el.setAttribute('pointer-events', 'none');
-  return el;
-}
-function updatePreviewRect(x, y, w, h) {
-  if (!previewEl) { previewEl = mkPreview('rect'); previewLayer.appendChild(previewEl); }
-  previewEl.setAttribute('x', x); previewEl.setAttribute('y', y);
-  previewEl.setAttribute('width', w); previewEl.setAttribute('height', h);
-}
-function updatePreviewCircle(cx, cy, r) {
-  if (!previewEl) { previewEl = mkPreview('circle'); previewLayer.appendChild(previewEl); }
-  previewEl.setAttribute('cx', cx); previewEl.setAttribute('cy', cy); previewEl.setAttribute('r', r);
-}
-function updatePreviewPoly(pts) {
-  if (!previewEl) { previewEl = mkPreview('polygon'); previewLayer.appendChild(previewEl); }
-  previewEl.setAttribute('points', pts.map(p=>`${p.x},${p.y}`).join(' '));
-}
+        // Draw a single primitive shape element (rect/circle/poly) into a parent <g>
+        function drawPrimitive(parent, s, color, stroke, strokeW) {
+            let el;
+            if (s.type === 'rect') {
+                el = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+                el.setAttribute('x', s.x); el.setAttribute('y', s.y);
+                el.setAttribute('width', s.w); el.setAttribute('height', s.h);
+            } else if (s.type === 'circle') {
+                el = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                el.setAttribute('cx', s.cx); el.setAttribute('cy', s.cy); el.setAttribute('r', s.r);
+            } else if (s.type === 'poly') {
+                el = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+                el.setAttribute('points', s.points.map(p => `${p.x},${p.y}`).join(' '));
+            }
+            el.setAttribute('fill', color);
+            el.setAttribute('stroke', stroke);
+            el.setAttribute('stroke-width', strokeW);
+            el.setAttribute('pointer-events', 'none');
+            parent.appendChild(el);
+        }
 
-// ── Zone management ───────────────────────────────────────────
-function commitZone(zone) {
-  zones.push(zone);
-  // Auto-advance room id suffix only in non-group mode
-  if (!groupMode) {
-    const id = document.getElementById('roomId').value.trim();
-    const match = id.match(/^(.*?)(\d+)$/);
-    if (match) document.getElementById('roomId').value = match[1] + (parseInt(match[2]) + 1);
-  }
-  renderAll();
-  toast(`Added: ${zone.id}`);
-}
+        // Compute label centroid for a zone (respects manual override)
+        function zoneCentroid(z) {
+            if (z.labelX !== undefined) return { lx: z.labelX, ly: z.labelY };
+            if (z.type === 'rect') return { lx: z.x + z.w / 2, ly: z.y + z.h / 2 };
+            if (z.type === 'circle') return { lx: z.cx, ly: z.cy };
+            if (z.type === 'poly') return { lx: z.points.reduce((a, p) => a + p.x, 0) / z.points.length, ly: z.points.reduce((a, p) => a + p.y, 0) / z.points.length };
+            if (z.type === 'multi') {
+                const cs = z.shapes.map(s => zoneCentroid(s));
+                return { lx: cs.reduce((a, c) => a + c.lx, 0) / cs.length, ly: cs.reduce((a, c) => a + c.ly, 0) / cs.length };
+            }
+            return { lx: 0, ly: 0 };
+        }
 
-function deleteZone(idx) {
-  zones.splice(idx, 1);
-  renderAll();
-}
+        function renderSVGZones() {
+            zonesLayer.innerHTML = '';
 
-function clearAll() {
-  if (zones.length === 0) return;
-  if (!confirm('Clear all zones?')) return;
-  zones = [];
-  renderAll();
-}
+            zones.forEach((z, i) => {
+                const color = COLORS[i % COLORS.length];
+                const stroke = STROKE[i % STROKE.length];
+                const sw = hoveredIdx === i ? '2' : '1';
 
-// ── Render SVG zones + sidebar ────────────────────────────────
-function renderAll() {
-  renderSVGZones();
-  renderSidebar();
-  renderOutput();
-}
+                if (z.type === 'multi') {
+                    z.shapes.forEach(s => drawPrimitive(zonesLayer, s, color, stroke, sw));
+                } else {
+                    drawPrimitive(zonesLayer, z, color, stroke, sw);
+                }
 
-// Draw a single primitive shape element (rect/circle/poly) into a parent <g>
-function drawPrimitive(parent, s, color, stroke, strokeW) {
-  let el;
-  if (s.type === 'rect') {
-    el = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-    el.setAttribute('x', s.x); el.setAttribute('y', s.y);
-    el.setAttribute('width', s.w); el.setAttribute('height', s.h);
-  } else if (s.type === 'circle') {
-    el = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-    el.setAttribute('cx', s.cx); el.setAttribute('cy', s.cy); el.setAttribute('r', s.r);
-  } else if (s.type === 'poly') {
-    el = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
-    el.setAttribute('points', s.points.map(p=>`${p.x},${p.y}`).join(' '));
-  }
-  el.setAttribute('fill', color);
-  el.setAttribute('stroke', stroke);
-  el.setAttribute('stroke-width', strokeW);
-  el.setAttribute('pointer-events', 'none');
-  parent.appendChild(el);
-}
+                const { lx, ly } = zoneCentroid(z);
 
-// Compute label centroid for a zone (respects manual override)
-function zoneCentroid(z) {
-  if (z.labelX !== undefined) return { lx: z.labelX, ly: z.labelY };
-  if (z.type === 'rect')   return { lx: z.x + z.w/2, ly: z.y + z.h/2 };
-  if (z.type === 'circle') return { lx: z.cx, ly: z.cy };
-  if (z.type === 'poly')   return { lx: z.points.reduce((a,p)=>a+p.x,0)/z.points.length, ly: z.points.reduce((a,p)=>a+p.y,0)/z.points.length };
-  if (z.type === 'multi') {
-    const cs = z.shapes.map(s => zoneCentroid(s));
-    return { lx: cs.reduce((a,c)=>a+c.lx,0)/cs.length, ly: cs.reduce((a,c)=>a+c.ly,0)/cs.length };
-  }
-  return { lx: 0, ly: 0 };
-}
+                (z.lines.length ? z.lines : [z.id]).forEach((line, li) => {
+                    const tx = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                    tx.setAttribute('x', lx);
+                    tx.setAttribute('y', ly + (li - (z.lines.length - 1) / 2) * 16);
+                    tx.setAttribute('text-anchor', 'middle');
+                    tx.setAttribute('dominant-baseline', 'middle');
+                    tx.setAttribute('fill', '#fff');
+                    tx.setAttribute('font-size', '13');
+                    tx.setAttribute('font-family', 'Inter, system-ui, sans-serif');
+                    tx.setAttribute('font-weight', '600');
+                    tx.setAttribute('pointer-events', 'none');
+                    tx.setAttribute('paint-order', 'stroke');
+                    tx.setAttribute('stroke', '#000');
+                    tx.setAttribute('stroke-width', '3');
+                    tx.setAttribute('stroke-linejoin', 'round');
+                    tx.textContent = line;
+                    zonesLayer.appendChild(tx);
+                });
 
-function renderSVGZones() {
-  zonesLayer.innerHTML = '';
+                // Index badge — top-left of bounding box
+                const badge = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                badge.setAttribute('x', lx);
+                badge.setAttribute('y', ly - 6);
+                badge.setAttribute('text-anchor', 'middle');
+                badge.setAttribute('fill', stroke);
+                badge.setAttribute('font-size', '10');
+                badge.setAttribute('font-family', 'monospace');
+                badge.setAttribute('font-weight', '700');
+                badge.setAttribute('pointer-events', 'none');
+                badge.textContent = i + 1;
+                zonesLayer.appendChild(badge);
+            });
 
-  zones.forEach((z, i) => {
-    const color  = COLORS[i % COLORS.length];
-    const stroke = STROKE[i % STROKE.length];
-    const sw     = hoveredIdx === i ? '2' : '1';
+            // Draw in-progress group shapes in orange dashes
+            if (groupMode && groupShapes.length > 0) {
+                groupShapes.forEach(s => {
+                    const el = document.createElementNS('http://www.w3.org/2000/svg', s.type === 'rect' ? 'rect' : s.type === 'circle' ? 'circle' : 'polygon');
+                    if (s.type === 'rect') { el.setAttribute('x', s.x); el.setAttribute('y', s.y); el.setAttribute('width', s.w); el.setAttribute('height', s.h); }
+                    else if (s.type === 'circle') { el.setAttribute('cx', s.cx); el.setAttribute('cy', s.cy); el.setAttribute('r', s.r); }
+                    else { el.setAttribute('points', s.points.map(p => `${p.x},${p.y}`).join(' ')); }
+                    el.setAttribute('fill', 'rgba(255,152,0,0.22)');
+                    el.setAttribute('stroke', '#ff9800');
+                    el.setAttribute('stroke-width', '1.5');
+                    el.setAttribute('stroke-dasharray', '5 3');
+                    el.setAttribute('pointer-events', 'none');
+                    zonesLayer.appendChild(el);
+                });
+            }
+        }
 
-    if (z.type === 'multi') {
-      z.shapes.forEach(s => drawPrimitive(zonesLayer, s, color, stroke, sw));
-    } else {
-      drawPrimitive(zonesLayer, z, color, stroke, sw);
-    }
+        function renderSidebar() {
+            // Update count in header
+            document.querySelector('.section-title').parentElement
+                .querySelector('.section-title').textContent = `ZONES (${zones.length})`;
 
-    const { lx, ly } = zoneCentroid(z);
+            const list = document.getElementById('zoneList');
+            list.innerHTML = '';
+            zones.forEach((z, i) => {
+                let info = '';
+                if (z.type === 'rect') info = `x=${z.x} y=${z.y} w=${z.w} h=${z.h}`;
+                else if (z.type === 'circle') info = `cx=${z.cx} cy=${z.cy} r=${z.r}`;
+                else if (z.type === 'poly') info = `${z.points.length} pts: ${z.points.map(p => `${p.x},${p.y}`).join(' ')}`;
+                else if (z.type === 'multi') info = `${z.shapes.length} shapes (group)`;
 
-    (z.lines.length ? z.lines : [z.id]).forEach((line, li) => {
-      const tx = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      tx.setAttribute('x', lx);
-      tx.setAttribute('y', ly + (li - (z.lines.length - 1) / 2) * 16);
-      tx.setAttribute('text-anchor', 'middle');
-      tx.setAttribute('dominant-baseline', 'middle');
-      tx.setAttribute('fill', '#fff');
-      tx.setAttribute('font-size', '13');
-      tx.setAttribute('font-family', 'Inter, system-ui, sans-serif');
-      tx.setAttribute('font-weight', '600');
-      tx.setAttribute('pointer-events', 'none');
-      tx.setAttribute('paint-order', 'stroke');
-      tx.setAttribute('stroke', '#000');
-      tx.setAttribute('stroke-width', '3');
-      tx.setAttribute('stroke-linejoin', 'round');
-      tx.textContent = line;
-      zonesLayer.appendChild(tx);
-    });
-
-    // Index badge — top-left of bounding box
-    const badge = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    badge.setAttribute('x', lx);
-    badge.setAttribute('y', ly - 6);
-    badge.setAttribute('text-anchor', 'middle');
-    badge.setAttribute('fill', stroke);
-    badge.setAttribute('font-size', '10');
-    badge.setAttribute('font-family', 'monospace');
-    badge.setAttribute('font-weight', '700');
-    badge.setAttribute('pointer-events', 'none');
-    badge.textContent = i + 1;
-    zonesLayer.appendChild(badge);
-  });
-
-  // Draw in-progress group shapes in orange dashes
-  if (groupMode && groupShapes.length > 0) {
-    groupShapes.forEach(s => {
-      const el = document.createElementNS('http://www.w3.org/2000/svg', s.type === 'rect' ? 'rect' : s.type === 'circle' ? 'circle' : 'polygon');
-      if (s.type === 'rect') { el.setAttribute('x', s.x); el.setAttribute('y', s.y); el.setAttribute('width', s.w); el.setAttribute('height', s.h); }
-      else if (s.type === 'circle') { el.setAttribute('cx', s.cx); el.setAttribute('cy', s.cy); el.setAttribute('r', s.r); }
-      else { el.setAttribute('points', s.points.map(p=>`${p.x},${p.y}`).join(' ')); }
-      el.setAttribute('fill', 'rgba(255,152,0,0.22)');
-      el.setAttribute('stroke', '#ff9800');
-      el.setAttribute('stroke-width', '1.5');
-      el.setAttribute('stroke-dasharray', '5 3');
-      el.setAttribute('pointer-events', 'none');
-      zonesLayer.appendChild(el);
-    });
-  }
-}
-
-function renderSidebar() {
-  // Update count in header
-  document.querySelector('.section-title').parentElement
-    .querySelector('.section-title').textContent = `ZONES (${zones.length})`;
-
-  const list = document.getElementById('zoneList');
-  list.innerHTML = '';
-  zones.forEach((z, i) => {
-    let info = '';
-    if (z.type === 'rect') info = `x=${z.x} y=${z.y} w=${z.w} h=${z.h}`;
-    else if (z.type === 'circle') info = `cx=${z.cx} cy=${z.cy} r=${z.r}`;
-    else if (z.type === 'poly') info = `${z.points.length} pts: ${z.points.map(p=>`${p.x},${p.y}`).join(' ')}`;
-    else if (z.type === 'multi') info = `${z.shapes.length} shapes (group)`;  
-
-    const div = document.createElement('div');
-    div.className = 'zone-item' + (hoveredIdx === i ? ' hovered' : '');
-    div.innerHTML = `
+                const div = document.createElement('div');
+                div.className = 'zone-item' + (hoveredIdx === i ? ' hovered' : '');
+                div.innerHTML = `
       <div style="display:flex;justify-content:space-between;align-items:center">
-        <span><span style="color:rgba(79,195,247,0.4);font-size:10px;margin-right:4px">#${i+1}</span><span class="zone-id" id="zid-${i}">${z.id}</span></span>
+        <span><span style="color:rgba(79,195,247,0.4);font-size:10px;margin-right:4px">#${i + 1}</span><span class="zone-id" id="zid-${i}">${z.id}</span></span>
         <div class="zone-actions">
           <button onclick="toggleInlineEdit(${i})" style="padding:2px 6px;font-size:10px;">✏ Rename</button>
           <button class="label-btn" onclick="startLabelPlace(${i})" style="padding:2px 6px;font-size:10px;" title="Click to reposition label on canvas">⌖ Label</button>
@@ -645,129 +840,130 @@ function renderSidebar() {
       <div class="zone-edit-form" id="zedit-${i}" style="display:none">
         <input id="zeid-${i}" type="text" value="${z.id}" placeholder="room id" />
         <div class="zone-edit-row">
-          <input id="zel1-${i}" type="text" value="${z.lines[0]||''}" placeholder="Label line 1" style="flex:1"/>
-          <input id="zel2-${i}" type="text" value="${z.lines[1]||''}" placeholder="Line 2" style="flex:1"/>
+          <input id="zel1-${i}" type="text" value="${z.lines[0] || ''}" placeholder="Label line 1" style="flex:1"/>
+          <input id="zel2-${i}" type="text" value="${z.lines[1] || ''}" placeholder="Line 2" style="flex:1"/>
         </div>
         <div class="zone-edit-row">
           <button onclick="applyInlineEdit(${i})" style="flex:1;padding:3px">✓ Apply</button>
           <button onclick="toggleInlineEdit(${i})" style="flex:1;padding:3px">✕ Cancel</button>
         </div>
       </div>`;
-    div.addEventListener('mouseenter', () => { hoveredIdx = i; renderSVGZones(); });
-    div.addEventListener('mouseleave', () => { hoveredIdx = -1; renderSVGZones(); });
-    list.appendChild(div);
-  });
-}
+                div.addEventListener('mouseenter', () => { hoveredIdx = i; renderSVGZones(); });
+                div.addEventListener('mouseleave', () => { hoveredIdx = -1; renderSVGZones(); });
+                list.appendChild(div);
+            });
+        }
 
-function toggleInlineEdit(idx) {
-  const form = document.getElementById(`zedit-${idx}`);
-  if (!form) return;
-  form.style.display = form.style.display === 'none' ? 'flex' : 'none';
-  if (form.style.display === 'flex') document.getElementById(`zeid-${idx}`).focus();
-}
+        function toggleInlineEdit(idx) {
+            const form = document.getElementById(`zedit-${idx}`);
+            if (!form) return;
+            form.style.display = form.style.display === 'none' ? 'flex' : 'none';
+            if (form.style.display === 'flex') document.getElementById(`zeid-${idx}`).focus();
+        }
 
-function applyInlineEdit(idx) {
-  const newId = document.getElementById(`zeid-${idx}`).value.trim();
-  const l1 = document.getElementById(`zel1-${idx}`).value.trim();
-  const l2 = document.getElementById(`zel2-${idx}`).value.trim();
-  if (!newId) { toast('ID cannot be empty'); return; }
-  zones[idx].id = newId;
-  zones[idx].lines = [l1, l2].filter(Boolean);
-  renderAll();
-  toast(`Updated: ${newId}`);
-}
+        function applyInlineEdit(idx) {
+            const newId = document.getElementById(`zeid-${idx}`).value.trim();
+            const l1 = document.getElementById(`zel1-${idx}`).value.trim();
+            const l2 = document.getElementById(`zel2-${idx}`).value.trim();
+            if (!newId) { toast('ID cannot be empty'); return; }
+            zones[idx].id = newId;
+            zones[idx].lines = [l1, l2].filter(Boolean);
+            renderAll();
+            toast(`Updated: ${newId}`);
+        }
 
-// ── JSX output ────────────────────────────────────────────────
-function primitiveToJSX(s) {
-  if (s.type === 'rect')
-    return `<rect className="f" x={${s.x}} y={${s.y}} width={${s.w}} height={${s.h}} />`;
-  if (s.type === 'circle')
-    return `<circle className="f" cx={${s.cx}} cy={${s.cy}} r={${s.r}} />`;
-  if (s.type === 'poly')
-    return `<polygon className="f" points="${s.points.map(p=>`${p.x},${p.y}`).join(' ')}" />`;
-}
+        // ── JSX output ────────────────────────────────────────────────
+        function primitiveToJSX(s) {
+            if (s.type === 'rect')
+                return `<rect className="f" x={${s.x}} y={${s.y}} width={${s.w}} height={${s.h}} />`;
+            if (s.type === 'circle')
+                return `<circle className="f" cx={${s.cx}} cy={${s.cy}} r={${s.r}} />`;
+            if (s.type === 'poly')
+                return `<polygon className="f" points="${s.points.map(p => `${p.x},${p.y}`).join(' ')}" />`;
+        }
 
-function zoneToJSX(z) {
-  const { lx, ly } = zoneCentroid(z);
-  const lblX = Math.round(lx), lblY = Math.round(ly);
-  const linesStr = JSON.stringify(z.lines.length ? z.lines : [z.id]);
+        function zoneToJSX(z) {
+            const { lx, ly } = zoneCentroid(z);
+            const lblX = Math.round(lx), lblY = Math.round(ly);
+            const linesStr = JSON.stringify(z.lines.length ? z.lines : [z.id]);
 
-  let shapeEls;
-  if (z.type === 'multi') {
-    shapeEls = z.shapes.map(s => `        ${primitiveToJSX(s)}`).join('\n');
-  } else {
-    shapeEls = `        ${primitiveToJSX(z)}`;
-  }
+            let shapeEls;
+            if (z.type === 'multi') {
+                shapeEls = z.shapes.map(s => `        ${primitiveToJSX(s)}`).join('\n');
+            } else {
+                shapeEls = `        ${primitiveToJSX(z)}`;
+            }
 
-  return `      {/* ${z.id} */}
+            return `      {/* ${z.id} */}
       <g id="room-${z.id}" className={cls('${z.id}')} onClick={clk('${z.id}')}>
 ${shapeEls}
         <Lbl x={${lblX}} y={${lblY}} lines={${linesStr}} />
       </g>`;
-}
+        }
 
-function renderOutput() {
-  document.getElementById('output').textContent = zones.map(zoneToJSX).join('\n\n');
-}
+        function renderOutput() {
+            document.getElementById('output').textContent = zones.map(zoneToJSX).join('\n\n');
+        }
 
-function copyOutput() {
-  const text = document.getElementById('output').textContent;
-  if (!text) { toast('No zones yet'); return; }
-  navigator.clipboard.writeText(text).then(() => toast('Copied to clipboard!'));
-}
+        function copyOutput() {
+            const text = document.getElementById('output').textContent;
+            if (!text) { toast('No zones yet'); return; }
+            navigator.clipboard.writeText(text).then(() => toast('Copied to clipboard!'));
+        }
 
-function downloadJSON() {
-  const data = JSON.stringify({ level: currentLevel, viewBox: VIEWBOXES[currentLevel], zones }, null, 2);
-  const blob = new Blob([data], {type: 'application/json'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = `sgc-level${currentLevel}-zones.json`;
-  a.click();
-  toast('Saved JSON');
-}
+        function downloadJSON() {
+            const data = JSON.stringify({ level: currentLevel, viewBox: VIEWBOXES[currentLevel], zones }, null, 2);
+            const blob = new Blob([data], { type: 'application/json' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `sgc-level${currentLevel}-zones.json`;
+            a.click();
+            toast('Saved JSON');
+        }
 
-function loadJSON(input) {
-  const file = input.files[0];
-  if (!file) return;
-  input.value = ''; // reset so same file can be loaded again
-  const reader = new FileReader();
-  reader.onload = e => {
-    let data;
-    try { data = JSON.parse(e.target.result); } catch { toast('Invalid JSON'); return; }
-    if (!data.zones || !Array.isArray(data.zones)) { toast('No zones found in file'); return; }
-    // Switch level if the file specifies one
-    if (data.level && VIEWBOXES[data.level]) {
-      const sel = document.getElementById('levelSel');
-      sel.value = data.level;
-      setViewBox(data.level);
-    }
-    const incoming = data.zones;
-    if (zones.length > 0) {
-      const mode = confirm(
-        `Current session has ${zones.length} zone(s).\n` +
-        `OK = merge with existing zones\nCancel = replace all`
-      );
-      if (!mode) zones = [];
-    }
-    zones.push(...incoming);
-    renderAll();
-    toast(`Loaded ${incoming.length} zone(s) from ${file.name}`);
-  };
-  reader.readAsText(file);
-}
+        function loadJSON(input) {
+            const file = input.files[0];
+            if (!file) return;
+            input.value = ''; // reset so same file can be loaded again
+            const reader = new FileReader();
+            reader.onload = e => {
+                let data;
+                try { data = JSON.parse(e.target.result); } catch { toast('Invalid JSON'); return; }
+                if (!data.zones || !Array.isArray(data.zones)) { toast('No zones found in file'); return; }
+                // Switch level if the file specifies one
+                if (data.level && VIEWBOXES[data.level]) {
+                    const sel = document.getElementById('levelSel');
+                    sel.value = data.level;
+                    setViewBox(data.level);
+                }
+                const incoming = data.zones;
+                if (zones.length > 0) {
+                    const mode = confirm(
+                        `Current session has ${zones.length} zone(s).\n` +
+                        `OK = merge with existing zones\nCancel = replace all`
+                    );
+                    if (!mode) zones = [];
+                }
+                zones.push(...incoming);
+                renderAll();
+                toast(`Loaded ${incoming.length} zone(s) from ${file.name}`);
+            };
+            reader.readAsText(file);
+        }
 
-// ── Toast ─────────────────────────────────────────────────────
-let toastTimer;
-function toast(msg) {
-  const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => el.classList.remove('show'), 1800);
-}
+        // ── Toast ─────────────────────────────────────────────────────
+        let toastTimer;
+        function toast(msg) {
+            const el = document.getElementById('toast');
+            el.textContent = msg;
+            el.classList.add('show');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => el.classList.remove('show'), 1800);
+        }
 
-// ── Init ──────────────────────────────────────────────────────
-renderAll();
-</script>
+        // ── Init ──────────────────────────────────────────────────────
+        renderAll();
+    </script>
 </body>
+
 </html>
