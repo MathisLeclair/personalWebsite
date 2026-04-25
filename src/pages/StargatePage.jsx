@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
+import { useTranslation } from 'react-i18next'
 import {
     Box,
     Typography,
@@ -13,11 +14,109 @@ import {
 } from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close'
 import LockIcon from '@mui/icons-material/Lock'
+import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew'
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos'
+import OpenInFullIcon from '@mui/icons-material/OpenInFull'
 import FloorPlan from '../components/stargate/FloorPlan'
 import { getRoomById } from '../data/stargateRooms'
+import LanguageSwitcher from '../components/LanguageSwitcher'
+
+/* ─── Lightbox ─── */
+function Lightbox({ screenshots, index, onClose }) {
+    const [current, setCurrent] = useState(index)
+    const total = screenshots.length
+
+    const prev = useCallback(() => setCurrent(i => (i - 1 + total) % total), [total])
+    const next = useCallback(() => setCurrent(i => (i + 1) % total), [total])
+
+    useEffect(() => {
+        const handler = e => {
+            if (e.key === 'Escape') onClose()
+            if (e.key === 'ArrowLeft') prev()
+            if (e.key === 'ArrowRight') next()
+        }
+        window.addEventListener('keydown', handler)
+        return () => window.removeEventListener('keydown', handler)
+    }, [onClose, prev, next])
+
+    return (
+        <Box
+            onClick={onClose}
+            sx={{
+                position: 'fixed', inset: 0, zIndex: 2000,
+                bgcolor: 'rgba(4,11,24,0.96)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}
+        >
+            {/* Prev */}
+            {total > 1 && (
+                <IconButton
+                    onClick={e => { e.stopPropagation(); prev() }}
+                    sx={{
+                        position: 'absolute', left: 16,
+                        color: '#4fc3f7', bgcolor: 'rgba(79,195,247,0.1)',
+                        '&:hover': { bgcolor: 'rgba(79,195,247,0.22)' },
+                    }}
+                >
+                    <ArrowBackIosNewIcon />
+                </IconButton>
+            )}
+
+            {/* Image */}
+            <Box
+                component="img"
+                src={screenshots[current]}
+                alt={`screenshot ${current + 1}`}
+                onClick={e => e.stopPropagation()}
+                sx={{
+                    maxWidth: '90vw', maxHeight: '88vh',
+                    objectFit: 'contain',
+                    borderRadius: '8px',
+                    boxShadow: '0 0 60px rgba(79,195,247,0.2)',
+                    border: '1px solid rgba(79,195,247,0.25)',
+                }}
+            />
+
+            {/* Next */}
+            {total > 1 && (
+                <IconButton
+                    onClick={e => { e.stopPropagation(); next() }}
+                    sx={{
+                        position: 'absolute', right: 16,
+                        color: '#4fc3f7', bgcolor: 'rgba(79,195,247,0.1)',
+                        '&:hover': { bgcolor: 'rgba(79,195,247,0.22)' },
+                    }}
+                >
+                    <ArrowForwardIosIcon />
+                </IconButton>
+            )}
+
+            {/* Close */}
+            <IconButton
+                onClick={onClose}
+                sx={{ position: 'absolute', top: 12, right: 12, color: 'rgba(179,229,252,0.5)' }}
+            >
+                <CloseIcon />
+            </IconButton>
+
+            {/* Counter */}
+            {total > 1 && (
+                <Typography
+                    sx={{
+                        position: 'absolute', bottom: 16,
+                        fontSize: '0.72rem', color: 'rgba(79,195,247,0.5)',
+                        letterSpacing: '0.1em',
+                    }}
+                >
+                    {current + 1} / {total}
+                </Typography>
+            )}
+        </Box>
+    )
+}
 
 /* ─── Screenshot with graceful fallback ─── */
-function Screenshot({ src, alt }) {
+function Screenshot({ src, alt, onClick }) {
     const [broken, setBroken] = useState(false)
 
     if (broken) {
@@ -44,16 +143,13 @@ function Screenshot({ src, alt }) {
 
     return (
         <Box
-            component="img"
-            src={src}
-            alt={alt}
-            onError={() => setBroken(true)}
+            onClick={onClick}
             sx={{
-                width: 220,
-                height: 140,
+                position: 'relative',
                 flexShrink: 0,
-                objectFit: 'cover',
+                cursor: 'zoom-in',
                 borderRadius: '6px',
+                overflow: 'hidden',
                 border: '1px solid rgba(79,195,247,0.2)',
                 transition: 'transform 0.2s ease, box-shadow 0.2s ease',
                 '&:hover': {
@@ -61,13 +157,48 @@ function Screenshot({ src, alt }) {
                     boxShadow: '0 0 16px rgba(79,195,247,0.35)',
                 },
             }}
-        />
+        >
+            <Box
+                component="img"
+                src={src}
+                alt={alt}
+                onError={() => setBroken(true)}
+                sx={{
+                    width: 220,
+                    height: 140,
+                    display: 'block',
+                    objectFit: 'cover',
+                }}
+            />
+            <Box
+                className="expand-icon"
+                sx={{
+                    position: 'absolute',
+                    top: 6,
+                    right: 6,
+                    bgcolor: 'rgba(4,11,24,0.65)',
+                    borderRadius: '4px',
+                    p: '3px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                }}
+            >
+                <OpenInFullIcon sx={{ fontSize: 14, color: '#4fc3f7' }} />
+            </Box>
+        </Box>
     )
 }
 
 /* ─── Room info dialog ─── */
 function RoomDialog({ room, onClose }) {
+    const [lightboxIdx, setLightboxIdx] = useState(null)
+    const { t } = useTranslation()
     if (!room) return null
+
+    const roomName = t(`stargate.rooms.${room.id}.name`, room.name)
+    const roomShortDesc = t(`stargate.rooms.${room.id}.shortDesc`, room.shortDesc)
+    const roomLongDesc = t(`stargate.rooms.${room.id}.longDesc`, room.longDesc)
 
     return (
         <Dialog
@@ -101,7 +232,7 @@ function RoomDialog({ room, onClose }) {
                     component="span"
                     sx={{ fontWeight: 700, color: '#e0f7fa', fontFamily: "'Inter',sans-serif", flex: 1, fontSize: '1rem' }}
                 >
-                    {room.name}
+                    {roomName}
                 </Typography>
                 <Chip
                     label={`LEVEL ${room.level}`}
@@ -134,7 +265,7 @@ function RoomDialog({ room, onClose }) {
                         letterSpacing: '0.03em',
                     }}
                 >
-                    {room.shortDesc}
+                    {roomShortDesc}
                 </Typography>
 
                 {/* Long desc */}
@@ -147,7 +278,7 @@ function RoomDialog({ room, onClose }) {
                         mb: room.screenshots?.length ? 2.5 : 0,
                     }}
                 >
-                    {room.longDesc}
+                    {roomLongDesc}
                 </Typography>
 
                 {/* Screenshots */}
@@ -158,7 +289,7 @@ function RoomDialog({ room, onClose }) {
                             variant="caption"
                             sx={{ color: 'rgba(79,195,247,0.5)', letterSpacing: '0.08em', display: 'block', mb: 1.5 }}
                         >
-                            REFERENCE FOOTAGE
+                            {t('stargate.reference_footage', 'REFERENCE FOOTAGE')}
                         </Typography>
                         <Box
                             sx={{
@@ -174,8 +305,8 @@ function RoomDialog({ room, onClose }) {
                                 },
                             }}
                         >
-                            {room.screenshots.map((src) => (
-                                <Screenshot key={src} src={src} alt={`${room.name} screenshot`} />
+                            {room.screenshots.map((src, i) => (
+                                <Screenshot key={src} src={src} alt={`${room.name} screenshot`} onClick={() => setLightboxIdx(i)} />
                             ))}
                         </Box>
                     </>
@@ -201,9 +332,17 @@ function RoomDialog({ room, onClose }) {
                         '&:hover': { bgcolor: 'rgba(79,195,247,0.1)' },
                     }}
                 >
-                    CLOSE FILE
+                    {t('stargate.close', 'CLOSE FILE')}
                 </Button>
             </DialogActions>
+
+            {lightboxIdx !== null && (
+                <Lightbox
+                    screenshots={room.screenshots}
+                    index={lightboxIdx}
+                    onClose={() => setLightboxIdx(null)}
+                />
+            )}
         </Dialog>
     )
 }
@@ -290,6 +429,7 @@ export default function StargatePage() {
                         letterSpacing: '0.08em',
                     }}
                 />
+                <LanguageSwitcher />
             </Box>
 
             {/* Main content */}
