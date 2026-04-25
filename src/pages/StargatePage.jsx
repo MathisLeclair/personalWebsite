@@ -4,13 +4,10 @@ import {
     Box,
     Typography,
     Dialog,
-    DialogTitle,
     DialogContent,
-    DialogActions,
     Button,
     Chip,
     IconButton,
-    Divider,
 } from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close'
 import LockIcon from '@mui/icons-material/Lock'
@@ -204,92 +201,112 @@ function RoomDialog({ room, onClose }) {
         <Dialog
             open={Boolean(room)}
             onClose={onClose}
-            maxWidth="md"
+            maxWidth="sm"
             fullWidth
             PaperProps={{
                 sx: {
-                    background: '#080f20',
-                    border: '1px solid rgba(79,195,247,0.25)',
-                    boxShadow: '0 0 60px rgba(79,195,247,0.12)',
+                    background: '#050d1c',
+                    border: '1px solid rgba(79,195,247,0.2)',
+                    boxShadow: '0 0 80px rgba(79,195,247,0.08)',
                     color: '#b3e5fc',
-                    borderRadius: '10px',
+                    borderRadius: '3px',
+                    overflow: 'hidden',
                 },
             }}
         >
-            {/* Header */}
-            <DialogTitle
+            {/* TOP CLASSIFICATION BANNER */}
+            <Box
                 sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 1.5,
-                    pb: 1,
-                    borderBottom: '1px solid rgba(79,195,247,0.15)',
+                    bgcolor: 'rgba(233,69,96,0.18)',
+                    borderBottom: '1px solid rgba(233,69,96,0.5)',
+                    py: 0.6,
+                    textAlign: 'center',
                 }}
             >
-                <LockIcon sx={{ color: '#4fc3f7', fontSize: 18 }} />
                 <Typography
-                    variant="h6"
-                    component="span"
-                    sx={{ fontWeight: 700, color: '#e0f7fa', fontFamily: "'Inter',sans-serif", flex: 1, fontSize: '1rem' }}
-                >
-                    {roomName}
-                </Typography>
-                <Chip
-                    label={`LEVEL ${room.level}`}
-                    size="small"
                     sx={{
-                        bgcolor: 'rgba(79,195,247,0.12)',
-                        color: '#4fc3f7',
-                        border: '1px solid rgba(79,195,247,0.35)',
-                        fontWeight: 700,
-                        fontSize: '0.68rem',
-                        letterSpacing: '0.07em',
-                        height: 22,
-                    }}
-                />
-                <IconButton onClick={onClose} size="small" sx={{ color: 'rgba(179,229,252,0.5)', ml: 0.5 }}>
-                    <CloseIcon fontSize="small" />
-                </IconButton>
-            </DialogTitle>
-
-            {/* Body */}
-            <DialogContent sx={{ pt: 2.5 }}>
-                {/* Short desc */}
-                <Typography
-                    variant="body2"
-                    sx={{
-                        color: '#4fc3f7',
-                        fontStyle: 'italic',
-                        mb: 1.5,
-                        fontSize: '0.85rem',
-                        letterSpacing: '0.03em',
+                        color: '#e94560',
+                        fontSize: '0.6rem',
+                        fontWeight: 900,
+                        letterSpacing: '0.22em',
+                        fontFamily: "'Courier New', monospace",
                     }}
                 >
-                    {roomShortDesc}
+                    ◆ TOP SECRET // SCI // NOFORN ◆
                 </Typography>
+            </Box>
 
-                {/* Long desc */}
-                <Typography
-                    variant="body2"
-                    sx={{
-                        color: 'rgba(179,229,252,0.85)',
-                        lineHeight: 1.75,
-                        fontSize: '0.88rem',
-                        mb: room.screenshots?.length ? 2.5 : 0,
-                    }}
-                >
-                    {roomLongDesc}
-                </Typography>
+            {/* LETTERHEAD */}
+            <Box sx={{ px: 3, pt: 2, pb: 1.5, borderBottom: '1px solid rgba(79,195,247,0.12)' }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1.5 }}>
+                    <Box>
+                        <Typography sx={{ fontSize: '0.52rem', color: 'rgba(79,195,247,0.38)', letterSpacing: '0.18em', fontFamily: "'Courier New', monospace", mb: 0.25 }}>
+                            DEPARTMENT OF HOMEWORLD SECURITY
+                        </Typography>
+                        <Typography sx={{ fontSize: '0.78rem', color: '#4fc3f7', letterSpacing: '0.1em', fontWeight: 700, fontFamily: "'Courier New', monospace" }}>
+                            STARGATE COMMAND
+                        </Typography>
+                    </Box>
+                    <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'flex-start' }}>
+                        <Box sx={{ textAlign: 'right' }}>
+                            <Typography sx={{ fontSize: '0.52rem', color: 'rgba(79,195,247,0.35)', fontFamily: "'Courier New', monospace", letterSpacing: '0.06em' }}>
+                                FILE: SGC-{room.id.replace(/-/g, '').toUpperCase()}
+                            </Typography>
+                            <Typography sx={{ fontSize: '0.52rem', color: 'rgba(79,195,247,0.35)', fontFamily: "'Courier New', monospace", letterSpacing: '0.06em' }}>
+                                LVL {room.level} // CLEARANCE: TS/SCI
+                            </Typography>
+                        </Box>
+                        <IconButton onClick={onClose} size="small" sx={{ color: 'rgba(179,229,252,0.35)', p: 0.25, mt: -0.25 }}>
+                            <CloseIcon sx={{ fontSize: 16 }} />
+                        </IconButton>
+                    </Box>
+                </Box>
 
-                {/* Screenshots */}
+                <Box sx={{ borderBottom: '1px solid rgba(79,195,247,0.2)', mb: 1.5 }} />
+
+                {/* Subject line */}
+                <Box>
+                    <Typography sx={{ fontSize: '0.5rem', color: 'rgba(79,195,247,0.35)', letterSpacing: '0.18em', fontFamily: "'Courier New', monospace", mb: 0.5 }}>
+                        RE: LOCATION DESIGNATION
+                    </Typography>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <LockIcon sx={{ color: 'rgba(79,195,247,0.5)', fontSize: 14 }} />
+                        <Typography sx={{ fontSize: '1rem', fontWeight: 900, color: '#e0f7fa', letterSpacing: '0.1em', fontFamily: "'Courier New', monospace" }}>
+                            {roomName.toUpperCase()}
+                        </Typography>
+                    </Box>
+                </Box>
+            </Box>
+
+            {/* DOCUMENT BODY */}
+            <DialogContent sx={{ pt: 2.5, px: 3 }}>
+                {/* 1. Summary */}
+                <Box sx={{ mb: 2.5 }}>
+                    <Typography sx={{ fontSize: '0.5rem', color: 'rgba(79,195,247,0.35)', letterSpacing: '0.18em', fontFamily: "'Courier New', monospace", mb: 0.75 }}>
+                        1. SUMMARY
+                    </Typography>
+                    <Box sx={{ borderLeft: '2px solid rgba(79,195,247,0.3)', pl: 1.5 }}>
+                        <Typography sx={{ fontSize: '0.82rem', color: '#4fc3f7', fontFamily: "'Courier New', monospace", lineHeight: 1.65 }}>
+                            {roomShortDesc}
+                        </Typography>
+                    </Box>
+                </Box>
+
+                {/* 2. Location details */}
+                <Box sx={{ mb: room.screenshots?.length ? 2.5 : 0 }}>
+                    <Typography sx={{ fontSize: '0.5rem', color: 'rgba(79,195,247,0.35)', letterSpacing: '0.18em', fontFamily: "'Courier New', monospace", mb: 0.75 }}>
+                        2. LOCATION DETAILS
+                    </Typography>
+                    <Typography sx={{ fontSize: '0.82rem', color: 'rgba(179,229,252,0.75)', fontFamily: "'Courier New', monospace", lineHeight: 1.8 }}>
+                        {roomLongDesc}
+                    </Typography>
+                </Box>
+
+                {/* 3. Reference imagery */}
                 {room.screenshots?.length > 0 && (
-                    <>
-                        <Divider sx={{ borderColor: 'rgba(79,195,247,0.1)', mb: 2 }} />
-                        <Typography
-                            variant="caption"
-                            sx={{ color: 'rgba(79,195,247,0.5)', letterSpacing: '0.08em', display: 'block', mb: 1.5 }}
-                        >
-                            {t('stargate.reference_footage', 'REFERENCE FOOTAGE')}
+                    <Box sx={{ borderTop: '1px dashed rgba(79,195,247,0.15)', pt: 2 }}>
+                        <Typography sx={{ fontSize: '0.5rem', color: 'rgba(79,195,247,0.35)', letterSpacing: '0.18em', fontFamily: "'Courier New', monospace", mb: 1.5 }}>
+                            3. {t('stargate.reference_footage', 'REFERENCE FOOTAGE')}
                         </Typography>
                         <Box
                             sx={{
@@ -299,23 +316,31 @@ function RoomDialog({ room, onClose }) {
                                 pb: 1,
                                 '&::-webkit-scrollbar': { height: 4 },
                                 '&::-webkit-scrollbar-track': { background: 'transparent' },
-                                '&::-webkit-scrollbar-thumb': {
-                                    background: 'rgba(79,195,247,0.3)',
-                                    borderRadius: 2,
-                                },
+                                '&::-webkit-scrollbar-thumb': { background: 'rgba(79,195,247,0.3)', borderRadius: 2 },
                             }}
                         >
                             {room.screenshots.map((src, i) => (
                                 <Screenshot key={src} src={src} alt={`${room.name} screenshot`} onClick={() => setLightboxIdx(i)} />
                             ))}
                         </Box>
-                    </>
+                    </Box>
                 )}
             </DialogContent>
 
-            <DialogActions sx={{ borderTop: '1px solid rgba(79,195,247,0.1)', px: 3, py: 1.5 }}>
-                <Typography variant="caption" sx={{ color: 'rgba(79,195,247,0.3)', flex: 1, letterSpacing: '0.05em' }}>
-                    STARGATE COMMAND — CLASSIFIED
+            {/* BOTTOM CLASSIFICATION FOOTER */}
+            <Box
+                sx={{
+                    borderTop: '1px solid rgba(233,69,96,0.3)',
+                    bgcolor: 'rgba(233,69,96,0.06)',
+                    px: 3,
+                    py: 1,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 2,
+                }}
+            >
+                <Typography sx={{ flex: 1, fontSize: '0.5rem', color: 'rgba(233,69,96,0.5)', letterSpacing: '0.14em', fontFamily: "'Courier New', monospace" }}>
+                    TOP SECRET // HANDLE VIA SCI CHANNELS ONLY
                 </Typography>
                 <Button
                     onClick={onClose}
@@ -324,17 +349,18 @@ function RoomDialog({ room, onClose }) {
                         color: '#4fc3f7',
                         borderColor: 'rgba(79,195,247,0.35)',
                         border: '1px solid',
-                        borderRadius: '6px',
-                        fontSize: '0.72rem',
+                        borderRadius: '3px',
+                        fontSize: '0.65rem',
                         fontWeight: 700,
-                        letterSpacing: '0.07em',
+                        letterSpacing: '0.1em',
                         px: 2,
+                        fontFamily: "'Courier New', monospace",
                         '&:hover': { bgcolor: 'rgba(79,195,247,0.1)' },
                     }}
                 >
                     {t('stargate.close', 'CLOSE FILE')}
                 </Button>
-            </DialogActions>
+            </Box>
 
             {lightboxIdx !== null && (
                 <Lightbox
