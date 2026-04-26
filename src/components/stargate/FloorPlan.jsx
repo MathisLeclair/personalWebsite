@@ -12,86 +12,234 @@ import { SGC_MEMBERS } from '../../data/sgcMembers'
 import { STARGATE_TIMELINE } from '../../data/stargateTimeline'
 import { useTranslation } from 'react-i18next'
 
+const ORIGIN_GLYPH = 1
+const RANDOM_CONNECT_CHANCE = 0.22
+
+// Stargate planet name generator — mirrors the two canonical naming conventions:
+// 1. P-code:   P<letter|digit><digit> - <three digits>   e.g. P3X-118, PB5-926
+// 2. Alien/mythological compound names                   e.g. VAGON BREI, PRACLARUSH TAONAS
+const SG_NAME_SYLLABLES = [
+    'AB', 'AK', 'AL', 'AN', 'AR', 'AT', 'AX',
+    'BAL', 'BEL', 'BOR', 'BRA',
+    'CAL', 'CHA', 'CHU', 'COR',
+    'DAR', 'DEL', 'DOR', 'DRA',
+    'EL', 'EN', 'ER', 'EX',
+    'FAR', 'FEN', 'FOR',
+    'GAL', 'GOR',
+    'HAK', 'HAL', 'HAN', 'HOR',
+    'IL', 'IN', 'IR',
+    'JAL', 'JAR', 'JOR', 'JUN',
+    'KAL', 'KAN', 'KHA', 'KOR', 'KUL',
+    'LAR', 'LEN', 'LON', 'LUR',
+    'MAR', 'MEL', 'MOR', 'MUN',
+    'NAK', 'NAR', 'NOR',
+    'OL', 'OR', 'OX',
+    'PAL', 'PAN', 'PAR', 'POL', 'PRA',
+    'RAK', 'RAN', 'REL', 'ROR', 'RUN',
+    'SAK', 'SAL', 'SAN', 'SOR', 'SUR',
+    'TAK', 'TAL', 'TAO', 'TAR', 'TEL', 'TOR', 'TUL',
+    'UL', 'UR', 'UX',
+    'VAG', 'VAL', 'VAN', 'VOR',
+    'WAR', 'WOR',
+    'XAN', 'XOR',
+    'YAL', 'YOR',
+    'ZAK', 'ZAL', 'ZOR',
+]
+const SG_ALPHA = 'ABCDEFGHJKLMNPQRSTUVWXYZ'
+const SG_DIGITS = '0123456789'
+
+function pick(arr) { return arr[Math.floor(Math.random() * arr.length)] }
+function pickChar(str) { return str[Math.floor(Math.random() * str.length)] }
+
+function generateStargateName() {
+    if (Math.random() < 0.85) {
+        // P-code style: P<alpha><digit>-<3 digits>  e.g. P3X-118
+        const prefix = 'P'
+        const mid = Math.random() < 0.6
+            ? pickChar(SG_DIGITS) + pickChar(SG_ALPHA)   // digit+letter: P3X
+            : pickChar(SG_ALPHA) + pickChar(SG_DIGITS)   // letter+digit: PB5
+        const suffix = String(Math.floor(Math.random() * 900) + 100)  // 100-999
+        return `${prefix}${mid}-${suffix}`
+    }
+    // Alien name: 1-3 syllable words, 1-2 words total
+    const wordCount = Math.random() < 0.55 ? 1 : 2
+    const words = Array.from({ length: wordCount }, () => {
+        const sylCount = Math.random() < 0.4 ? 1 : Math.random() < 0.7 ? 2 : 3
+        return Array.from({ length: sylCount }, () => pick(SG_NAME_SYLLABLES)).join('')
+    })
+    return words.join(' ')
+}
+
+
 const ADDRESS_LORE = {
     ABYDOS: {
         key: 'abydos',
-        worldType: 'Desert world / Ancient cultural nexus',
-        faction: 'Abydonians, Tau\'ri allied',
-        risk: 'MEDIUM',
-        intel: 'First off-world destination reached by Earth in the modern Stargate era. Historical inscriptions here were key to decoding gate travel.',
-        tactical: 'Population generally friendly. Maintain cultural protocols and avoid contaminating local political structures.',
+        worldType: 'Desert world in the Milky Way',
+        faction: 'Abydonians; formerly under Ra',
+        status: 'Destroyed in 2003 (SG-1 canon)',
+        firstSeen: 'Stargate (1994 film)',
+        canonNotes: [
+            'First world reached by modern Tau\'ri gate travel.',
+            'A cartouche on Abydos provided a major list of Stargate addresses used by early SG-1 operations.',
+            'Destroyed by Anubis in "Full Circle".',
+        ],
+        sources: [
+            { label: 'Abydos (Stargate Wiki)', url: 'https://stargate.fandom.com/wiki/Abydos' },
+            { label: 'Children of the Gods', url: 'https://stargate.fandom.com/wiki/Children_of_the_Gods_(episode)' },
+            { label: 'Full Circle', url: 'https://stargate.fandom.com/wiki/Full_Circle_(episode)' },
+        ],
     },
     CHULAK: {
         key: 'chulak',
-        worldType: 'Goa\'uld-controlled feudal world',
-        faction: 'Jaffa of Apophis (historical)',
-        risk: 'HIGH',
-        intel: 'Major operational theater tied to Apophis and early resistance contacts including Teal\'c.',
-        tactical: 'Expect patrols, heavy staff-weapon presence, and rapid escalation if identity is compromised.',
+        worldType: 'Jaffa homeworld in the Milky Way',
+        faction: 'Jaffa; historically Apophis, later Free Jaffa Nation',
+        status: 'Under Free Jaffa control after Ori conflict',
+        firstSeen: 'SG-1: "Children of the Gods"',
+        canonNotes: [
+            'Homeworld of Teal\'c and a central early-theatre world for SG-1.',
+            'The Jaffa rebellion is tied to Chulak as one of the first worlds to reject Goa\'uld rule.',
+            'Later occupied during the Ori campaign and subsequently liberated.',
+        ],
+        sources: [
+            { label: 'Chulak (Stargate Wiki)', url: 'https://stargate.fandom.com/wiki/Chulak' },
+            { label: 'Children of the Gods', url: 'https://stargate.fandom.com/wiki/Children_of_the_Gods_(episode)' },
+            { label: 'The Ark of Truth', url: 'https://stargate.fandom.com/wiki/The_Ark_of_Truth' },
+        ],
     },
     TOLLAN: {
         key: 'tollan',
-        worldType: 'Advanced technocratic world',
-        faction: 'Tollan',
-        risk: 'LOW',
-        intel: 'Technologically superior but politically isolationist civilization with strict non-interference doctrine.',
-        tactical: 'Diplomatic posture recommended. Technical exchange is highly restricted.',
+        worldType: 'Former Tollan homeworld (now uninhabitable)',
+        faction: 'Tollan civilization (historical)',
+        status: 'Abandoned after planetary environmental collapse',
+        firstSeen: 'SG-1: "Enigma"',
+        canonNotes: [
+            'Original homeworld of the Tollan before large-scale evacuation.',
+            'SG-1 encountered Tollan survivors during the planetary disaster.',
+            'Population relocated to Tollana with Nox assistance.',
+        ],
+        sources: [
+            { label: 'Tollan (planet) (Stargate Wiki)', url: 'https://stargate.fandom.com/wiki/Tollan_(planet)' },
+            { label: 'Enigma', url: 'https://stargate.fandom.com/wiki/Enigma_(episode)' },
+        ],
     },
     TOLLANA: {
         key: 'tollana',
         worldType: 'Relocated Tollan colony world',
-        faction: 'Tollan survivors',
-        risk: 'MEDIUM',
-        intel: 'Successor settlement after Tollan evacuation. Politically sensitive and vulnerable to Goa\'uld manipulation.',
-        tactical: 'Intel value high. Prioritize political threat assessment over direct engagement.',
+        faction: 'Tollan',
+        status: 'Civilization devastated during Anubis-era conflict',
+        firstSeen: 'SG-1: "Pretense"',
+        canonNotes: [
+            'Tollana was settled after Tollan was abandoned.',
+            'The Tollan built strong ion-cannon defenses and maintained isolationist policies.',
+            'Planet was attacked after Tanith/Anubis coercion events in "Between Two Fires".',
+        ],
+        sources: [
+            { label: 'Tollana (Stargate Wiki)', url: 'https://stargate.fandom.com/wiki/Tollana' },
+            { label: 'Pretense', url: 'https://stargate.fandom.com/wiki/Pretense_(episode)' },
+            { label: 'Between Two Fires', url: 'https://stargate.fandom.com/wiki/Between_Two_Fires_(episode)' },
+        ],
     },
     KHEB: {
         key: 'kheb',
-        worldType: 'Sacred ascension site',
-        faction: 'Unaffiliated spiritual enclave',
-        risk: 'LOW',
-        intel: 'Rarely visited world associated with Ancient knowledge and ascension-era mythology.',
-        tactical: 'Minimal force posture. Scientific and cultural teams preferred.',
+        worldType: 'Isolated world associated with ascension lore',
+        faction: 'No standing polity; linked to Oma Desala in canon',
+        status: 'Known as an off-limits sacred location in Jaffa lore',
+        firstSeen: 'SG-1: "Maternal Instinct"',
+        canonNotes: [
+            'Kheb is identified as a retreat connected to Oma Desala and ascension teachings.',
+            'Shifu was hidden there and later removed for protection.',
+            'Referenced in later canon as relevant to Anubis\' ascent history.',
+        ],
+        sources: [
+            { label: 'Kheb (Stargate Wiki)', url: 'https://stargate.fandom.com/wiki/Kheb' },
+            { label: 'Maternal Instinct', url: 'https://stargate.fandom.com/wiki/Maternal_Instinct_(episode)' },
+            { label: 'Threads', url: 'https://stargate.fandom.com/wiki/Threads_(episode)' },
+        ],
     },
     TARTARUS: {
         key: 'tartarus',
-        worldType: 'Industrial prison and labor world',
-        faction: 'Goa\'uld / Jaffa infrastructure',
-        risk: 'EXTREME',
-        intel: 'Critical enemy logistics and detention location linked to high-value prisoner and military movement.',
-        tactical: 'Hostile environment. Covert infiltration only with extraction window pre-planned.',
+        worldType: 'Anubis-controlled military/production world',
+        faction: 'Anubis (historical), later contested',
+        status: 'Key Kull production site in SG-1 canon',
+        firstSeen: 'SG-1: "Evolution, Part 2"',
+        canonNotes: [
+            'Anubis and Thoth used Tartarus for Kull-warrior development.',
+            'The gate complex includes a forcefield functionally equivalent to an iris.',
+            'SG-1 and allies conducted key operations there during Kull arc events.',
+        ],
+        sources: [
+            { label: 'Tartarus (Stargate Wiki)', url: 'https://stargate.fandom.com/wiki/Tartarus' },
+            { label: 'Evolution, Part 2', url: 'https://stargate.fandom.com/wiki/Evolution,_Part_2_(episode)' },
+            { label: 'Threads', url: 'https://stargate.fandom.com/wiki/Threads_(episode)' },
+        ],
     },
     'PRACLARUSH TAONAS': {
         key: 'praclarush_taonas',
-        worldType: 'Ancient city-world ruin',
-        faction: 'Ancient infrastructure remnants',
-        risk: 'HIGH',
-        intel: 'Site tied to strategic Ancient systems and long-range defense assets.',
-        tactical: 'Ancient tech can be unstable. Bring technical containment and hazard response kits.',
+        worldType: 'Ancient world and Taonas outpost site',
+        faction: 'Ancients (historical)',
+        status: 'Ruined surface; significant Ancient remnants',
+        firstSeen: 'SG-1: "Lost City, Part 2"',
+        canonNotes: [
+            'Praclarush Taonas is identified as one of the earliest Lantean worlds.',
+            'Contains the Taonas outpost and a major Ancient star map reference to Atlantis.',
+            'A ZPM recovered there enabled activation of Antarctic defenses in SG-1 continuity.',
+        ],
+        sources: [
+            { label: 'Praclarush (Stargate Wiki)', url: 'https://stargate.fandom.com/wiki/Praclarush' },
+            { label: 'Lost City, Part 2', url: 'https://stargate.fandom.com/wiki/Lost_City,_Part_2_(episode)' },
+            { label: 'The Pegasus Project', url: 'https://stargate.fandom.com/wiki/The_Pegasus_Project_(episode)' },
+        ],
     },
     EURONDA: {
         key: 'euronda',
-        worldType: 'Militarized authoritarian state world',
-        faction: 'Eurondan regime',
-        risk: 'HIGH',
-        intel: 'Contact scenario demonstrated severe ideological and humanitarian risk factors.',
-        tactical: 'Strict engagement controls and deep political vetting mandatory.',
+        worldType: 'Milky Way world depicted in active civil war',
+        faction: 'Eurondans and Breeders',
+        status: 'Eurondan bunker civilization collapses in episode continuity',
+        firstSeen: 'SG-1: "The Other Side"',
+        canonNotes: [
+            'SG-1 initially receives a request for fuel support from Eurondan leadership.',
+            'The conflict is revealed as an ideologically driven extermination campaign by Eurondans.',
+            'SG-1 withdraws support and the Eurondan bunker is destroyed in the same episode arc.',
+        ],
+        sources: [
+            { label: 'Euronda (Stargate Wiki)', url: 'https://stargate.fandom.com/wiki/Euronda' },
+            { label: 'The Other Side', url: 'https://stargate.fandom.com/wiki/The_Other_Side_(episode)' },
+        ],
     },
     EDORA: {
         key: 'edora',
-        worldType: 'Agrarian world with stellar anomaly exposure',
-        faction: 'Edoran civilians',
-        risk: 'MEDIUM',
-        intel: 'Known for periodic environmental hazards linked to unusual stellar behavior.',
-        tactical: 'Deploy atmospheric and radiation monitoring on arrival.',
+        worldType: 'Agrarian inhabited world in the Milky Way',
+        faction: 'Edorans',
+        status: 'Recurring meteor-cycle hazard world',
+        firstSeen: 'SG-1: "A Hundred Days"',
+        canonNotes: [
+            'Edora experiences periodic "fire rain" from asteroid-belt interactions.',
+            'A severe meteor cycle buried the local Stargate during SG-1 operations.',
+            'The gate was later recovered in-episode continuity and Edora appears again in "Shades of Grey".',
+        ],
+        sources: [
+            { label: 'Edora (Stargate Wiki)', url: 'https://stargate.fandom.com/wiki/Edora' },
+            { label: 'A Hundred Days', url: 'https://stargate.fandom.com/wiki/A_Hundred_Days_(episode)' },
+            { label: 'Shades of Grey', url: 'https://stargate.fandom.com/wiki/Shades_of_Grey_(episode)' },
+        ],
     },
     'EARTH (Beta Gate)': {
         key: 'earth_beta_gate',
-        worldType: 'Earth-linked alternate gate scenario',
-        faction: 'Tau\'ri internal',
-        risk: 'LOW',
-        intel: 'Important historical incident for understanding dual-gate routing and inbound/outbound edge cases.',
-        tactical: 'Primary value is procedural validation, not field conflict.',
+        worldType: 'Secondary Earth Stargate installation',
+        faction: 'Tau\'ri (SGC control in canon continuity)',
+        status: 'Installed at SGC after Alpha Gate loss; later destroyed',
+        firstSeen: 'SG-1: "Solitudes"',
+        canonNotes: [
+            'Earth\'s Beta Gate was found in Antarctica and identified as the Ancient-era Earth gate.',
+            'Used as an operational replacement when the Alpha Gate was unavailable.',
+            'Destroyed during the Redemption arc after Anubis-era gate-weapon events.',
+        ],
+        sources: [
+            { label: 'Beta Gate (Stargate Wiki)', url: 'https://stargate.fandom.com/wiki/Beta_Gate' },
+            { label: 'Solitudes', url: 'https://stargate.fandom.com/wiki/Solitudes_(episode)' },
+            { label: 'Small Victories', url: 'https://stargate.fandom.com/wiki/Small_Victories_(episode)' },
+            { label: 'Redemption, Part 2', url: 'https://stargate.fandom.com/wiki/Redemption,_Part_2_(episode)' },
+        ],
     },
 }
 
@@ -99,23 +247,25 @@ function getAddressLore(addr, t) {
     const lore = ADDRESS_LORE[addr.name]
     if (lore) {
         return {
-            worldType: t(`stargate.lore.entries.${lore.key}.worldType`, lore.worldType),
-            faction: t(`stargate.lore.entries.${lore.key}.faction`, lore.faction),
-            risk: t(`stargate.lore.entries.${lore.key}.risk`, lore.risk),
-            intel: t(`stargate.lore.entries.${lore.key}.intel`, lore.intel),
-            tactical: t(`stargate.lore.entries.${lore.key}.tactical`, lore.tactical),
+            worldType: lore.worldType,
+            faction: lore.faction,
+            status: lore.status,
+            firstSeen: lore.firstSeen,
+            canonNotes: lore.canonNotes,
+            sources: lore.sources,
         }
     }
 
     return {
-        worldType: t('stargate.lore.fallback.worldType', 'Uncatalogued world profile'),
-        faction: t('stargate.lore.fallback.faction', 'Mixed / unknown local actors'),
-        risk: t('stargate.lore.fallback.risk', 'MEDIUM'),
-        intel: t('stargate.lore.fallback.intel', {
-            defaultValue: 'Documented gate destination referenced in {{episode}}. Additional anthropological and strategic reconnaissance pending.',
+        worldType: t('stargate.lore.fallback.worldType', 'Canonical profile not yet documented in-app'),
+        faction: t('stargate.lore.fallback.faction', 'No sourced faction summary loaded'),
+        status: t('stargate.lore.fallback.status', 'No canonical status loaded'),
+        firstSeen: t('stargate.lore.fallback.firstSeen', 'No first-appearance source loaded'),
+        canonNotes: [t('stargate.lore.fallback.note', {
+            defaultValue: 'This destination is listed in {{episode}}, but expanded canon notes have not been added yet.',
             episode: addr.episode,
-        }),
-        tactical: t('stargate.lore.fallback.tactical', 'Treat as limited-intelligence deployment. Use standard SG perimeter and first-contact protocol.'),
+        })],
+        sources: [],
     }
 }
 
@@ -205,6 +355,7 @@ export default function FloorPlan({ selectedRoom, onRoomSelect }) {
     const [gateMode, setGateMode] = useState('addresses')
     const [manualGlyphs, setManualGlyphs] = useState([])
     const [manualResult, setManualResult] = useState(null)
+    const [irisClosed, setIrisClosed] = useState(true)
     const [timelineYear, setTimelineYear] = useState('all')
     const forcedAddrRef = useRef(null)
 
@@ -231,6 +382,14 @@ export default function FloorPlan({ selectedRoom, onRoomSelect }) {
         setManualResult(null)
     }, [])
 
+    const lockOriginGlyph = useCallback(() => {
+        setManualGlyphs(prev => {
+            if (prev.length !== 6) return prev
+            return [...prev, ORIGIN_GLYPH]
+        })
+        setManualResult(null)
+    }, [])
+
     const popGlyph = useCallback(() => {
         setManualGlyphs(prev => prev.slice(0, -1))
         setManualResult(null)
@@ -242,16 +401,37 @@ export default function FloorPlan({ selectedRoom, onRoomSelect }) {
     }, [])
 
     const validateManualAddress = useCallback(() => {
-        if (manualGlyphs.length !== 6) return
-        const match = STARGATE_ADDRESSES.find(addr =>
-            addr.glyphs.every((g, i) => g === manualGlyphs[i])
-        )
-        if (match) {
-            setManualResult({ ok: true, addr: match })
+        if (manualGlyphs.length !== 7) return
+
+        if (manualGlyphs[6] !== ORIGIN_GLYPH) {
+            setManualResult({ ok: false, reason: 'origin' })
             return
         }
-        setManualResult({ ok: false })
-    }, [manualGlyphs])
+
+        const destinationGlyphs = manualGlyphs.slice(0, 6)
+        const match = STARGATE_ADDRESSES.find(addr =>
+            addr.glyphs.every((g, i) => g === destinationGlyphs[i])
+        )
+        if (match) {
+            setManualResult({ ok: true, addr: match, random: false })
+            return
+        }
+
+        if (Math.random() < RANDOM_CONNECT_CHANCE) {
+            setManualResult({
+                ok: true,
+                random: true,
+                addr: {
+                    name: generateStargateName(),
+                    episode: t('stargate.sim.noEpisodeReference', 'Uncharted — no SGC mission record'),
+                    glyphs: destinationGlyphs,
+                },
+            })
+            return
+        }
+
+        setManualResult({ ok: false, reason: 'noMatch' })
+    }, [manualGlyphs, t])
 
     const focusRoomFromTimeline = useCallback((roomId) => {
         if (!roomId) return
@@ -348,6 +528,7 @@ export default function FloorPlan({ selectedRoom, onRoomSelect }) {
                         <AnimatedStargate
                             size={450}
                             dialing
+                            irisClosed={irisClosed}
                             forcedAddress={forcedAddrRef.current}
                             dialKey={dialKey}
                             onAddressChange={setDialingAddrName}
@@ -389,6 +570,19 @@ export default function FloorPlan({ selectedRoom, onRoomSelect }) {
                             }}
                         >
                             {t('stargate.gateModes.simulator', 'Dialing Mini-Game')}
+                        </Button>
+                        <Button
+                            size="small"
+                            onClick={() => setIrisClosed(v => !v)}
+                            sx={{
+                                color: irisClosed ? '#ffcdd2' : '#e0f7fa',
+                                border: '1px solid rgba(79,195,247,0.28)',
+                                bgcolor: irisClosed ? 'rgba(229,57,53,0.16)' : 'rgba(79,195,247,0.12)',
+                            }}
+                        >
+                            {irisClosed
+                                ? t('stargate.gateModes.irisClosed', 'IRIS: CLOSED')
+                                : t('stargate.gateModes.irisOpen', 'IRIS: OPEN')}
                         </Button>
                     </Box>
 
@@ -537,11 +731,11 @@ export default function FloorPlan({ selectedRoom, onRoomSelect }) {
                                 color: 'rgba(179,229,252,0.78)',
                                 mb: 1.2,
                             }}>
-                                {t('stargate.sim.instructions', 'Select 6 destination glyphs, then validate against the known SGC address database. The 7th chevron locks the origin symbol automatically.')}
+                                {t('stargate.sim.instructions', 'Select 6 destination glyphs, lock the 7th (origin) symbol, then validate. Unknown sequences can still connect with a small probability if the origin lock is correct.')}
                             </Typography>
 
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.6, flexWrap: 'wrap', mb: 1.3 }}>
-                                {Array.from({ length: 6 }, (_, i) => (
+                                {Array.from({ length: 7 }, (_, i) => (
                                     <Box key={i} sx={{
                                         width: 28,
                                         height: 28,
@@ -552,7 +746,9 @@ export default function FloorPlan({ selectedRoom, onRoomSelect }) {
                                         alignItems: 'center',
                                         justifyContent: 'center',
                                     }}>
-                                        {manualGlyphs[i] ? <GlyphBadge n={manualGlyphs[i]} /> : <Typography sx={{ fontSize: '0.58rem', color: 'rgba(79,195,247,0.35)' }}>{i + 1}</Typography>}
+                                        {manualGlyphs[i]
+                                            ? <GlyphBadge n={manualGlyphs[i]} />
+                                            : <Typography sx={{ fontSize: '0.58rem', color: 'rgba(79,195,247,0.35)' }}>{i === 6 ? 'O' : i + 1}</Typography>}
                                     </Box>
                                 ))}
                             </Box>
@@ -575,9 +771,17 @@ export default function FloorPlan({ selectedRoom, onRoomSelect }) {
                                     {t('stargate.sim.clear', 'Clear')}
                                 </Button>
                                 <Button
+                                    variant="outlined"
+                                    onClick={lockOriginGlyph}
+                                    disabled={manualGlyphs.length !== 6}
+                                    sx={{ color: '#4fc3f7', borderColor: 'rgba(79,195,247,0.35)' }}
+                                >
+                                    {t('stargate.sim.lockOrigin', 'Lock Origin (7th Chevron)')}
+                                </Button>
+                                <Button
                                     variant="contained"
                                     onClick={validateManualAddress}
-                                    disabled={manualGlyphs.length !== 6}
+                                    disabled={manualGlyphs.length !== 7}
                                     sx={{
                                         bgcolor: '#0b3d5e',
                                         color: '#e0f7fa',
@@ -598,11 +802,22 @@ export default function FloorPlan({ selectedRoom, onRoomSelect }) {
                                 }}>
                                     {manualResult.ok ? (
                                         <>
-                                            <Typography sx={{ color: '#a5d6a7', fontWeight: 700, mb: 0.5 }}>
-                                                {t('stargate.sim.match', { defaultValue: 'Valid destination: {{name}}', name: manualResult.addr.name })}
-                                            </Typography>
+                                            {manualResult.random ? (
+                                                <Typography sx={{ color: '#a5d6a7', fontWeight: 700, mb: 0.5 }}>
+                                                    {t('stargate.sim.randomConnect', 'Unscheduled lock achieved. Wormhole synchronization succeeded.')}
+                                                </Typography>
+                                            ) : (
+                                                <Typography sx={{ color: '#a5d6a7', fontWeight: 700, mb: 0.5 }}>
+                                                    {t('stargate.sim.match', { defaultValue: 'Valid destination: {{name}}', name: manualResult.addr.name })}
+                                                </Typography>
+                                            )}
                                             <Typography sx={{ color: 'rgba(179,229,252,0.75)', fontSize: '0.72rem', mb: 0.9 }}>
-                                                {t('stargate.sim.matchEpisode', { defaultValue: 'Reference episode: {{episode}}', episode: manualResult.addr.episode })}
+                                                {manualResult.random
+                                                    ? t('stargate.sim.randomConnectHint', {
+                                                        defaultValue: 'Random lock chance: {{chance}}% when 7th symbol is valid.',
+                                                        chance: Math.round(RANDOM_CONNECT_CHANCE * 100),
+                                                    })
+                                                    : t('stargate.sim.matchEpisode', { defaultValue: 'Reference episode: {{episode}}', episode: manualResult.addr.episode })}
                                             </Typography>
                                             <Button
                                                 variant="outlined"
@@ -617,7 +832,9 @@ export default function FloorPlan({ selectedRoom, onRoomSelect }) {
                                         </>
                                     ) : (
                                         <Typography sx={{ color: '#ef9a9a', fontWeight: 700 }}>
-                                            {t('stargate.sim.noMatch', 'No match in known address registry. Check glyph sequence and retry.')}
+                                            {manualResult.reason === 'origin'
+                                                ? t('stargate.sim.badOrigin', '7th symbol must be the origin chevron lock.')
+                                                : t('stargate.sim.noMatch', 'No match in known address registry. Check glyph sequence and retry.')}
                                         </Typography>
                                     )}
                                 </Box>
@@ -904,7 +1121,8 @@ export default function FloorPlan({ selectedRoom, onRoomSelect }) {
                         <Box sx={{ display: 'grid', gridTemplateColumns: '1fr', gap: 1.2 }}>
                             <LoreField label={t('stargate.lore.labels.worldType', 'WORLD TYPE')} value={activeLore.worldType} />
                             <LoreField label={t('stargate.lore.labels.faction', 'PRIMARY FACTION')} value={activeLore.faction} />
-                            <LoreField label={t('stargate.lore.labels.risk', 'THREAT RATING')} value={activeLore.risk} />
+                            <LoreField label={t('stargate.lore.labels.risk', 'CANON STATUS')} value={activeLore.status} />
+                            <LoreField label={t('stargate.lore.labels.firstSeen', 'FIRST APPEARANCE')} value={activeLore.firstSeen} />
                         </Box>
 
                         <Box sx={{ mt: 2.1 }}>
@@ -922,7 +1140,11 @@ export default function FloorPlan({ selectedRoom, onRoomSelect }) {
                                 lineHeight: 1.55,
                                 color: 'rgba(179,229,252,0.86)',
                             }}>
-                                {activeLore.intel}
+                                {activeLore.canonNotes.map((line, idx) => (
+                                    <Box key={idx} component="span" sx={{ display: 'block', mb: idx === activeLore.canonNotes.length - 1 ? 0 : 0.65 }}>
+                                        {`- ${line}`}
+                                    </Box>
+                                ))}
                             </Typography>
                         </Box>
 
@@ -934,15 +1156,32 @@ export default function FloorPlan({ selectedRoom, onRoomSelect }) {
                                 color: 'rgba(79,195,247,0.55)',
                                 mb: 0.7,
                             }}>
-                                {t('stargate.lore.labels.tacticalNotes', 'TACTICAL NOTES')}
+                                {t('stargate.lore.labels.sources', 'CANON SOURCES')}
                             </Typography>
-                            <Typography sx={{
-                                fontSize: '0.78rem',
-                                lineHeight: 1.55,
-                                color: 'rgba(179,229,252,0.86)',
-                            }}>
-                                {activeLore.tactical}
-                            </Typography>
+                            {activeLore.sources.length === 0 && (
+                                <Typography sx={{ fontSize: '0.78rem', lineHeight: 1.55, color: 'rgba(179,229,252,0.68)' }}>
+                                    {t('stargate.lore.noSources', 'No source links loaded for this entry yet.')}
+                                </Typography>
+                            )}
+                            {activeLore.sources.map((src) => (
+                                <Typography
+                                    key={src.url}
+                                    component="a"
+                                    href={src.url}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    sx={{
+                                        display: 'block',
+                                        fontSize: '0.74rem',
+                                        lineHeight: 1.55,
+                                        color: '#4fc3f7',
+                                        textDecoration: 'none',
+                                        '&:hover': { textDecoration: 'underline' },
+                                    }}
+                                >
+                                    {src.label}
+                                </Typography>
+                            ))}
                         </Box>
 
                         <Box sx={{ mt: 'auto', pt: 2.2, display: 'flex', gap: 1 }}>
