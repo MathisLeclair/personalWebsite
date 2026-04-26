@@ -15,6 +15,7 @@ import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew'
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos'
 import OpenInFullIcon from '@mui/icons-material/OpenInFull'
 import FloorPlan from '../components/stargate/FloorPlan'
+import AnimatedStargate from '../components/stargate/AnimatedStargate'
 import { getRoomById, facilityLevels, tierMeta } from '../data/stargateRooms'
 import LanguageSwitcher from '../components/LanguageSwitcher'
 
@@ -623,21 +624,9 @@ export default function StargatePage() {
                     zIndex: 10,
                 }}
             >
-                {/* SGC emblem placeholder */}
-                <Box
-                    sx={{
-                        width: 38,
-                        height: 38,
-                        borderRadius: '50%',
-                        border: '2px solid rgba(79,195,247,0.5)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontSize: '1rem',
-                        flexShrink: 0,
-                    }}
-                >
-                    ✦
+                {/* SGC emblem — animated stargate */}
+                <Box sx={{ flexShrink: 0, lineHeight: 0 }}>
+                    <AnimatedStargate size={42} rpm={0.6} />
                 </Box>
 
                 <Box sx={{ flex: 1 }}>
@@ -687,8 +676,13 @@ export default function StargatePage() {
                     mx: 'auto',
                 }}
             >
-                {/* Intro */}
+                {/* Decorative gate + intro */}
                 <Box sx={{ mb: 4, textAlign: 'center' }}>
+                    {/* Animated gate */}
+                    <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3 }}>
+                        <AnimatedStargate size={220} rpm={0.75} />
+                    </Box>
+
                     <Typography
                         variant="h4"
                         sx={{
