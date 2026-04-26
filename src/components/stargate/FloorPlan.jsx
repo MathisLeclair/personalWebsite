@@ -9,6 +9,7 @@ import Level28Plan from './Level28Plan'
 import AnimatedStargate from './AnimatedStargate'
 import { STARGATE_ADDRESSES } from '../../data/stargateAddresses'
 import { SGC_MEMBERS } from '../../data/sgcMembers'
+import { STARGATE_TIMELINE } from '../../data/stargateTimeline'
 import { useTranslation } from 'react-i18next'
 
 const ADDRESS_LORE = {
@@ -201,6 +202,10 @@ export default function FloorPlan({ selectedRoom, onRoomSelect }) {
     const [dialKey, setDialKey] = useState(0)
     const [loreAddr, setLoreAddr] = useState(null)
     const [loreOpen, setLoreOpen] = useState(false)
+    const [gateMode, setGateMode] = useState('addresses')
+    const [manualGlyphs, setManualGlyphs] = useState([])
+    const [manualResult, setManualResult] = useState(null)
+    const [timelineYear, setTimelineYear] = useState('all')
     const forcedAddrRef = useRef(null)
 
     const handleDialAddress = useCallback((addr) => {
@@ -218,7 +223,48 @@ export default function FloorPlan({ selectedRoom, onRoomSelect }) {
         setLoreOpen(false)
     }, [])
 
+    const pushGlyph = useCallback((n) => {
+        setManualGlyphs(prev => {
+            if (prev.length >= 6) return prev
+            return [...prev, n]
+        })
+        setManualResult(null)
+    }, [])
+
+    const popGlyph = useCallback(() => {
+        setManualGlyphs(prev => prev.slice(0, -1))
+        setManualResult(null)
+    }, [])
+
+    const clearGlyphs = useCallback(() => {
+        setManualGlyphs([])
+        setManualResult(null)
+    }, [])
+
+    const validateManualAddress = useCallback(() => {
+        if (manualGlyphs.length !== 6) return
+        const match = STARGATE_ADDRESSES.find(addr =>
+            addr.glyphs.every((g, i) => g === manualGlyphs[i])
+        )
+        if (match) {
+            setManualResult({ ok: true, addr: match })
+            return
+        }
+        setManualResult({ ok: false })
+    }, [manualGlyphs])
+
+    const focusRoomFromTimeline = useCallback((roomId) => {
+        if (!roomId) return
+        onRoomSelect?.(roomId)
+        if (roomId.startsWith('l27-')) setLevel(27)
+        if (roomId.startsWith('l28-')) setLevel(28)
+    }, [onRoomSelect])
+
     const activeLore = loreAddr ? getAddressLore(loreAddr, t) : null
+    const timelineYears = ['all', ...Array.from(new Set(STARGATE_TIMELINE.map(e => e.year))).sort((a, b) => a - b)]
+    const filteredTimeline = timelineYear === 'all'
+        ? STARGATE_TIMELINE
+        : STARGATE_TIMELINE.filter(e => e.year === timelineYear)
 
     return (
         <Box>
@@ -227,9 +273,16 @@ export default function FloorPlan({ selectedRoom, onRoomSelect }) {
                 <Tabs
                     value={level}
                     onChange={(_, v) => setLevel(v)}
+                    variant="scrollable"
+                    scrollButtons
+                    allowScrollButtonsMobile
                     textColor="inherit"
                     TabIndicatorProps={{ style: { backgroundColor: '#4fc3f7' } }}
                     sx={{
+                        maxWidth: '100%',
+                        '& .MuiTabs-scrollButtons': {
+                            color: 'rgba(79,195,247,0.7)',
+                        },
                         '& .MuiTab-root': {
                             color: 'rgba(79,195,247,0.55)',
                             fontFamily: "'Inter', sans-serif",
@@ -250,6 +303,7 @@ export default function FloorPlan({ selectedRoom, onRoomSelect }) {
                     <Tab label={t('stargate.tabs.level27', 'LEVEL 27 - ADMIN')} value={27} />
                     <Tab label={t('stargate.tabs.addresses', 'GATE - KNOWN ADDRESSES')} value="gate" />
                     <Tab label={t('stargate.members.tabLabel', 'SGC — KNOWN PERSONNEL')} value="members" />
+                    <Tab label={t('stargate.tabs.timeline', 'STARGATE TIMELINE')} value="timeline" />
                 </Tabs>
             </Box>
 
@@ -313,139 +367,286 @@ export default function FloorPlan({ selectedRoom, onRoomSelect }) {
                         </Typography>
                     </Box>
 
-                    {/* Column headers */}
-                    <Box sx={{
-                        display: 'grid',
-                        gridTemplateColumns: { xs: '1fr auto', sm: '1fr 160px auto' },
-                        px: 1.5,
-                        py: 0.75,
-                        bgcolor: 'rgba(79,195,247,0.05)',
-                        borderRadius: '3px 3px 0 0',
-                        border: '1px solid rgba(79,195,247,0.12)',
-                        borderBottom: 'none',
-                    }}>
-                        {[
-                            t('stargate.addresses.columns.designation', 'DESIGNATION'),
-                            t('stargate.addresses.columns.episode', 'EPISODE REF'),
-                            t('stargate.addresses.columns.glyphs', 'ADDRESS GLYPHS'),
-                        ].map((h, hi) => (
-                            <Typography key={h} sx={{
-                                fontSize: '0.5rem',
-                                fontFamily: "'Courier New', monospace",
-                                letterSpacing: '0.16em',
-                                color: 'rgba(79,195,247,0.55)',
-                                fontWeight: 700,
-                                display: hi === 1 ? { xs: 'none', sm: 'block' } : 'block',
-                            }}>{h}</Typography>
-                        ))}
+                    <Box sx={{ display: 'flex', gap: 0.7, mb: 2.1, flexWrap: 'wrap' }}>
+                        <Button
+                            size="small"
+                            onClick={() => setGateMode('addresses')}
+                            sx={{
+                                color: gateMode === 'addresses' ? '#e0f7fa' : 'rgba(179,229,252,0.7)',
+                                border: '1px solid rgba(79,195,247,0.28)',
+                                bgcolor: gateMode === 'addresses' ? 'rgba(79,195,247,0.16)' : 'transparent',
+                            }}
+                        >
+                            {t('stargate.gateModes.knownAddresses', 'Known Addresses')}
+                        </Button>
+                        <Button
+                            size="small"
+                            onClick={() => setGateMode('sim')}
+                            sx={{
+                                color: gateMode === 'sim' ? '#e0f7fa' : 'rgba(179,229,252,0.7)',
+                                border: '1px solid rgba(79,195,247,0.28)',
+                                bgcolor: gateMode === 'sim' ? 'rgba(79,195,247,0.16)' : 'transparent',
+                            }}
+                        >
+                            {t('stargate.gateModes.simulator', 'Dialing Mini-Game')}
+                        </Button>
                     </Box>
 
-                    {/* Address rows */}
-                    <Box sx={{
-                        border: '1px solid rgba(79,195,247,0.12)',
-                        borderRadius: '0 0 3px 3px',
-                        overflow: 'hidden',
-                    }}>
-                        {STARGATE_ADDRESSES.map((addr, i) => {
-                            const isDialing = dialingAddrName === addr.name
-                            return (
-                                <Box
-                                    key={addr.name}
-                                    onClick={() => handleDialAddress(addr)}
-                                    sx={{
-                                        display: 'grid',
-                                        gridTemplateColumns: { xs: '1fr auto', sm: '1fr 160px auto' },
+                    {gateMode === 'addresses' && (
+                        <>
+                            {/* Column headers */}
+                            <Box sx={{
+                                display: 'grid',
+                                gridTemplateColumns: { xs: '1fr auto', sm: '1fr 160px auto' },
+                                px: 1.5,
+                                py: 0.75,
+                                bgcolor: 'rgba(79,195,247,0.05)',
+                                borderRadius: '3px 3px 0 0',
+                                border: '1px solid rgba(79,195,247,0.12)',
+                                borderBottom: 'none',
+                            }}>
+                                {[
+                                    t('stargate.addresses.columns.designation', 'DESIGNATION'),
+                                    t('stargate.addresses.columns.episode', 'EPISODE REF'),
+                                    t('stargate.addresses.columns.glyphs', 'ADDRESS GLYPHS'),
+                                ].map((h, hi) => (
+                                    <Typography key={h} sx={{
+                                        fontSize: '0.5rem',
+                                        fontFamily: "'Courier New', monospace",
+                                        letterSpacing: '0.16em',
+                                        color: 'rgba(79,195,247,0.55)',
+                                        fontWeight: 700,
+                                        display: hi === 1 ? { xs: 'none', sm: 'block' } : 'block',
+                                    }}>{h}</Typography>
+                                ))}
+                            </Box>
+
+                            {/* Address rows */}
+                            <Box sx={{
+                                border: '1px solid rgba(79,195,247,0.12)',
+                                borderRadius: '0 0 3px 3px',
+                                overflow: 'hidden',
+                            }}>
+                                {STARGATE_ADDRESSES.map((addr, i) => {
+                                    const isDialing = dialingAddrName === addr.name
+                                    return (
+                                        <Box
+                                            key={addr.name}
+                                            onClick={() => handleDialAddress(addr)}
+                                            sx={{
+                                                display: 'grid',
+                                                gridTemplateColumns: { xs: '1fr auto', sm: '1fr 160px auto' },
+                                                alignItems: 'center',
+                                                px: 1.5,
+                                                py: 0.9,
+                                                borderTop: i === 0 ? 'none' : '1px solid rgba(79,195,247,0.07)',
+                                                borderLeft: isDialing ? '3px solid rgba(79,195,247,0.7)' : '3px solid transparent',
+                                                bgcolor: isDialing
+                                                    ? 'rgba(79,195,247,0.1)'
+                                                    : i % 2 === 0 ? 'transparent' : 'rgba(79,195,247,0.025)',
+                                                cursor: 'pointer',
+                                                transition: 'background 0.2s, border-color 0.2s',
+                                                '&:hover': {
+                                                    bgcolor: isDialing
+                                                        ? 'rgba(79,195,247,0.14)'
+                                                        : 'rgba(79,195,247,0.07)',
+                                                },
+                                            }}
+                                        >
+                                            {/* Name */}
+                                            <Typography sx={{
+                                                fontSize: '0.72rem',
+                                                fontFamily: "'Courier New', monospace",
+                                                color: isDialing ? '#e0f7fa' : '#b3e5fc',
+                                                fontWeight: isDialing ? 700 : 600,
+                                                letterSpacing: '0.06em',
+                                            }}>
+                                                {addr.name}
+                                            </Typography>
+
+                                            {/* Episode — hidden on xs */}
+                                            <Typography sx={{
+                                                fontSize: '0.62rem',
+                                                fontFamily: "'Courier New', monospace",
+                                                color: 'rgba(179,229,252,0.4)',
+                                                letterSpacing: '0.04em',
+                                                fontStyle: 'italic',
+                                                pr: 1,
+                                                display: { xs: 'none', sm: 'block' },
+                                            }}>
+                                                {addr.episode}
+                                            </Typography>
+
+                                            {/* Glyphs + lore + copy */}
+                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                                                {addr.glyphs.map((g, gi) => (
+                                                    <GlyphBadge key={gi} n={g} />
+                                                ))}
+                                                <Tooltip title={t('stargate.addresses.openIntel', 'Open intel file')} placement="left">
+                                                    <IconButton
+                                                        size="small"
+                                                        onClick={(e) => openLoreDrawer(addr, e)}
+                                                        sx={{
+                                                            color: 'rgba(79,195,247,0.35)',
+                                                            p: '3px',
+                                                            '&:hover': { color: '#4fc3f7' },
+                                                        }}
+                                                    >
+                                                        <MenuBookOutlinedIcon sx={{ fontSize: 14 }} />
+                                                    </IconButton>
+                                                </Tooltip>
+                                                <CopyGlyphButton
+                                                    glyphs={addr.glyphs}
+                                                    copyLabel={t('stargate.addresses.copyGlyphs', 'Copy glyphs')}
+                                                    copiedLabel={t('stargate.addresses.copied', 'Copied!')}
+                                                />
+                                            </Box>
+                                        </Box>
+                                    )
+                                })}
+                            </Box>
+
+                            <Box sx={{ mt: 1.5, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 1 }}>
+                                <Typography sx={{
+                                    fontSize: '0.5rem',
+                                    fontFamily: "'Courier New', monospace",
+                                    color: 'rgba(79,195,247,0.4)',
+                                    letterSpacing: '0.1em',
+                                }}>
+                                    {t('stargate.addresses.hint', 'CLICK ROW TO DIAL // BOOK ICON OPENS LORE FILE')}
+                                </Typography>
+                                <Typography sx={{
+                                    fontSize: '0.5rem',
+                                    fontFamily: "'Courier New', monospace",
+                                    color: 'rgba(233,69,96,0.45)',
+                                    letterSpacing: '0.1em',
+                                }}>
+                                    {t('stargate.addresses.footer', {
+                                        defaultValue: '{{count}} VERIFIED ADDRESSES - CLASSIFIED // SCI CHANNELS ONLY',
+                                        count: STARGATE_ADDRESSES.length,
+                                    })}
+                                </Typography>
+                            </Box>
+                        </>
+                    )}
+
+                    {gateMode === 'sim' && (
+                        <>
+                            <Typography sx={{
+                                fontSize: '0.72rem',
+                                color: 'rgba(179,229,252,0.78)',
+                                mb: 1.2,
+                            }}>
+                                {t('stargate.sim.instructions', 'Select 6 destination glyphs, then validate against the known SGC address database. The 7th chevron locks the origin symbol automatically.')}
+                            </Typography>
+
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.6, flexWrap: 'wrap', mb: 1.3 }}>
+                                {Array.from({ length: 6 }, (_, i) => (
+                                    <Box key={i} sx={{
+                                        width: 28,
+                                        height: 28,
+                                        borderRadius: '4px',
+                                        border: '1px solid rgba(79,195,247,0.25)',
+                                        bgcolor: 'rgba(79,195,247,0.06)',
+                                        display: 'inline-flex',
                                         alignItems: 'center',
-                                        px: 1.5,
-                                        py: 0.9,
-                                        borderTop: i === 0 ? 'none' : '1px solid rgba(79,195,247,0.07)',
-                                        borderLeft: isDialing ? '3px solid rgba(79,195,247,0.7)' : '3px solid transparent',
-                                        bgcolor: isDialing
-                                            ? 'rgba(79,195,247,0.1)'
-                                            : i % 2 === 0 ? 'transparent' : 'rgba(79,195,247,0.025)',
-                                        cursor: 'pointer',
-                                        transition: 'background 0.2s, border-color 0.2s',
-                                        '&:hover': {
-                                            bgcolor: isDialing
-                                                ? 'rgba(79,195,247,0.14)'
-                                                : 'rgba(79,195,247,0.07)',
-                                        },
+                                        justifyContent: 'center',
+                                    }}>
+                                        {manualGlyphs[i] ? <GlyphBadge n={manualGlyphs[i]} /> : <Typography sx={{ fontSize: '0.58rem', color: 'rgba(79,195,247,0.35)' }}>{i + 1}</Typography>}
+                                    </Box>
+                                ))}
+                            </Box>
+
+                            <Box sx={{ display: 'flex', gap: 0.8, flexWrap: 'wrap', mb: 1.8 }}>
+                                <Button
+                                    variant="outlined"
+                                    onClick={popGlyph}
+                                    disabled={manualGlyphs.length === 0}
+                                    sx={{ color: '#4fc3f7', borderColor: 'rgba(79,195,247,0.35)' }}
+                                >
+                                    {t('stargate.sim.backspace', 'Backspace')}
+                                </Button>
+                                <Button
+                                    variant="outlined"
+                                    onClick={clearGlyphs}
+                                    disabled={manualGlyphs.length === 0}
+                                    sx={{ color: '#4fc3f7', borderColor: 'rgba(79,195,247,0.35)' }}
+                                >
+                                    {t('stargate.sim.clear', 'Clear')}
+                                </Button>
+                                <Button
+                                    variant="contained"
+                                    onClick={validateManualAddress}
+                                    disabled={manualGlyphs.length !== 6}
+                                    sx={{
+                                        bgcolor: '#0b3d5e',
+                                        color: '#e0f7fa',
+                                        '&:hover': { bgcolor: '#145785' },
                                     }}
                                 >
-                                    {/* Name */}
-                                    <Typography sx={{
-                                        fontSize: '0.72rem',
-                                        fontFamily: "'Courier New', monospace",
-                                        color: isDialing ? '#e0f7fa' : '#b3e5fc',
-                                        fontWeight: isDialing ? 700 : 600,
-                                        letterSpacing: '0.06em',
-                                    }}>
-                                        {addr.name}
-                                    </Typography>
+                                    {t('stargate.sim.validate', 'Validate Address')}
+                                </Button>
+                            </Box>
 
-                                    {/* Episode — hidden on xs */}
-                                    <Typography sx={{
-                                        fontSize: '0.62rem',
-                                        fontFamily: "'Courier New', monospace",
-                                        color: 'rgba(179,229,252,0.4)',
-                                        letterSpacing: '0.04em',
-                                        fontStyle: 'italic',
-                                        pr: 1,
-                                        display: { xs: 'none', sm: 'block' },
-                                    }}>
-                                        {addr.episode}
-                                    </Typography>
-
-                                    {/* Glyphs + lore + copy */}
-                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                                        {addr.glyphs.map((g, gi) => (
-                                            <GlyphBadge key={gi} n={g} />
-                                        ))}
-                                        <Tooltip title={t('stargate.addresses.openIntel', 'Open intel file')} placement="left">
-                                            <IconButton
-                                                size="small"
-                                                onClick={(e) => openLoreDrawer(addr, e)}
-                                                sx={{
-                                                    color: 'rgba(79,195,247,0.35)',
-                                                    p: '3px',
-                                                    '&:hover': { color: '#4fc3f7' },
+                            {manualResult && (
+                                <Box sx={{
+                                    border: `1px solid ${manualResult.ok ? 'rgba(102,187,106,0.45)' : 'rgba(233,69,96,0.45)'}`,
+                                    bgcolor: manualResult.ok ? 'rgba(102,187,106,0.08)' : 'rgba(233,69,96,0.08)',
+                                    borderRadius: '6px',
+                                    p: 1.2,
+                                    mb: 1.8,
+                                }}>
+                                    {manualResult.ok ? (
+                                        <>
+                                            <Typography sx={{ color: '#a5d6a7', fontWeight: 700, mb: 0.5 }}>
+                                                {t('stargate.sim.match', { defaultValue: 'Valid destination: {{name}}', name: manualResult.addr.name })}
+                                            </Typography>
+                                            <Typography sx={{ color: 'rgba(179,229,252,0.75)', fontSize: '0.72rem', mb: 0.9 }}>
+                                                {t('stargate.sim.matchEpisode', { defaultValue: 'Reference episode: {{episode}}', episode: manualResult.addr.episode })}
+                                            </Typography>
+                                            <Button
+                                                variant="outlined"
+                                                onClick={() => {
+                                                    setGateMode('addresses')
+                                                    handleDialAddress(manualResult.addr)
                                                 }}
+                                                sx={{ color: '#4fc3f7', borderColor: 'rgba(79,195,247,0.35)' }}
                                             >
-                                                <MenuBookOutlinedIcon sx={{ fontSize: 14 }} />
-                                            </IconButton>
-                                        </Tooltip>
-                                        <CopyGlyphButton
-                                            glyphs={addr.glyphs}
-                                            copyLabel={t('stargate.addresses.copyGlyphs', 'Copy glyphs')}
-                                            copiedLabel={t('stargate.addresses.copied', 'Copied!')}
-                                        />
-                                    </Box>
+                                                {t('stargate.sim.dialNow', 'Dial This Address')}
+                                            </Button>
+                                        </>
+                                    ) : (
+                                        <Typography sx={{ color: '#ef9a9a', fontWeight: 700 }}>
+                                            {t('stargate.sim.noMatch', 'No match in known address registry. Check glyph sequence and retry.')}
+                                        </Typography>
+                                    )}
                                 </Box>
-                            )
-                        })}
-                    </Box>
+                            )}
 
-                    <Box sx={{ mt: 1.5, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 1 }}>
-                        <Typography sx={{
-                            fontSize: '0.5rem',
-                            fontFamily: "'Courier New', monospace",
-                            color: 'rgba(79,195,247,0.4)',
-                            letterSpacing: '0.1em',
-                        }}>
-                            {t('stargate.addresses.hint', 'CLICK ROW TO DIAL // BOOK ICON OPENS LORE FILE')}
-                        </Typography>
-                        <Typography sx={{
-                            fontSize: '0.5rem',
-                            fontFamily: "'Courier New', monospace",
-                            color: 'rgba(233,69,96,0.45)',
-                            letterSpacing: '0.1em',
-                        }}>
-                            {t('stargate.addresses.footer', {
-                                defaultValue: '{{count}} VERIFIED ADDRESSES - CLASSIFIED // SCI CHANNELS ONLY',
-                                count: STARGATE_ADDRESSES.length,
-                            })}
-                        </Typography>
-                    </Box>
+                            <Box sx={{
+                                display: 'grid',
+                                gridTemplateColumns: { xs: 'repeat(6, 1fr)', sm: 'repeat(13, 1fr)' },
+                                gap: 0.55,
+                            }}>
+                                {Array.from({ length: 39 }, (_, i) => i + 1).map(n => (
+                                    <Button
+                                        key={n}
+                                        onClick={() => pushGlyph(n)}
+                                        disabled={manualGlyphs.length >= 6}
+                                        sx={{
+                                            minWidth: 0,
+                                            p: 0.3,
+                                            border: '1px solid rgba(79,195,247,0.2)',
+                                            bgcolor: 'rgba(79,195,247,0.04)',
+                                            '&:hover': { bgcolor: 'rgba(79,195,247,0.1)' },
+                                        }}
+                                    >
+                                        <GlyphBadge n={n} />
+                                    </Button>
+                                ))}
+                            </Box>
+                        </>
+                    )}
                 </Box>
             )}
 
@@ -544,6 +745,97 @@ export default function FloorPlan({ selectedRoom, onRoomSelect }) {
                                 count: SGC_MEMBERS.length,
                             })}
                         </Typography>
+                    </Box>
+                </Box>
+            )}
+
+            {level === 'timeline' && (
+                <Box
+                    sx={{
+                        borderRadius: '8px',
+                        border: '1px solid rgba(79,195,247,0.18)',
+                        background: '#060f1e',
+                        boxShadow: '0 0 40px rgba(79,195,247,0.06)',
+                        px: { xs: 2, md: 3 },
+                        py: 3,
+                    }}
+                >
+                    <Box sx={{ borderBottom: '1px solid rgba(79,195,247,0.18)', mb: 2, pb: 1 }}>
+                        <Typography sx={{
+                            fontSize: '0.58rem',
+                            fontFamily: "'Courier New', monospace",
+                            letterSpacing: '0.2em',
+                            color: 'rgba(79,195,247,0.5)',
+                            fontWeight: 700,
+                        }}>
+                            {t('stargate.timeline.title', 'STARGATE PROGRAM TIMELINE')}
+                        </Typography>
+                    </Box>
+
+                    <Box sx={{ display: 'flex', gap: 0.6, flexWrap: 'wrap', mb: 2 }}>
+                        {timelineYears.map(y => (
+                            <Button
+                                key={y}
+                                onClick={() => setTimelineYear(y)}
+                                size="small"
+                                sx={{
+                                    color: timelineYear === y ? '#e0f7fa' : 'rgba(179,229,252,0.65)',
+                                    border: '1px solid rgba(79,195,247,0.25)',
+                                    bgcolor: timelineYear === y ? 'rgba(79,195,247,0.18)' : 'transparent',
+                                }}
+                            >
+                                {y === 'all' ? t('stargate.timeline.allYears', 'All years') : y}
+                            </Button>
+                        ))}
+                    </Box>
+
+                    <Box sx={{ display: 'grid', gap: 1.1 }}>
+                        {filteredTimeline.map(event => (
+                            <Box key={event.id} sx={{
+                                border: '1px solid rgba(79,195,247,0.15)',
+                                borderRadius: '6px',
+                                p: 1.25,
+                                background: 'linear-gradient(140deg, rgba(79,195,247,0.05), rgba(79,195,247,0.01))',
+                            }}>
+                                <Box sx={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: 1, mb: 0.6 }}>
+                                    <Typography sx={{ color: '#4fc3f7', fontWeight: 700, fontSize: '0.78rem', letterSpacing: '0.05em' }}>
+                                        {event.year} - {event.title}
+                                    </Typography>
+                                    <Typography sx={{ color: 'rgba(179,229,252,0.5)', fontSize: '0.68rem', fontStyle: 'italic' }}>
+                                        {event.episode}
+                                    </Typography>
+                                </Box>
+                                <Typography sx={{ color: 'rgba(179,229,252,0.82)', fontSize: '0.74rem', lineHeight: 1.55, mb: 0.9 }}>
+                                    {event.description}
+                                </Typography>
+
+                                <Box sx={{ display: 'flex', gap: 0.7, flexWrap: 'wrap' }}>
+                                    {event.roomId && (
+                                        <Button
+                                            size="small"
+                                            onClick={() => focusRoomFromTimeline(event.roomId)}
+                                            sx={{ color: '#4fc3f7', border: '1px solid rgba(79,195,247,0.28)' }}
+                                        >
+                                            {t('stargate.timeline.focusRoom', 'Focus Room')}
+                                        </Button>
+                                    )}
+                                    {event.addressName && (
+                                        <Button
+                                            size="small"
+                                            onClick={() => {
+                                                const addr = STARGATE_ADDRESSES.find(a => a.name === event.addressName)
+                                                if (!addr) return
+                                                setLevel('gate')
+                                                handleDialAddress(addr)
+                                            }}
+                                            sx={{ color: '#4fc3f7', border: '1px solid rgba(79,195,247,0.28)' }}
+                                        >
+                                            {t('stargate.timeline.dialEventAddress', 'Dial Event Address')}
+                                        </Button>
+                                    )}
+                                </Box>
+                            </Box>
+                        ))}
                     </Box>
                 </Box>
             )}

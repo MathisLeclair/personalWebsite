@@ -5,6 +5,8 @@
 // viewBox: "25 188 800 737" → shows x=25..825, y=188..925 (5px margin on all sides)
 //
 // Set DEBUG=true to see coloured zones for calibration.
+import { useTranslation } from 'react-i18next'
+
 const DEBUG = false
 
 const TXT = '#b3e5fc'
@@ -27,6 +29,7 @@ function Lbl({ x, y, lines, size = 18 }) {
 }
 
 export default function Level28Plan({ selectedRoom, onRoomSelect }) {
+    const { t } = useTranslation()
     const clk = id => () => onRoomSelect(id)
     const cls = id => `l28r${selectedRoom === id ? ' sel' : ''}`
     const f = () => FILL_D   // static debug fill, hover/sel handled by CSS
