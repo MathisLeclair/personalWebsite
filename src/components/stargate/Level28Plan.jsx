@@ -36,7 +36,7 @@ export default function Level28Plan({ selectedRoom, onRoomSelect }) {
             viewBox="25 188 800 737"
             xmlns="http://www.w3.org/2000/svg"
             style={{ width: '100%', height: 'auto', display: 'block', background: '#050d1a' }}
-            aria-label="SGC Level 28 Floor Plan"
+            aria-label={t('stargate.plans.level28Aria', 'SGC Level 28 Floor Plan')}
         >
             <defs>
                 <style>{`
@@ -172,7 +172,7 @@ export default function Level28Plan({ selectedRoom, onRoomSelect }) {
             <text x={820} y={922} textAnchor="end" fill={TXT} fontSize={11}
                 fontFamily="'Inter',sans-serif"
                 style={{ pointerEvents: 'none', userSelect: 'none' }}
-                opacity={0.28} letterSpacing="2">SGC – LEVEL 28</text>
+                opacity={0.28} letterSpacing="2">{t('stargate.plans.level28Footer', 'SGC - LEVEL 28')}</text>
         </svg>
     )
 }

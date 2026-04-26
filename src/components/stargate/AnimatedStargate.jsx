@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { STARGATE_ADDRESSES } from '../../data/stargateAddresses'
+import { useTranslation } from 'react-i18next'
 
 /**
  * AnimatedStargate — accurate Milky Way Stargate SVG.
@@ -28,8 +29,6 @@ const R_GATE = 114
 const R_TRACK_MID = (R_TRACK_O + R_TRACK_I) / 2  // 138
 
 const CHEVRON_ANGLES = Array.from({ length: 9 }, (_, i) => -90 + i * 40)
-
-const CHEVRON_WORDS = ['ONE', 'TWO', 'THREE', 'FOUR', 'FIVE', 'SIX', 'SEVEN']
 
 // 7-chevron address: 6 side chevrons encode in order, top (0) locks on the origin glyph.
 // Bottom two chevrons (indices 4 @ 70° and 5 @ 110°) are NEVER used for 7-symbol addresses.
@@ -139,6 +138,7 @@ export default function AnimatedStargate({
     dialKey = 0,            // increment to restart/interrupt current cycle
     onAddressChange = null, // callback(name) when a new address starts being dialed
 }) {
+    const { t } = useTranslation()
     // ── Dialing sequence state ──
     const [lockedChevs, setLockedChevs] = useState([])
     const [flashTop, setFlashTop] = useState(false)
@@ -197,11 +197,23 @@ export default function AnimatedStargate({
                 // ── Lock ──
                 setTrackDur(0)
                 setFlashTop(true)
-                const word = CHEVRON_WORDS[step]
+                const chevronWords = [
+                    t('stargate.gate.words.one', 'ONE'),
+                    t('stargate.gate.words.two', 'TWO'),
+                    t('stargate.gate.words.three', 'THREE'),
+                    t('stargate.gate.words.four', 'FOUR'),
+                    t('stargate.gate.words.five', 'FIVE'),
+                    t('stargate.gate.words.six', 'SIX'),
+                    t('stargate.gate.words.seven', 'SEVEN'),
+                ]
+                const word = chevronWords[step]
                 setStatusText(
                     step === DIAL_SEQUENCE.length - 1
-                        ? 'CHEVRON SEVEN... LOCKED'
-                        : `CHEVRON ${word} ENCODED`
+                        ? t('stargate.gate.chevronSevenLocked', 'CHEVRON SEVEN... LOCKED')
+                        : t('stargate.gate.chevronEncoded', {
+                            defaultValue: 'CHEVRON {{word}} ENCODED',
+                            word,
+                        })
                 )
                 clearTimeout(flashTimerRef.current)
                 flashTimerRef.current = setTimeout(
@@ -214,7 +226,7 @@ export default function AnimatedStargate({
             }
 
             // ── Event horizon + kawoosh ──
-            setStatusText('WORMHOLE ESTABLISHED')
+            setStatusText(t('stargate.gate.wormholeEstablished', 'WORMHOLE ESTABLISHED'))
             setHorizonOpen(true)      // horizon and burst start together
             setKawoosh(true)
             await sleep(900)          // kawoosh animation duration
@@ -248,7 +260,7 @@ export default function AnimatedStargate({
             clearTimeout(mainTimerRef.current)
             clearTimeout(flashTimerRef.current)
         }
-    }, [dialing, dialKey])  // dialKey restarts cycle when user selects an address
+    }, [dialing, dialKey, t])  // dialKey restarts cycle when user selects an address
 
     // ── Computed render values ──
     const lockedSet = dialing ? lockedChevs : lockedChevrons

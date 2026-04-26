@@ -8,9 +8,12 @@ import Level27Plan from './Level27Plan'
 import Level28Plan from './Level28Plan'
 import AnimatedStargate from './AnimatedStargate'
 import { STARGATE_ADDRESSES } from '../../data/stargateAddresses'
+import { SGC_MEMBERS } from '../../data/sgcMembers'
+import { useTranslation } from 'react-i18next'
 
 const ADDRESS_LORE = {
     ABYDOS: {
+        key: 'abydos',
         worldType: 'Desert world / Ancient cultural nexus',
         faction: 'Abydonians, Tau\'ri allied',
         risk: 'MEDIUM',
@@ -18,6 +21,7 @@ const ADDRESS_LORE = {
         tactical: 'Population generally friendly. Maintain cultural protocols and avoid contaminating local political structures.',
     },
     CHULAK: {
+        key: 'chulak',
         worldType: 'Goa\'uld-controlled feudal world',
         faction: 'Jaffa of Apophis (historical)',
         risk: 'HIGH',
@@ -25,6 +29,7 @@ const ADDRESS_LORE = {
         tactical: 'Expect patrols, heavy staff-weapon presence, and rapid escalation if identity is compromised.',
     },
     TOLLAN: {
+        key: 'tollan',
         worldType: 'Advanced technocratic world',
         faction: 'Tollan',
         risk: 'LOW',
@@ -32,6 +37,7 @@ const ADDRESS_LORE = {
         tactical: 'Diplomatic posture recommended. Technical exchange is highly restricted.',
     },
     TOLLANA: {
+        key: 'tollana',
         worldType: 'Relocated Tollan colony world',
         faction: 'Tollan survivors',
         risk: 'MEDIUM',
@@ -39,6 +45,7 @@ const ADDRESS_LORE = {
         tactical: 'Intel value high. Prioritize political threat assessment over direct engagement.',
     },
     KHEB: {
+        key: 'kheb',
         worldType: 'Sacred ascension site',
         faction: 'Unaffiliated spiritual enclave',
         risk: 'LOW',
@@ -46,6 +53,7 @@ const ADDRESS_LORE = {
         tactical: 'Minimal force posture. Scientific and cultural teams preferred.',
     },
     TARTARUS: {
+        key: 'tartarus',
         worldType: 'Industrial prison and labor world',
         faction: 'Goa\'uld / Jaffa infrastructure',
         risk: 'EXTREME',
@@ -53,6 +61,7 @@ const ADDRESS_LORE = {
         tactical: 'Hostile environment. Covert infiltration only with extraction window pre-planned.',
     },
     'PRACLARUSH TAONAS': {
+        key: 'praclarush_taonas',
         worldType: 'Ancient city-world ruin',
         faction: 'Ancient infrastructure remnants',
         risk: 'HIGH',
@@ -60,6 +69,7 @@ const ADDRESS_LORE = {
         tactical: 'Ancient tech can be unstable. Bring technical containment and hazard response kits.',
     },
     EURONDA: {
+        key: 'euronda',
         worldType: 'Militarized authoritarian state world',
         faction: 'Eurondan regime',
         risk: 'HIGH',
@@ -67,6 +77,7 @@ const ADDRESS_LORE = {
         tactical: 'Strict engagement controls and deep political vetting mandatory.',
     },
     EDORA: {
+        key: 'edora',
         worldType: 'Agrarian world with stellar anomaly exposure',
         faction: 'Edoran civilians',
         risk: 'MEDIUM',
@@ -74,6 +85,7 @@ const ADDRESS_LORE = {
         tactical: 'Deploy atmospheric and radiation monitoring on arrival.',
     },
     'EARTH (Beta Gate)': {
+        key: 'earth_beta_gate',
         worldType: 'Earth-linked alternate gate scenario',
         faction: 'Tau\'ri internal',
         risk: 'LOW',
@@ -82,20 +94,31 @@ const ADDRESS_LORE = {
     },
 }
 
-function getAddressLore(addr) {
+function getAddressLore(addr, t) {
     const lore = ADDRESS_LORE[addr.name]
-    if (lore) return lore
+    if (lore) {
+        return {
+            worldType: t(`stargate.lore.entries.${lore.key}.worldType`, lore.worldType),
+            faction: t(`stargate.lore.entries.${lore.key}.faction`, lore.faction),
+            risk: t(`stargate.lore.entries.${lore.key}.risk`, lore.risk),
+            intel: t(`stargate.lore.entries.${lore.key}.intel`, lore.intel),
+            tactical: t(`stargate.lore.entries.${lore.key}.tactical`, lore.tactical),
+        }
+    }
 
     return {
-        worldType: 'Uncatalogued world profile',
-        faction: 'Mixed / unknown local actors',
-        risk: 'MEDIUM',
-        intel: `Documented gate destination referenced in ${addr.episode}. Additional anthropological and strategic reconnaissance pending.`,
-        tactical: 'Treat as limited-intelligence deployment. Use standard SG perimeter and first-contact protocol.',
+        worldType: t('stargate.lore.fallback.worldType', 'Uncatalogued world profile'),
+        faction: t('stargate.lore.fallback.faction', 'Mixed / unknown local actors'),
+        risk: t('stargate.lore.fallback.risk', 'MEDIUM'),
+        intel: t('stargate.lore.fallback.intel', {
+            defaultValue: 'Documented gate destination referenced in {{episode}}. Additional anthropological and strategic reconnaissance pending.',
+            episode: addr.episode,
+        }),
+        tactical: t('stargate.lore.fallback.tactical', 'Treat as limited-intelligence deployment. Use standard SG perimeter and first-contact protocol.'),
     }
 }
 
-function CopyGlyphButton({ glyphs }) {
+function CopyGlyphButton({ glyphs, copyLabel = 'Copy glyphs', copiedLabel = 'Copied!' }) {
     const [copied, setCopied] = useState(false)
 
     const handleCopy = (e) => {
@@ -107,7 +130,7 @@ function CopyGlyphButton({ glyphs }) {
     }
 
     return (
-        <Tooltip title={copied ? 'Copied!' : 'Copy glyphs'} placement="left">
+        <Tooltip title={copied ? copiedLabel : copyLabel} placement="left">
             <IconButton
                 size="small"
                 onClick={handleCopy}
@@ -126,6 +149,7 @@ function CopyGlyphButton({ glyphs }) {
 }
 
 function GlyphBadge({ n }) {
+    const { t } = useTranslation()
     const pad = String(n).padStart(2, '0')
     // Each glyph number is unique per address row, so filter ID collisions are harmless
     // (all same-n filters are identical; browser uses whichever it finds first).
@@ -133,7 +157,7 @@ function GlyphBadge({ n }) {
     return (
         <Box
             component="span"
-            title={`Glyph ${n}`}
+            title={t('stargate.addresses.glyphTitle', { defaultValue: 'Glyph {{n}}', n })}
             sx={{
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -169,6 +193,7 @@ function GlyphBadge({ n }) {
 }
 
 export default function FloorPlan({ selectedRoom, onRoomSelect }) {
+    const { t } = useTranslation()
     const [level, setLevel] = useState(28)
 
     // Gate tab state
@@ -192,6 +217,8 @@ export default function FloorPlan({ selectedRoom, onRoomSelect }) {
     const closeLoreDrawer = useCallback(() => {
         setLoreOpen(false)
     }, [])
+
+    const activeLore = loreAddr ? getAddressLore(loreAddr, t) : null
 
     return (
         <Box>
@@ -219,14 +246,15 @@ export default function FloorPlan({ selectedRoom, onRoomSelect }) {
                         },
                     }}
                 >
-                    <Tab label="LEVEL 28 — GATE OPS" value={28} />
-                    <Tab label="LEVEL 27 — ADMIN" value={27} />
-                    <Tab label="GATE — KNOWN ADDRESSES" value="gate" />
+                    <Tab label={t('stargate.tabs.level28', 'LEVEL 28 - GATE OPS')} value={28} />
+                    <Tab label={t('stargate.tabs.level27', 'LEVEL 27 - ADMIN')} value={27} />
+                    <Tab label={t('stargate.tabs.addresses', 'GATE - KNOWN ADDRESSES')} value="gate" />
+                    <Tab label={t('stargate.members.tabLabel', 'SGC — KNOWN PERSONNEL')} value="members" />
                 </Tabs>
             </Box>
 
             {/* SVG floor plan */}
-            {level !== 'gate' && (
+            {(level === 27 || level === 28) && (
                 <>
                     <Box
                         sx={{
@@ -244,7 +272,7 @@ export default function FloorPlan({ selectedRoom, onRoomSelect }) {
                         )}
                     </Box>
                     <Box sx={{ textAlign: 'center', mt: 1.5, color: 'rgba(179,229,252,0.4)', fontSize: '0.72rem', letterSpacing: '0.06em' }}>
-                        CLICK A ROOM TO ACCESS CLASSIFIED INFORMATION
+                        {t('stargate.ui.clickRoomHint', 'CLICK A ROOM TO ACCESS CLASSIFIED INFORMATION')}
                     </Box>
                 </>
             )}
@@ -281,7 +309,7 @@ export default function FloorPlan({ selectedRoom, onRoomSelect }) {
                             color: 'rgba(79,195,247,0.5)',
                             fontWeight: 700,
                         }}>
-                            MILKY WAY GATE NETWORK — VERIFIED COORDINATES
+                            {t('stargate.addresses.title', 'MILKY WAY GATE NETWORK - VERIFIED COORDINATES')}
                         </Typography>
                     </Box>
 
@@ -296,7 +324,11 @@ export default function FloorPlan({ selectedRoom, onRoomSelect }) {
                         border: '1px solid rgba(79,195,247,0.12)',
                         borderBottom: 'none',
                     }}>
-                        {['DESIGNATION', 'EPISODE REF', 'ADDRESS GLYPHS'].map((h, hi) => (
+                        {[
+                            t('stargate.addresses.columns.designation', 'DESIGNATION'),
+                            t('stargate.addresses.columns.episode', 'EPISODE REF'),
+                            t('stargate.addresses.columns.glyphs', 'ADDRESS GLYPHS'),
+                        ].map((h, hi) => (
                             <Typography key={h} sx={{
                                 fontSize: '0.5rem',
                                 fontFamily: "'Courier New', monospace",
@@ -369,7 +401,7 @@ export default function FloorPlan({ selectedRoom, onRoomSelect }) {
                                         {addr.glyphs.map((g, gi) => (
                                             <GlyphBadge key={gi} n={g} />
                                         ))}
-                                        <Tooltip title="Open intel file" placement="left">
+                                        <Tooltip title={t('stargate.addresses.openIntel', 'Open intel file')} placement="left">
                                             <IconButton
                                                 size="small"
                                                 onClick={(e) => openLoreDrawer(addr, e)}
@@ -382,7 +414,11 @@ export default function FloorPlan({ selectedRoom, onRoomSelect }) {
                                                 <MenuBookOutlinedIcon sx={{ fontSize: 14 }} />
                                             </IconButton>
                                         </Tooltip>
-                                        <CopyGlyphButton glyphs={addr.glyphs} />
+                                        <CopyGlyphButton
+                                            glyphs={addr.glyphs}
+                                            copyLabel={t('stargate.addresses.copyGlyphs', 'Copy glyphs')}
+                                            copiedLabel={t('stargate.addresses.copied', 'Copied!')}
+                                        />
                                     </Box>
                                 </Box>
                             )
@@ -396,7 +432,7 @@ export default function FloorPlan({ selectedRoom, onRoomSelect }) {
                             color: 'rgba(79,195,247,0.4)',
                             letterSpacing: '0.1em',
                         }}>
-                            CLICK ROW TO DIAL // BOOK ICON OPENS LORE FILE
+                            {t('stargate.addresses.hint', 'CLICK ROW TO DIAL // BOOK ICON OPENS LORE FILE')}
                         </Typography>
                         <Typography sx={{
                             fontSize: '0.5rem',
@@ -404,7 +440,109 @@ export default function FloorPlan({ selectedRoom, onRoomSelect }) {
                             color: 'rgba(233,69,96,0.45)',
                             letterSpacing: '0.1em',
                         }}>
-                            {STARGATE_ADDRESSES.length} VERIFIED ADDRESSES — CLASSIFIED // SCI CHANNELS ONLY
+                            {t('stargate.addresses.footer', {
+                                defaultValue: '{{count}} VERIFIED ADDRESSES - CLASSIFIED // SCI CHANNELS ONLY',
+                                count: STARGATE_ADDRESSES.length,
+                            })}
+                        </Typography>
+                    </Box>
+                </Box>
+            )}
+
+            {/* Known SGC members tab */}
+            {level === 'members' && (
+                <Box
+                    sx={{
+                        borderRadius: '8px',
+                        border: '1px solid rgba(79,195,247,0.18)',
+                        background: '#060f1e',
+                        boxShadow: '0 0 40px rgba(79,195,247,0.06)',
+                        px: { xs: 2, md: 3 },
+                        py: 3,
+                    }}
+                >
+                    <Box sx={{ borderBottom: '1px solid rgba(79,195,247,0.18)', mb: 2, pb: 1 }}>
+                        <Typography sx={{
+                            fontSize: '0.58rem',
+                            fontFamily: "'Courier New', monospace",
+                            letterSpacing: '0.2em',
+                            color: 'rgba(79,195,247,0.5)',
+                            fontWeight: 700,
+                        }}>
+                            {t('stargate.members.title', 'STARGATE COMMAND PERSONNEL INDEX — KNOWN MEMBERS')}
+                        </Typography>
+                    </Box>
+
+                    <Box sx={{
+                        display: 'grid',
+                        gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' },
+                        gap: 1.2,
+                    }}>
+                        {SGC_MEMBERS.map((m) => (
+                            <Box
+                                key={m.name}
+                                sx={{
+                                    border: '1px solid rgba(79,195,247,0.15)',
+                                    borderRadius: '6px',
+                                    p: 1.2,
+                                    background: 'linear-gradient(140deg, rgba(79,195,247,0.05), rgba(79,195,247,0.01))',
+                                }}
+                            >
+                                <Typography sx={{
+                                    fontSize: '0.78rem',
+                                    fontFamily: "'Courier New', monospace",
+                                    color: '#e0f7fa',
+                                    fontWeight: 700,
+                                    letterSpacing: '0.06em',
+                                    mb: 0.35,
+                                }}>
+                                    {m.name}
+                                </Typography>
+                                <Typography sx={{
+                                    fontSize: '0.64rem',
+                                    fontFamily: "'Courier New', monospace",
+                                    color: 'rgba(79,195,247,0.8)',
+                                    letterSpacing: '0.06em',
+                                    mb: 0.75,
+                                }}>
+                                    {t(`stargate.members.entries.${m.id}.rank`, m.rank)}
+                                </Typography>
+
+                                <MemberField
+                                    label={t('stargate.members.labels.assignment', 'ASSIGNMENT')}
+                                    value={t(`stargate.members.entries.${m.id}.assignment`, m.assignment)}
+                                />
+                                <MemberField
+                                    label={t('stargate.members.labels.specialty', 'SPECIALTY')}
+                                    value={t(`stargate.members.entries.${m.id}.specialty`, m.specialty)}
+                                />
+                                <MemberField
+                                    label={t('stargate.members.labels.status', 'STATUS')}
+                                    value={t(`stargate.members.entries.${m.id}.status`, m.status)}
+                                />
+                            </Box>
+                        ))}
+                    </Box>
+
+                    <Box sx={{ mt: 1.4, display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: 1 }}>
+                        <Typography sx={{
+                            fontSize: '0.5rem',
+                            fontFamily: "'Courier New', monospace",
+                            color: 'rgba(79,195,247,0.4)',
+                            letterSpacing: '0.1em',
+                        }}>
+                            {t('stargate.members.footerLeft', 'ROSTER CONSOLIDATED FROM KNOWN SGC ERA PERSONNEL RECORDS')}
+                        </Typography>
+                        <Typography sx={{
+                            fontSize: '0.5rem',
+                            fontFamily: "'Courier New', monospace",
+                            color: 'rgba(233,69,96,0.45)',
+                            letterSpacing: '0.1em',
+                        }}>
+                            {t('stargate.members.footerRight', {
+                                defaultValue: '{{count}} KNOWN MEMBERS — CLASSIFIED // PERSONNEL CHANNEL',
+                                count: SGC_MEMBERS.length,
+                            })}
                         </Typography>
                     </Box>
                 </Box>
@@ -435,7 +573,7 @@ export default function FloorPlan({ selectedRoom, onRoomSelect }) {
                                     color: 'rgba(79,195,247,0.55)',
                                     mb: 0.5,
                                 }}>
-                                    DESTINATION INTELLIGENCE FILE
+                                    {t('stargate.lore.fileTitle', 'DESTINATION INTELLIGENCE FILE')}
                                 </Typography>
                                 <Typography sx={{
                                     fontSize: '1.02rem',
@@ -454,7 +592,10 @@ export default function FloorPlan({ selectedRoom, onRoomSelect }) {
                                     fontStyle: 'italic',
                                     mt: 0.4,
                                 }}>
-                                    Episode reference: {loreAddr.episode}
+                                    {t('stargate.lore.episodeReference', {
+                                        defaultValue: 'Episode reference: {{episode}}',
+                                        episode: loreAddr.episode,
+                                    })}
                                 </Typography>
                             </Box>
                             <IconButton
@@ -469,9 +610,9 @@ export default function FloorPlan({ selectedRoom, onRoomSelect }) {
                         <Divider sx={{ borderColor: 'rgba(79,195,247,0.16)', my: 1.7 }} />
 
                         <Box sx={{ display: 'grid', gridTemplateColumns: '1fr', gap: 1.2 }}>
-                            <LoreField label="WORLD TYPE" value={getAddressLore(loreAddr).worldType} />
-                            <LoreField label="PRIMARY FACTION" value={getAddressLore(loreAddr).faction} />
-                            <LoreField label="THREAT RATING" value={getAddressLore(loreAddr).risk} />
+                            <LoreField label={t('stargate.lore.labels.worldType', 'WORLD TYPE')} value={activeLore.worldType} />
+                            <LoreField label={t('stargate.lore.labels.faction', 'PRIMARY FACTION')} value={activeLore.faction} />
+                            <LoreField label={t('stargate.lore.labels.risk', 'THREAT RATING')} value={activeLore.risk} />
                         </Box>
 
                         <Box sx={{ mt: 2.1 }}>
@@ -482,14 +623,14 @@ export default function FloorPlan({ selectedRoom, onRoomSelect }) {
                                 color: 'rgba(79,195,247,0.55)',
                                 mb: 0.7,
                             }}>
-                                INTELLIGENCE SUMMARY
+                                {t('stargate.lore.labels.intelSummary', 'INTELLIGENCE SUMMARY')}
                             </Typography>
                             <Typography sx={{
                                 fontSize: '0.78rem',
                                 lineHeight: 1.55,
                                 color: 'rgba(179,229,252,0.86)',
                             }}>
-                                {getAddressLore(loreAddr).intel}
+                                {activeLore.intel}
                             </Typography>
                         </Box>
 
@@ -501,14 +642,14 @@ export default function FloorPlan({ selectedRoom, onRoomSelect }) {
                                 color: 'rgba(79,195,247,0.55)',
                                 mb: 0.7,
                             }}>
-                                TACTICAL NOTES
+                                {t('stargate.lore.labels.tacticalNotes', 'TACTICAL NOTES')}
                             </Typography>
                             <Typography sx={{
                                 fontSize: '0.78rem',
                                 lineHeight: 1.55,
                                 color: 'rgba(179,229,252,0.86)',
                             }}>
-                                {getAddressLore(loreAddr).tactical}
+                                {activeLore.tactical}
                             </Typography>
                         </Box>
 
@@ -533,7 +674,7 @@ export default function FloorPlan({ selectedRoom, onRoomSelect }) {
                                     },
                                 }}
                             >
-                                DIAL DESTINATION
+                                {t('stargate.lore.dialDestination', 'DIAL DESTINATION')}
                             </Button>
                             <Button
                                 variant="text"
@@ -545,7 +686,7 @@ export default function FloorPlan({ selectedRoom, onRoomSelect }) {
                                     letterSpacing: '0.1em',
                                 }}
                             >
-                                CLOSE
+                                {t('stargate.lore.close', 'CLOSE')}
                             </Button>
                         </Box>
                     </Box>
@@ -571,6 +712,29 @@ function LoreField({ label, value }) {
                 fontSize: '0.75rem',
                 color: 'rgba(179,229,252,0.9)',
                 lineHeight: 1.4,
+            }}>
+                {value}
+            </Typography>
+        </Box>
+    )
+}
+
+function MemberField({ label, value }) {
+    return (
+        <Box sx={{ mb: 0.45 }}>
+            <Typography sx={{
+                fontSize: '0.5rem',
+                fontFamily: "'Courier New', monospace",
+                letterSpacing: '0.12em',
+                color: 'rgba(79,195,247,0.5)',
+                mb: 0.1,
+            }}>
+                {label}
+            </Typography>
+            <Typography sx={{
+                fontSize: '0.69rem',
+                color: 'rgba(179,229,252,0.86)',
+                lineHeight: 1.35,
             }}>
                 {value}
             </Typography>
