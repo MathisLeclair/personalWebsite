@@ -143,18 +143,18 @@ export default function AnimatedStargate({
     const [lockedChevs, setLockedChevs] = useState([])
     const [flashTop, setFlashTop] = useState(false)
     const [horizonOpen, setHorizonOpen] = useState(false)
-    const [trackAngle,  setTrackAngle]  = useState(0)
-    const [trackDur,    setTrackDur]    = useState(0)
-    const [addrName,    setAddrName]    = useState('')
-    const [statusText,  setStatusText]  = useState('')
-    const angleRef      = useRef(0)
-    const cancelRef     = useRef(false)
-    const mainTimerRef  = useRef(null)
+    const [trackAngle, setTrackAngle] = useState(0)
+    const [trackDur, setTrackDur] = useState(0)
+    const [addrName, setAddrName] = useState('')
+    const [statusText, setStatusText] = useState('')
+    const angleRef = useRef(0)
+    const cancelRef = useRef(false)
+    const mainTimerRef = useRef(null)
     const flashTimerRef = useRef(null)
     // capture latest props in refs so the async loop always sees current values
-    const forcedAddrRef  = useRef(forcedAddress)
+    const forcedAddrRef = useRef(forcedAddress)
     const onAddrChangeRef = useRef(onAddressChange)
-    useEffect(() => { forcedAddrRef.current  = forcedAddress  }, [forcedAddress])
+    useEffect(() => { forcedAddrRef.current = forcedAddress }, [forcedAddress])
     useEffect(() => { onAddrChangeRef.current = onAddressChange }, [onAddressChange])
 
     useEffect(() => {
@@ -276,7 +276,7 @@ export default function AnimatedStargate({
 
     // Extend viewBox: extra height for status + address label when dialing
     const viewH = dialing ? 452 : 400
-    const svgH  = dialing ? size * (452 / 400) : size
+    const svgH = dialing ? size * (452 / 400) : size
 
     return (
         <svg

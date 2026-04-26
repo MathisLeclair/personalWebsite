@@ -68,8 +68,8 @@ export default function FloorPlan({ selectedRoom, onRoomSelect }) {
 
     // Gate tab state
     const [dialingAddrName, setDialingAddrName] = useState('')
-    const [dialKey, setDialKey]                 = useState(0)
-    const forcedAddrRef                         = useRef(null)
+    const [dialKey, setDialKey] = useState(0)
+    const forcedAddrRef = useRef(null)
 
     const handleDialAddress = useCallback((addr) => {
         forcedAddrRef.current = addr
