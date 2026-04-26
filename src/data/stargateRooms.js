@@ -177,9 +177,88 @@ export const rooms = [
         shortDesc: 'Perimeter corridor running around the full outside of Level 28.',
         longDesc:
             'The outer corridor forms the full perimeter of Level 28, wrapping around the Gateroom, Control Room, and all adjacent sections. It serves as the primary access route for security patrols, emergency egress, and logistics movement between sections without passing through the high-security interior rooms. Multiple blast doors and security checkpoints segment the corridor during lockdown.',
+        screenshots: [
+            '/stargate/screenshots/outer-corridor-1.png',
+            '/stargate/screenshots/outer-corridor-2.png',
+        ],
+    },
+    {
+        id: 'l28-armory',
+        level: 28,
+        svgId: 'room-l28-armory',
+        name: 'Armory',
+        shortDesc: 'Weapons storage and issue point for SG teams departing on missions.',
+        longDesc:
+            'The SGC Armory on Level 28 is the primary weapons storage and issue point for all SG teams. Personnel collect personal sidearms, P90 submachine guns, and mission-specific ordnance here before departing through the Stargate. The room maintains inventory of standard Earth weapons as well as select recovered alien weaponry cleared for field use. It sits adjacent to the Round Hallway for rapid access before gate departure.',
+        screenshots: [],
+    },
+    {
+        id: 'l28-freight-elevator',
+        level: 28,
+        svgId: 'room-l28-freight-elevator',
+        name: 'Freight Elevator',
+        shortDesc: 'Heavy-capacity elevator for large equipment and alien artefacts.',
+        longDesc:
+            'The freight elevator provides heavy-load vertical transit capability within the SGC. It is used to move large alien artefacts, heavy weapons, vehicles, and bulk supplies between sublevels without occupying the main personnel elevators. The platform is wide enough to accommodate a Goa\'uld death glider fuselage or equivalent-sized cargo.',
+        screenshots: [],
+    },
+    {
+        id: 'l28-storage-room',
+        level: 28,
+        svgId: 'room-l28-storage-room',
+        name: 'Storage Room',
+        shortDesc: 'General-purpose storage adjacent to the elevator shafts.',
+        longDesc:
+            'The storage room on Level 28 serves as a general-purpose holding area for equipment, supplies, and gear staged near the elevator access points. It provides quick access for loading and unloading cargo from the freight elevator and is used to temporarily stage mission equipment before it is moved to the Armory, Laboratory, or Staging Room.',
         screenshots: [],
     },
 ]
 
 export const getRoomsByLevel = (level) => rooms.filter((r) => r.level === level)
 export const getRoomById = (id) => rooms.find((r) => r.id === id)
+
+/**
+ * Full 28-sublevel facility directory
+ * Source: Stargate SG-1 — Cheyenne Mountain Complex reference diagram
+ */
+export const facilityLevels = [
+    // ─── INTERFACE TO THE OUTSIDE WORLD ──────────────────────────────────────
+    { level: 1, tier: 'interface', doorColor: 'Red', tunnelLights: 'White', function: 'Shipping / Receiving' },
+    { level: 2, tier: 'interface', doorColor: 'Red', tunnelLights: 'Red', function: 'Transport / Vehicle Maintenance' },
+    { level: 3, tier: 'interface', doorColor: 'Red', tunnelLights: 'Red', function: 'Commissary / Mess Hall' },
+    { level: 4, tier: 'interface', doorColor: 'Red', tunnelLights: 'Red', function: 'Supplies / Storage' },
+    { level: 5, tier: 'interface', doorColor: 'Red', tunnelLights: 'Red', function: 'Storage / Loading Dock' },
+    { level: 6, tier: 'interface', doorColor: null, tunnelLights: 'White', function: 'Security Clearance' },
+    // ─── FACILITY SUPPORT ─────────────────────────────────────────────────────
+    { level: 7, tier: 'support', doorColor: 'Yellow', tunnelLights: 'Yellow', function: 'Offices' },
+    { level: 8, tier: 'support', doorColor: 'Yellow', tunnelLights: 'Yellow', function: 'Offices' },
+    { level: 9, tier: 'support', doorColor: 'Yellow', tunnelLights: 'Yellow', function: 'Facility Maintenance / Mechanical' },
+    { level: 10, tier: 'support', doorColor: null, tunnelLights: 'Amber', function: 'Earth-Based Communications' },
+    { level: 11, tier: 'support', doorColor: null, tunnelLights: 'Amber', function: 'Personnel / Records' },
+    { level: 12, tier: 'support', doorColor: null, tunnelLights: 'Amber', function: null },
+    { level: 13, tier: 'support', doorColor: null, tunnelLights: 'Pale Green', function: null },
+    { level: 14, tier: 'support', doorColor: null, tunnelLights: 'Pale Green', function: null },
+    { level: 15, tier: 'support', doorColor: null, tunnelLights: 'Pale Green', function: null },
+    // ─── STARGATE PROJECT SUPPORT ─────────────────────────────────────────────
+    { level: 16, tier: 'sgc', doorColor: 'White', tunnelLights: 'White', function: 'SGC Security / Holding Rooms; Video Surveillance / Isolation Rooms' },
+    { level: 17, tier: 'sgc', doorColor: null, tunnelLights: 'Pale Blue', function: 'Negotiating Room' },
+    { level: 18, tier: 'sgc', doorColor: null, tunnelLights: 'Pale Blue', function: "Daniel's and Jonas's Lab" },
+    { level: 19, tier: 'sgc', doorColor: 'Turquoise', tunnelLights: 'Pale Blue', function: "Carter's Lab" },
+    { level: 20, tier: 'sgc', doorColor: 'Dark Blue', tunnelLights: 'Blue', function: 'MRI Room; Surveillance; Observation Lab' },
+    { level: 21, tier: 'sgc', doorColor: 'Medium Blue', tunnelLights: 'Blue', function: 'Infirmary / Medical Lab / Operating Theater; Observation Room; Supply Room' },
+    { level: 22, tier: 'sgc', doorColor: 'Light Blue', tunnelLights: 'Blue', function: "Dr. Fraiser's Office; Isolation Wing; Quarters; General Purpose" },
+    { level: 23, tier: 'sgc', doorColor: null, tunnelLights: 'Green', function: 'Storage Room' },
+    { level: 24, tier: 'sgc', doorColor: null, tunnelLights: 'Green', function: null },
+    { level: 25, tier: 'sgc', doorColor: null, tunnelLights: 'Green', function: "Teal'c's Quarters; Crew and Guest Quarters; Locker Room / Gym" },
+    // ─── STARGATE PROJECT SUPPORT — HIGH LEVEL SECURITY ──────────────────────
+    { level: 26, tier: 'sgc-hl', doorColor: null, tunnelLights: 'White', function: 'Off-world Communications' },
+    { level: 27, tier: 'sgc-hl', doorColor: null, tunnelLights: 'White', function: "Briefing Rooms; General's Office; SGC Offices" },
+    { level: 28, tier: 'sgc-hl', doorColor: null, tunnelLights: 'White', function: 'Gateroom; Control Room; Short Term Brig; Armory' },
+]
+
+export const tierMeta = {
+    interface: { label: 'INTERFACE TO THE OUTSIDE WORLD', clearance: 'General Security — Military and Civilian Personnel' },
+    support: { label: 'FACILITY SUPPORT', clearance: 'Medium Security — Military Personnel Only' },
+    sgc: { label: 'STARGATE PROJECT SUPPORT', clearance: 'High Security — SGC Personnel' },
+    'sgc-hl': { label: 'STARGATE PROJECT SUPPORT', clearance: 'High Level Security — SGC Personnel Only' },
+}

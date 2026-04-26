@@ -15,7 +15,7 @@ import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew'
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos'
 import OpenInFullIcon from '@mui/icons-material/OpenInFull'
 import FloorPlan from '../components/stargate/FloorPlan'
-import { getRoomById } from '../data/stargateRooms'
+import { getRoomById, facilityLevels, tierMeta } from '../data/stargateRooms'
 import LanguageSwitcher from '../components/LanguageSwitcher'
 
 /* ─── Lightbox ─── */
@@ -373,6 +373,224 @@ function RoomDialog({ room, onClose }) {
     )
 }
 
+/* ─── Colour helpers for the directory ─── */
+const DOOR_SWATCH = {
+    Red: '#e94560',
+    Yellow: '#f5c518',
+    White: '#e0f7fa',
+    Turquoise: '#00bcd4',
+    'Dark Blue': '#1565c0',
+    'Medium Blue': '#1e88e5',
+    'Light Blue': '#64b5f6',
+}
+const TUNNEL_SWATCH = {
+    White: '#e0f7fa',
+    Red: '#e94560',
+    Yellow: '#f5c518',
+    Amber: '#ffb300',
+    'Pale Green': '#a5d6a7',
+    'Pale Blue': '#90caf9',
+    Blue: '#42a5f5',
+    Green: '#66bb6a',
+}
+const TIER_BORDER = {
+    interface: 'rgba(233,69,96,0.35)',
+    support: 'rgba(245,197,24,0.35)',
+    sgc: 'rgba(79,195,247,0.35)',
+    'sgc-hl': 'rgba(255,255,255,0.45)',
+}
+
+/* ─── Facility Directory ─── */
+function FacilityDirectory() {
+    const [open, setOpen] = useState(false)
+
+    // Group levels by tier, preserving order
+    const tiers = ['interface', 'support', 'sgc', 'sgc-hl']
+
+    return (
+        <Box sx={{ mt: 5 }}>
+            {/* Section header — click to expand */}
+            <Box
+                onClick={() => setOpen(o => !o)}
+                sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 2,
+                    cursor: 'pointer',
+                    border: '1px solid rgba(79,195,247,0.25)',
+                    borderBottom: open ? '1px solid rgba(79,195,247,0.1)' : '1px solid rgba(79,195,247,0.25)',
+                    borderRadius: open ? '4px 4px 0 0' : '4px',
+                    py: 1.75,
+                    px: 2.5,
+                    userSelect: 'none',
+                    bgcolor: 'rgba(79,195,247,0.04)',
+                    transition: 'background 0.15s',
+                    '&:hover': { bgcolor: 'rgba(79,195,247,0.08)' },
+                    '&:hover .dir-title': { color: '#4fc3f7' },
+                    '&:hover .dir-chevron': { color: '#4fc3f7' },
+                }}
+            >
+                <Typography sx={{ fontSize: '0.75rem', color: 'rgba(79,195,247,0.5)', fontFamily: "'Courier New', monospace", flexShrink: 0 }}>
+                    ⊞
+                </Typography>
+                <Typography
+                    className="dir-title"
+                    sx={{
+                        flex: 1,
+                        fontSize: '0.65rem',
+                        fontFamily: "'Courier New', monospace",
+                        letterSpacing: '0.18em',
+                        color: 'rgba(179,229,252,0.75)',
+                        fontWeight: 700,
+                        transition: 'color 0.15s',
+                    }}
+                >
+                    FACILITY SUBLEVEL DIRECTORY
+                </Typography>
+                <Typography sx={{ fontSize: '0.55rem', color: 'rgba(179,229,252,0.35)', fontFamily: "'Courier New', monospace", letterSpacing: '0.08em', mr: 1.5 }}>
+                    CHEYENNE MOUNTAIN — 28 SUBLEVELS
+                </Typography>
+                <Typography className="dir-chevron" sx={{ fontSize: '0.65rem', color: 'rgba(79,195,247,0.5)', fontFamily: "'Courier New', monospace", letterSpacing: '0.1em', transition: 'color 0.15s' }}>
+                    {open ? '▲' : '▼'}
+                </Typography>
+            </Box>
+
+            {open && (
+                <Box
+                    sx={{
+                        border: '1px solid rgba(79,195,247,0.25)',
+                        borderTop: 'none',
+                        borderRadius: '0 0 4px 4px',
+                        overflow: 'hidden',
+                        bgcolor: '#030913',
+                    }}
+                >
+                    {/* Column headers */}
+                    <Box
+                        sx={{
+                            display: 'grid',
+                            gridTemplateColumns: '56px 1fr 110px 110px',
+                            gap: 0,
+                            bgcolor: 'rgba(79,195,247,0.07)',
+                            borderBottom: '1px solid rgba(79,195,247,0.2)',
+                            px: 2.5,
+                            py: 1,
+                        }}
+                    >
+                        {['LVL', 'FUNCTION / DESIGNATION', 'DOOR COLOR', 'TUNNEL LIGHTS'].map(h => (
+                            <Typography key={h} sx={{ fontSize: '0.55rem', color: 'rgba(79,195,247,0.6)', fontFamily: "'Courier New', monospace", letterSpacing: '0.14em', fontWeight: 700 }}>
+                                {h}
+                            </Typography>
+                        ))}
+                    </Box>
+
+                    {tiers.map(tier => {
+                        const rows = facilityLevels.filter(l => l.tier === tier)
+                        const meta = tierMeta[tier]
+                        return (
+                            <Box key={tier}>
+                                {/* Tier header */}
+                                <Box
+                                    sx={{
+                                        borderLeft: `3px solid ${TIER_BORDER[tier]}`,
+                                        borderTop: '1px solid rgba(79,195,247,0.1)',
+                                        px: 2.5,
+                                        py: 1,
+                                        bgcolor: 'rgba(79,195,247,0.04)',
+                                    }}
+                                >
+                                    <Typography sx={{ fontSize: '0.6rem', color: 'rgba(179,229,252,0.8)', fontFamily: "'Courier New', monospace", letterSpacing: '0.14em', fontWeight: 700 }}>
+                                        {meta.label}
+                                    </Typography>
+                                    <Typography sx={{ fontSize: '0.52rem', color: 'rgba(179,229,252,0.4)', fontFamily: "'Courier New', monospace", letterSpacing: '0.08em', mt: 0.25 }}>
+                                        {meta.clearance}
+                                    </Typography>
+                                </Box>
+
+                                {/* Level rows */}
+                                {rows.map((row, i) => (
+                                    <Box
+                                        key={row.level}
+                                        sx={{
+                                            display: 'grid',
+                                            gridTemplateColumns: '56px 1fr 110px 110px',
+                                            gap: 0,
+                                            px: 2.5,
+                                            py: 0.85,
+                                            borderTop: '1px solid rgba(79,195,247,0.06)',
+                                            borderLeft: `3px solid ${TIER_BORDER[tier]}`,
+                                            bgcolor: row.level === 27 || row.level === 28
+                                                ? 'rgba(79,195,247,0.07)'
+                                                : i % 2 === 0 ? 'transparent' : 'rgba(79,195,247,0.025)',
+                                        }}
+                                    >
+                                        {/* Level number */}
+                                        <Typography sx={{
+                                            fontSize: '0.82rem',
+                                            color: row.level >= 26 ? '#e0f7fa' : 'rgba(179,229,252,0.6)',
+                                            fontFamily: "'Courier New', monospace",
+                                            fontWeight: row.level >= 26 ? 700 : 400,
+                                        }}>
+                                            {String(row.level).padStart(2, '0')}
+                                        </Typography>
+
+                                        {/* Function */}
+                                        <Typography sx={{
+                                            fontSize: '0.75rem',
+                                            color: row.function ? 'rgba(179,229,252,0.8)' : 'rgba(179,229,252,0.25)',
+                                            fontFamily: "'Courier New', monospace",
+                                            fontStyle: row.function ? 'normal' : 'italic',
+                                            pr: 2,
+                                            lineHeight: 1.5,
+                                        }}>
+                                            {row.function ?? '[REDACTED]'}
+                                        </Typography>
+
+                                        {/* Door swatch */}
+                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                            {row.doorColor ? (
+                                                <>
+                                                    <Box sx={{ width: 10, height: 10, borderRadius: '2px', bgcolor: DOOR_SWATCH[row.doorColor] ?? '#888', flexShrink: 0 }} />
+                                                    <Typography sx={{ fontSize: '0.68rem', color: 'rgba(179,229,252,0.6)', fontFamily: "'Courier New', monospace" }}>
+                                                        {row.doorColor}
+                                                    </Typography>
+                                                </>
+                                            ) : (
+                                                <Typography sx={{ fontSize: '0.68rem', color: 'rgba(179,229,252,0.2)', fontFamily: "'Courier New', monospace" }}>—</Typography>
+                                            )}
+                                        </Box>
+
+                                        {/* Tunnel swatch */}
+                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                            {row.tunnelLights ? (
+                                                <>
+                                                    <Box sx={{ width: 10, height: 10, borderRadius: '50%', bgcolor: TUNNEL_SWATCH[row.tunnelLights] ?? '#888', flexShrink: 0, boxShadow: `0 0 5px ${TUNNEL_SWATCH[row.tunnelLights] ?? '#888'}` }} />
+                                                    <Typography sx={{ fontSize: '0.68rem', color: 'rgba(179,229,252,0.6)', fontFamily: "'Courier New', monospace" }}>
+                                                        {row.tunnelLights}
+                                                    </Typography>
+                                                </>
+                                            ) : (
+                                                <Typography sx={{ fontSize: '0.68rem', color: 'rgba(179,229,252,0.2)', fontFamily: "'Courier New', monospace" }}>—</Typography>
+                                            )}
+                                        </Box>
+                                    </Box>
+                                ))}
+                            </Box>
+                        )
+                    })}
+
+                    {/* Footer note */}
+                    <Box sx={{ px: 2.5, py: 1.25, borderTop: '1px solid rgba(79,195,247,0.12)', bgcolor: 'rgba(233,69,96,0.05)' }}>
+                        <Typography sx={{ fontSize: '0.52rem', color: 'rgba(233,69,96,0.5)', fontFamily: "'Courier New', monospace", letterSpacing: '0.1em' }}>
+                            DISSEMINATION RESTRICTED — HANDLE VIA SCI CHANNELS ONLY — DO NOT REPRODUCE WITHOUT WRITTEN AUTHORISATION FROM THE DEPARTMENT OF HOMEWORLD SECURITY
+                        </Typography>
+                    </Box>
+                </Box>
+            )}
+        </Box>
+    )
+}
+
 /* ─── Page ─── */
 export default function StargatePage() {
     const [selectedRoomId, setSelectedRoomId] = useState(null)
@@ -493,6 +711,9 @@ export default function StargatePage() {
 
                 {/* Floor plan */}
                 <FloorPlan selectedRoom={selectedRoomId} onRoomSelect={setSelectedRoomId} />
+
+                {/* Facility Directory */}
+                <FacilityDirectory />
             </Box>
 
             {/* Footer bar */}

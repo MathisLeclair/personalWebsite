@@ -54,6 +54,7 @@ export default function Level27Plan({ selectedRoom, onRoomSelect }) {
             />
 
             {/* ════ INTERACTIVE ZONES (image pixel coords) ════ */}
+            {/* @@ZONES_START@@ */}
 
             {/* ── Briefing room ── */}
             <g id="room-l27-briefing-room" className={cls('l27-briefing-room')} onClick={clk('l27-briefing-room')}>
@@ -72,6 +73,8 @@ export default function Level27Plan({ selectedRoom, onRoomSelect }) {
                 <rect className="f" x={887} y={711} width={45} height={58} />
                 <Lbl x={909} y={742} lines={['Elev.']} size={10} />
             </g>
+
+            {/* @@ZONES_END@@ */}
 
             <text x={1097} y={922} textAnchor="end" fill={TXT} fontSize={10}
                 fontFamily="'Inter',sans-serif"

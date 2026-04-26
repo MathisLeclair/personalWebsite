@@ -281,6 +281,21 @@
                 "name": "Couloir Extérieur",
                 "shortDesc": "Couloir périmétrique parcourant tout l'extérieur du niveau 28.",
                 "longDesc": "Le couloir extérieur forme le périmètre complet du niveau 28, contournant la salle de la Porte, la salle de contrôle et toutes les sections adjacentes. Il sert de voie d'accès principale pour les patrouilles de sécurité, les sorties d'urgence et les déplacements logistiques entre sections sans passer par les salles intérieures à haute sécurité. De multiples portes blindées et points de contrôle segmentent le couloir en cas de confinement."
+            },
+            "l28-armory": {
+                "name": "Arsenal",
+                "shortDesc": "Stockage d'armes et point de distribution pour les équipes SG en mission.",
+                "longDesc": "L'arsenal du SGC au niveau 28 est le principal point de stockage et de distribution d'armes pour toutes les équipes SG. Le personnel y récupère armes de poing, mitraillettes P90 et munitions spécifiques à la mission avant de passer par la Porte Stellaire. La salle dispose d'un inventaire d'armes terrestres standards ainsi que de certaines armes extraterrestres récupérées et homologuées pour le terrain. Elle est adjacente au Couloir Rond pour un accès rapide avant le départ."
+            },
+            "l28-freight-elevator": {
+                "name": "Ascenseur de Fret",
+                "shortDesc": "Ascenseur grande capacité pour équipements lourds et artefacts extraterrestres.",
+                "longDesc": "L'ascenseur de fret assure le transport de charges lourdes au sein du SGC. Il est utilisé pour déplacer les grands artefacts extraterrestres, les armes lourdes, les véhicules et les fournitures en vrac entre les sous-niveaux sans mobiliser les ascenseurs du personnel. La plateforme est suffisamment large pour accueillir le fuselage d'un chasseur Goa'uld ou une cargaison de taille équivalente."
+            },
+            "l28-storage-room": {
+                "name": "Salle de Stockage",
+                "shortDesc": "Stockage polyvalent adjacent aux cages d'ascenseur.",
+                "longDesc": "La salle de stockage du niveau 28 sert de zone de transit général pour l'équipement, les fournitures et le matériel déposés près des accès aux ascenseurs. Elle permet un chargement et déchargement rapides depuis l'ascenseur de fret, et sert à préparer temporairement le matériel de mission avant son transfert vers l'Arsenal, le Laboratoire ou la Salle de Préparation."
             }
         }
     }

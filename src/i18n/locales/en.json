@@ -281,6 +281,21 @@
                 "name": "Outer Corridor",
                 "shortDesc": "Perimeter corridor running around the full outside of Level 28.",
                 "longDesc": "The outer corridor forms the full perimeter of Level 28, wrapping around the Gateroom, Control Room, and all adjacent sections. It serves as the primary access route for security patrols, emergency egress, and logistics movement between sections without passing through the high-security interior rooms. Multiple blast doors and security checkpoints segment the corridor during lockdown."
+            },
+            "l28-armory": {
+                "name": "Armory",
+                "shortDesc": "Weapons storage and issue point for SG teams departing on missions.",
+                "longDesc": "The SGC Armory on Level 28 is the primary weapons storage and issue point for all SG teams. Personnel collect personal sidearms, P90 submachine guns, and mission-specific ordnance here before departing through the Stargate. The room maintains inventory of standard Earth weapons as well as select recovered alien weaponry cleared for field use. It sits adjacent to the Round Hallway for rapid access before gate departure."
+            },
+            "l28-freight-elevator": {
+                "name": "Freight Elevator",
+                "shortDesc": "Heavy-capacity elevator for large equipment and alien artefacts.",
+                "longDesc": "The freight elevator provides heavy-load vertical transit capability within the SGC. It is used to move large alien artefacts, heavy weapons, vehicles, and bulk supplies between sublevels without occupying the main personnel elevators. The platform is wide enough to accommodate a Goa'uld death glider fuselage or equivalent-sized cargo."
+            },
+            "l28-storage-room": {
+                "name": "Storage Room",
+                "shortDesc": "General-purpose storage adjacent to the elevator shafts.",
+                "longDesc": "The storage room on Level 28 serves as a general-purpose holding area for equipment, supplies, and gear staged near the elevator access points. It provides quick access for loading and unloading cargo from the freight elevator and is used to temporarily stage mission equipment before it is moved to the Armory, Laboratory, or Staging Room."
             }
         }
     }

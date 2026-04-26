@@ -57,6 +57,7 @@ export default function Level28Plan({ selectedRoom, onRoomSelect }) {
             />
 
             {/* ════ INTERACTIVE ZONES (image pixel coords) ════ */}
+            {/* @@ZONES_START@@ */}
 
             {/* ── Gate room ── */}
             <g id="room-l28-gateroom" className={cls('l28-gateroom')} onClick={clk('l28-gateroom')}>
@@ -124,6 +125,49 @@ export default function Level28Plan({ selectedRoom, onRoomSelect }) {
                 <rect className="f" x={634} y={829} width={113} height={52} />
                 <Lbl x={280} y={227} lines={['Outer Corridor']} size={13} />
             </g>
+
+            {/* ── Armory ── */}
+            <g id="room-l28-armory" className={cls('l28-armory')} onClick={clk('l28-armory')}>
+                <polygon className="f" points="512,495 626,497 627,638 614,651 469,651 466,617 512,619" />
+                <Lbl x={564} y={571} lines={['Armory']} size={13} />
+            </g>
+
+            {/* ── Freight elevator ── */}
+            <g id="room-l28-freight-elevator" className={cls('l28-freight-elevator')} onClick={clk('l28-freight-elevator')}>
+                <rect className="f" x={192} y={587} width={123} height={115} />
+                <Lbl x={254} y={640} lines={['Freight', 'Elev.']} size={11} />
+            </g>
+
+            {/* ── Storage room ── */}
+            <g id="room-l28-storage-room" className={cls('l28-storage-room')} onClick={clk('l28-storage-room')}>
+                <rect className="f" x={466} y={739} width={71} height={78} />
+                <Lbl x={501} y={778} lines={['Storage']} size={10} />
+            </g>
+
+            {/* ════ BLAST DOORS ════ */}
+            {(() => {
+                const doorStyle = { fill: 'rgba(233,69,96,0.22)', stroke: '#e94560', strokeWidth: 1.5, pointerEvents: 'none' }
+                const lineStyle = { stroke: 'rgba(233,69,96,0.45)', strokeWidth: 1, pointerEvents: 'none' }
+                const doors = [
+                    { id: 'C-2', x: 423, y: 259, w: 60, h: 12 },
+                    { id: 'C-1', x: 387, y: 479, w: 58, h: 12 },
+                    { id: 'C-3L', x: 509, y: 296, w: 5, h: 148 },
+                    { id: 'door-4', x: 384, y: 613, w: 71, h: 6 },
+                    { id: 'door-5', x: 706, y: 198, w: 9, h: 37 },
+                    { id: 'door-6', x: 757, y: 321, w: 48, h: 13 },
+                    { id: 'door-7', x: 108, y: 200, w: 9, h: 61 },
+                    { id: 'door-8', x: 44, y: 285, w: 65, h: 11 },
+                ]
+                return doors.map(d => (
+                    <g key={d.id} id={`blastdoor-${d.id}`}>
+                        <rect x={d.x} y={d.y} width={d.w} height={d.h} style={doorStyle} />
+                        <line x1={d.x} y1={d.y} x2={d.x + d.w} y2={d.y + d.h} style={lineStyle} />
+                        <line x1={d.x + d.w} y1={d.y} x2={d.x} y2={d.y + d.h} style={lineStyle} />
+                    </g>
+                ))
+            })()}
+
+            {/* @@ZONES_END@@ */}
 
             <text x={820} y={922} textAnchor="end" fill={TXT} fontSize={11}
                 fontFamily="'Inter',sans-serif"
