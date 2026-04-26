@@ -147,6 +147,7 @@ export default function AnimatedStargate({
     const [trackDur, setTrackDur] = useState(0)
     const [addrName, setAddrName] = useState('')
     const [statusText, setStatusText] = useState('')
+    const [kawoosh, setKawoosh] = useState(false)
     const angleRef = useRef(0)
     const cancelRef = useRef(false)
     const mainTimerRef = useRef(null)
@@ -212,14 +213,18 @@ export default function AnimatedStargate({
                 if (cancelRef.current) return
             }
 
-            // ── Event horizon ──
+            // ── Event horizon + kawoosh ──
             setStatusText('WORMHOLE ESTABLISHED')
-            setHorizonOpen(true)
-            await sleep(HORIZON_HOLD)
+            setHorizonOpen(true)      // horizon and burst start together
+            setKawoosh(true)
+            await sleep(900)          // kawoosh animation duration
+            setKawoosh(false)
+            await sleep(HORIZON_HOLD - 900)  // rest of horizon hold
             if (cancelRef.current) return
 
             // ── Reset ──
             setHorizonOpen(false)
+            setKawoosh(false)
             setLockedChevs([])
             setFlashTop(false)
             setAddrName('')
@@ -316,7 +321,7 @@ export default function AnimatedStargate({
                     <stop offset="100%" stopColor="#060f1d" />
                 </radialGradient>
 
-                {/* Event horizon */}
+                {/* Event horizon steady gradient */}
                 <radialGradient id="sgEHG" cx="50%" cy="50%" r="50%">
                     <stop offset="0%" stopColor="#e0f7fa" stopOpacity={0.95} />
                     <stop offset="35%" stopColor="#4fc3f7" stopOpacity={0.88} />
@@ -328,6 +333,14 @@ export default function AnimatedStargate({
                     <feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge>
                 </filter>
 
+                {/* Kawoosh burst gradient */}
+                <radialGradient id="sgKawooshG" cx="50%" cy="50%" r="50%">
+                    <stop offset="0%" stopColor="white" stopOpacity={1} />
+                    <stop offset="25%" stopColor="#e0f7fa" stopOpacity={0.95} />
+                    <stop offset="60%" stopColor="#4fc3f7" stopOpacity={0.75} />
+                    <stop offset="100%" stopColor="#0277bd" stopOpacity={0} />
+                </radialGradient>
+
                 <style>{`
                     @keyframes sg-spin {
                         to { transform: rotate(360deg); }
@@ -337,19 +350,30 @@ export default function AnimatedStargate({
                         50%     { opacity: 1; }
                     }
                     .sg-horizon { animation: sg-pulse 3s ease-in-out infinite; }
+
+                    /* Kawoosh fill disk — expands out past the ring then fades */
+                    @keyframes sg-kawoosh-fill {
+                        0%   { transform: scale(0.01); opacity: 0; }
+                        6%   { opacity: 1; }
+                        42%  { transform: scale(2.05); opacity: 0.88; }
+                        70%  { transform: scale(1.85); opacity: 0.35; }
+                        100% { transform: scale(1.65); opacity: 0; }
+                    }
+                    /* Shockwave ring — thin circle shoots outward */
+                    @keyframes sg-kawoosh-wave {
+                        0%   { transform: scale(0.04); opacity: 0.9; }
+                        100% { transform: scale(3.2);  opacity: 0; }
+                    }
+                    /* Secondary ripple — slightly delayed inner ring */
+                    @keyframes sg-kawoosh-ripple {
+                        0%   { transform: scale(0.08); opacity: 0.65; }
+                        100% { transform: scale(2.4);  opacity: 0; }
+                    }
                 `}</style>
             </defs>
 
             {/* ── 1. Dark aperture background ── */}
             <circle cx={CX} cy={CY} r={R_GATE} fill="#030a14" />
-
-            {/* ── 2. Event horizon (when active) ── */}
-            {showHorizon && (
-                <g filter="url(#sgEHBlur)">
-                    <circle className="sg-horizon" cx={CX} cy={CY} r={R_GATE - 1}
-                        fill="url(#sgEHG)" />
-                </g>
-            )}
 
             {/* ── 3. Spinning inner track (rendered BEHIND the outer ring) ── */}
             <g style={innerTrackStyle}>
@@ -382,6 +406,55 @@ export default function AnimatedStargate({
                 })}
 
             </g>
+
+            {/* ── 2. Event horizon (above track so it isn't covered) ── */}
+            {showHorizon && (
+                <g filter="url(#sgEHBlur)">
+                    <circle className="sg-horizon" cx={CX} cy={CY} r={R_GATE - 1}
+                        fill="url(#sgEHG)" />
+                </g>
+            )}
+
+            {/* ── 2b. Kawoosh burst (above horizon, below ring+chevrons) ── */}
+            {kawoosh && (
+                <>
+                    {/* Fill disk: bright radial burst expanding past the ring */}
+                    <circle
+                        cx={CX} cy={CY} r={R_GATE - 1}
+                        fill="url(#sgKawooshG)"
+                        style={{
+                            transformBox: 'fill-box',
+                            transformOrigin: 'center',
+                            animation: 'sg-kawoosh-fill 900ms ease-out forwards',
+                        }}
+                    />
+                    {/* Outer shockwave ring — shoots far past the gate */}
+                    <circle
+                        cx={CX} cy={CY} r={R_GATE - 1}
+                        fill="none"
+                        stroke="rgba(255,255,255,0.95)"
+                        strokeWidth="5"
+                        style={{
+                            transformBox: 'fill-box',
+                            transformOrigin: 'center',
+                            animation: 'sg-kawoosh-wave 580ms ease-out forwards',
+                        }}
+                    />
+                    {/* Inner ripple ring — softer, slower secondary wave */}
+                    <circle
+                        cx={CX} cy={CY} r={R_GATE - 1}
+                        fill="none"
+                        stroke="rgba(79,195,247,0.75)"
+                        strokeWidth="8"
+                        style={{
+                            transformBox: 'fill-box',
+                            transformOrigin: 'center',
+                            animation: 'sg-kawoosh-ripple 750ms ease-out forwards',
+                            animationDelay: '60ms',
+                        }}
+                    />
+                </>
+            )}
 
             {/* ── 4. Outer ring donut (even-odd, overlaps the track edge) ── */}
             <path d={donutD} fillRule="evenodd" fill="url(#sgRingG)" />
