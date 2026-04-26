@@ -29,6 +29,8 @@ const R_TRACK_MID = (R_TRACK_O + R_TRACK_I) / 2  // 138
 
 const CHEVRON_ANGLES = Array.from({ length: 9 }, (_, i) => -90 + i * 40)
 
+const CHEVRON_WORDS = ['ONE', 'TWO', 'THREE', 'FOUR', 'FIVE', 'SIX', 'SEVEN']
+
 // 7-chevron address: 6 side chevrons encode in order, top (0) locks on the origin glyph.
 // Bottom two chevrons (indices 4 @ 70° and 5 @ 110°) are NEVER used for 7-symbol addresses.
 const DIAL_SEQUENCE = [1, 2, 3, 6, 7, 8, 0]
@@ -133,18 +135,27 @@ export default function AnimatedStargate({
     lockedChevrons = [],
     rpm = 0.75,
     dialing = false,
+    forcedAddress = null,   // address object to dial immediately
+    dialKey = 0,            // increment to restart/interrupt current cycle
+    onAddressChange = null, // callback(name) when a new address starts being dialed
 }) {
     // ── Dialing sequence state ──
     const [lockedChevs, setLockedChevs] = useState([])
     const [flashTop, setFlashTop] = useState(false)
     const [horizonOpen, setHorizonOpen] = useState(false)
-    const [trackAngle, setTrackAngle] = useState(0)     // accumulated ring rotation (deg)
-    const [trackDur, setTrackDur] = useState(0)     // CSS transition duration (ms)
-    const [addrName, setAddrName] = useState('')
-    const angleRef = useRef(0)   // mirrors trackAngle but readable synchronously
-    const cancelRef = useRef(false)
-    const mainTimerRef = useRef(null)
+    const [trackAngle,  setTrackAngle]  = useState(0)
+    const [trackDur,    setTrackDur]    = useState(0)
+    const [addrName,    setAddrName]    = useState('')
+    const [statusText,  setStatusText]  = useState('')
+    const angleRef      = useRef(0)
+    const cancelRef     = useRef(false)
+    const mainTimerRef  = useRef(null)
     const flashTimerRef = useRef(null)
+    // capture latest props in refs so the async loop always sees current values
+    const forcedAddrRef  = useRef(forcedAddress)
+    const onAddrChangeRef = useRef(onAddressChange)
+    useEffect(() => { forcedAddrRef.current  = forcedAddress  }, [forcedAddress])
+    useEffect(() => { onAddrChangeRef.current = onAddressChange }, [onAddressChange])
 
     useEffect(() => {
         if (!dialing) return
@@ -157,30 +168,40 @@ export default function AnimatedStargate({
         async function runCycle() {
             if (cancelRef.current) return
 
-            // Pick a random address each cycle
-            const addr = STARGATE_ADDRESSES[Math.floor(Math.random() * STARGATE_ADDRESSES.length)]
-            // 6 destination glyphs + Earth origin (glyph 1) as the 7th
+            // Use forced address if one was requested, then fall back to random
+            const addr = forcedAddrRef.current
+                ?? STARGATE_ADDRESSES[Math.floor(Math.random() * STARGATE_ADDRESSES.length)]
+            forcedAddrRef.current = null   // consume it — next cycle is random again
             const dialGlyphs = [...addr.glyphs, 1]
 
             setAddrName(addr.name)
+            setStatusText('')
             setLockedChevs([])
             setFlashTop(false)
             setHorizonOpen(false)
+            onAddrChangeRef.current?.(addr.name)
 
             for (let step = 0; step < DIAL_SEQUENCE.length; step++) {
                 if (cancelRef.current) return
 
-                // ── Spin: rotate ring to align the next glyph at the top chevron ──
+                // ── Spin ──
+                setStatusText('')
                 const target = glyphStopAngle(dialGlyphs[step], angleRef.current)
                 angleRef.current = target
                 setTrackDur(SPIN_DURATION)
                 setTrackAngle(target)
-                await sleep(SPIN_DURATION + 80)   // +80ms ensures transition completes
+                await sleep(SPIN_DURATION + 80)
                 if (cancelRef.current) return
 
-                // ── Lock: ring stops, top chevron flashes, side chevron lights permanently ──
+                // ── Lock ──
                 setTrackDur(0)
                 setFlashTop(true)
+                const word = CHEVRON_WORDS[step]
+                setStatusText(
+                    step === DIAL_SEQUENCE.length - 1
+                        ? 'CHEVRON SEVEN... LOCKED'
+                        : `CHEVRON ${word} ENCODED`
+                )
                 clearTimeout(flashTimerRef.current)
                 flashTimerRef.current = setTimeout(
                     () => { if (!cancelRef.current) setFlashTop(false) },
@@ -191,7 +212,8 @@ export default function AnimatedStargate({
                 if (cancelRef.current) return
             }
 
-            // ── All 7 locked → event horizon ──
+            // ── Event horizon ──
+            setStatusText('WORMHOLE ESTABLISHED')
             setHorizonOpen(true)
             await sleep(HORIZON_HOLD)
             if (cancelRef.current) return
@@ -201,7 +223,8 @@ export default function AnimatedStargate({
             setLockedChevs([])
             setFlashTop(false)
             setAddrName('')
-            // Normalize accumulated angle (no transition = invisible snap)
+            setStatusText('')
+            onAddrChangeRef.current?.('')
             setTrackDur(0)
             const normalized = angleRef.current % 360
             angleRef.current = normalized
@@ -212,14 +235,15 @@ export default function AnimatedStargate({
             runCycle()
         }
 
-        sleep(800).then(() => { if (!cancelRef.current) runCycle() })
+        const delay = forcedAddrRef.current ? 0 : 800
+        sleep(delay).then(() => { if (!cancelRef.current) runCycle() })
 
         return () => {
             cancelRef.current = true
             clearTimeout(mainTimerRef.current)
             clearTimeout(flashTimerRef.current)
         }
-    }, [dialing])
+    }, [dialing, dialKey])  // dialKey restarts cycle when user selects an address
 
     // ── Computed render values ──
     const lockedSet = dialing ? lockedChevs : lockedChevrons
@@ -250,9 +274,9 @@ export default function AnimatedStargate({
         `a ${R_RING_IN} ${R_RING_IN} 0 1 0 -${2 * R_RING_IN} 0`,
     ].join(' ')
 
-    // Extend viewBox downward when dialing to make room for the address label
-    const viewH = dialing ? 428 : 400
-    const svgH = dialing ? size * (428 / 400) : size
+    // Extend viewBox: extra height for status + address label when dialing
+    const viewH = dialing ? 452 : 400
+    const svgH  = dialing ? size * (452 / 400) : size
 
     return (
         <svg
@@ -391,12 +415,22 @@ export default function AnimatedStargate({
             {/* ── 7. Destination label (dialing mode only) ── */}
             {dialing && (
                 <>
-                    {/* Separator line */}
-                    <line x1="60" y1="406" x2="340" y2="406"
-                        stroke="rgba(79,195,247,0.18)" strokeWidth="0.75" />
-                    {/* Destination name */}
+                    <line x1="50" y1="408" x2="350" y2="408"
+                        stroke="rgba(79,195,247,0.15)" strokeWidth="0.75" />
+                    {/* Status: CHEVRON N ENCODED / WORMHOLE ESTABLISHED */}
                     <text
-                        x={CX} y={419}
+                        x={CX} y={422}
+                        textAnchor="middle"
+                        fill={statusText ? 'rgba(255,200,80,0.82)' : 'transparent'}
+                        fontFamily="'Courier New', monospace"
+                        fontSize="9"
+                        letterSpacing="2"
+                    >
+                        {statusText || ' '}
+                    </text>
+                    {/* Address name */}
+                    <text
+                        x={CX} y={440}
                         textAnchor="middle"
                         fill={addrName ? 'rgba(79,195,247,0.82)' : 'transparent'}
                         fontFamily="'Courier New', monospace"

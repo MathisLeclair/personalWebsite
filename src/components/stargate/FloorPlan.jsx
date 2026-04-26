@@ -1,8 +1,41 @@
-import { useState } from 'react'
-import { Box, Tabs, Tab, Typography } from '@mui/material'
+import { useState, useRef, useCallback } from 'react'
+import { Box, Tabs, Tab, Typography, Tooltip, IconButton } from '@mui/material'
+import ContentCopyIcon from '@mui/icons-material/ContentCopy'
+import CheckIcon from '@mui/icons-material/Check'
 import Level27Plan from './Level27Plan'
 import Level28Plan from './Level28Plan'
+import AnimatedStargate from './AnimatedStargate'
 import { STARGATE_ADDRESSES } from '../../data/stargateAddresses'
+
+function CopyGlyphButton({ glyphs }) {
+    const [copied, setCopied] = useState(false)
+
+    const handleCopy = (e) => {
+        e.stopPropagation()
+        navigator.clipboard.writeText(glyphs.join(' ')).then(() => {
+            setCopied(true)
+            setTimeout(() => setCopied(false), 1800)
+        })
+    }
+
+    return (
+        <Tooltip title={copied ? 'Copied!' : 'Copy glyphs'} placement="left">
+            <IconButton
+                size="small"
+                onClick={handleCopy}
+                sx={{
+                    color: copied ? '#66bb6a' : 'rgba(79,195,247,0.35)',
+                    p: '3px',
+                    '&:hover': { color: copied ? '#66bb6a' : '#4fc3f7' },
+                }}
+            >
+                {copied
+                    ? <CheckIcon sx={{ fontSize: 13 }} />
+                    : <ContentCopyIcon sx={{ fontSize: 13 }} />}
+            </IconButton>
+        </Tooltip>
+    )
+}
 
 function GlyphBadge({ n }) {
     return (
@@ -32,6 +65,16 @@ function GlyphBadge({ n }) {
 
 export default function FloorPlan({ selectedRoom, onRoomSelect }) {
     const [level, setLevel] = useState(28)
+
+    // Gate tab state
+    const [dialingAddrName, setDialingAddrName] = useState('')
+    const [dialKey, setDialKey]                 = useState(0)
+    const forcedAddrRef                         = useRef(null)
+
+    const handleDialAddress = useCallback((addr) => {
+        forcedAddrRef.current = addr
+        setDialKey(k => k + 1)
+    }, [])
 
     return (
         <Box>
@@ -101,6 +144,17 @@ export default function FloorPlan({ selectedRoom, onRoomSelect }) {
                         py: 4,
                     }}
                 >
+                    {/* Big dialing gate */}
+                    <Box sx={{ display: 'flex', justifyContent: 'center', mb: 4 }}>
+                        <AnimatedStargate
+                            size={450}
+                            dialing
+                            forcedAddress={forcedAddrRef.current}
+                            dialKey={dialKey}
+                            onAddressChange={setDialingAddrName}
+                        />
+                    </Box>
+
                     {/* Section header */}
                     <Box sx={{ borderBottom: '1px solid rgba(79,195,247,0.18)', mb: 2, pb: 1 }}>
                         <Typography sx={{
@@ -117,7 +171,7 @@ export default function FloorPlan({ selectedRoom, onRoomSelect }) {
                     {/* Column headers */}
                     <Box sx={{
                         display: 'grid',
-                        gridTemplateColumns: '1fr 160px auto',
+                        gridTemplateColumns: { xs: '1fr auto', sm: '1fr 160px auto' },
                         px: 1.5,
                         py: 0.75,
                         bgcolor: 'rgba(79,195,247,0.05)',
@@ -125,13 +179,14 @@ export default function FloorPlan({ selectedRoom, onRoomSelect }) {
                         border: '1px solid rgba(79,195,247,0.12)',
                         borderBottom: 'none',
                     }}>
-                        {['DESIGNATION', 'EPISODE REF', 'ADDRESS GLYPHS'].map(h => (
+                        {['DESIGNATION', 'EPISODE REF', 'ADDRESS GLYPHS'].map((h, hi) => (
                             <Typography key={h} sx={{
                                 fontSize: '0.5rem',
                                 fontFamily: "'Courier New', monospace",
                                 letterSpacing: '0.16em',
                                 color: 'rgba(79,195,247,0.55)',
                                 fontWeight: 700,
+                                display: hi === 1 ? { xs: 'none', sm: 'block' } : 'block',
                             }}>{h}</Typography>
                         ))}
                     </Box>
@@ -142,55 +197,84 @@ export default function FloorPlan({ selectedRoom, onRoomSelect }) {
                         borderRadius: '0 0 3px 3px',
                         overflow: 'hidden',
                     }}>
-                        {STARGATE_ADDRESSES.map((addr, i) => (
-                            <Box
-                                key={addr.name}
-                                sx={{
-                                    display: 'grid',
-                                    gridTemplateColumns: '1fr 160px auto',
-                                    alignItems: 'center',
-                                    px: 1.5,
-                                    py: 0.9,
-                                    borderTop: i === 0 ? 'none' : '1px solid rgba(79,195,247,0.07)',
-                                    bgcolor: i % 2 === 0 ? 'transparent' : 'rgba(79,195,247,0.025)',
-                                }}
-                            >
-                                <Typography sx={{
-                                    fontSize: '0.72rem',
-                                    fontFamily: "'Courier New', monospace",
-                                    color: '#b3e5fc',
-                                    fontWeight: 600,
-                                    letterSpacing: '0.06em',
-                                }}>
-                                    {addr.name}
-                                </Typography>
-                                <Typography sx={{
-                                    fontSize: '0.62rem',
-                                    fontFamily: "'Courier New', monospace",
-                                    color: 'rgba(179,229,252,0.4)',
-                                    letterSpacing: '0.04em',
-                                    fontStyle: 'italic',
-                                    pr: 1,
-                                }}>
-                                    {addr.episode}
-                                </Typography>
-                                <Box sx={{ display: 'flex', gap: 0.5 }}>
-                                    {addr.glyphs.map((g, gi) => (
-                                        <GlyphBadge key={gi} n={g} />
-                                    ))}
+                        {STARGATE_ADDRESSES.map((addr, i) => {
+                            const isDialing = dialingAddrName === addr.name
+                            return (
+                                <Box
+                                    key={addr.name}
+                                    onClick={() => handleDialAddress(addr)}
+                                    sx={{
+                                        display: 'grid',
+                                        gridTemplateColumns: { xs: '1fr auto', sm: '1fr 160px auto' },
+                                        alignItems: 'center',
+                                        px: 1.5,
+                                        py: 0.9,
+                                        borderTop: i === 0 ? 'none' : '1px solid rgba(79,195,247,0.07)',
+                                        borderLeft: isDialing ? '3px solid rgba(79,195,247,0.7)' : '3px solid transparent',
+                                        bgcolor: isDialing
+                                            ? 'rgba(79,195,247,0.1)'
+                                            : i % 2 === 0 ? 'transparent' : 'rgba(79,195,247,0.025)',
+                                        cursor: 'pointer',
+                                        transition: 'background 0.2s, border-color 0.2s',
+                                        '&:hover': {
+                                            bgcolor: isDialing
+                                                ? 'rgba(79,195,247,0.14)'
+                                                : 'rgba(79,195,247,0.07)',
+                                        },
+                                    }}
+                                >
+                                    {/* Name */}
+                                    <Typography sx={{
+                                        fontSize: '0.72rem',
+                                        fontFamily: "'Courier New', monospace",
+                                        color: isDialing ? '#e0f7fa' : '#b3e5fc',
+                                        fontWeight: isDialing ? 700 : 600,
+                                        letterSpacing: '0.06em',
+                                    }}>
+                                        {addr.name}
+                                    </Typography>
+
+                                    {/* Episode — hidden on xs */}
+                                    <Typography sx={{
+                                        fontSize: '0.62rem',
+                                        fontFamily: "'Courier New', monospace",
+                                        color: 'rgba(179,229,252,0.4)',
+                                        letterSpacing: '0.04em',
+                                        fontStyle: 'italic',
+                                        pr: 1,
+                                        display: { xs: 'none', sm: 'block' },
+                                    }}>
+                                        {addr.episode}
+                                    </Typography>
+
+                                    {/* Glyphs + copy */}
+                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                                        {addr.glyphs.map((g, gi) => (
+                                            <GlyphBadge key={gi} n={g} />
+                                        ))}
+                                        <CopyGlyphButton glyphs={addr.glyphs} />
+                                    </Box>
                                 </Box>
-                            </Box>
-                        ))}
+                            )
+                        })}
                     </Box>
 
-                    <Box sx={{ mt: 1.5, textAlign: 'right' }}>
+                    <Box sx={{ mt: 1.5, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 1 }}>
+                        <Typography sx={{
+                            fontSize: '0.5rem',
+                            fontFamily: "'Courier New', monospace",
+                            color: 'rgba(79,195,247,0.4)',
+                            letterSpacing: '0.1em',
+                        }}>
+                            CLICK ANY ROW TO DIAL THAT ADDRESS
+                        </Typography>
                         <Typography sx={{
                             fontSize: '0.5rem',
                             fontFamily: "'Courier New', monospace",
                             color: 'rgba(233,69,96,0.45)',
                             letterSpacing: '0.1em',
                         }}>
-                            {STARGATE_ADDRESSES.length} VERIFIED ADDRESSES — CLASSIFIED // HANDLE VIA SCI CHANNELS
+                            {STARGATE_ADDRESSES.length} VERIFIED ADDRESSES — CLASSIFIED // SCI CHANNELS ONLY
                         </Typography>
                     </Box>
                 </Box>

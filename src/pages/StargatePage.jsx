@@ -676,13 +676,8 @@ export default function StargatePage() {
                     mx: 'auto',
                 }}
             >
-                {/* Decorative gate + intro */}
+                {/* Decorative intro */}
                 <Box sx={{ mb: 4, textAlign: 'center' }}>
-                    {/* Animated gate */}
-                    <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3 }}>
-                        <AnimatedStargate size={220} rpm={0.75} dialing />
-                    </Box>
-
                     <Typography
                         variant="h4"
                         sx={{
@@ -700,6 +695,44 @@ export default function StargatePage() {
                         sx={{ color: 'rgba(179,229,252,0.5)', letterSpacing: '0.05em', fontSize: '0.82rem' }}
                     >
                         Colorado Springs, CO — 28 sublevels — Stargate on Sublevel 28
+                    </Typography>
+                </Box>
+
+                {/* Classified briefing */}
+                <Box
+                    sx={{
+                        mb: 4,
+                        p: { xs: 2, md: 3 },
+                        border: '1px solid rgba(79,195,247,0.15)',
+                        borderLeft: '3px solid rgba(79,195,247,0.45)',
+                        borderRadius: '3px',
+                        bgcolor: 'rgba(79,195,247,0.03)',
+                    }}
+                >
+                    <Typography sx={{
+                        fontSize: '0.52rem',
+                        fontFamily: "'Courier New', monospace",
+                        color: 'rgba(233,69,96,0.6)',
+                        letterSpacing: '0.2em',
+                        mb: 1.5,
+                        fontWeight: 700,
+                    }}>
+                        ◆ CLASSIFIED — MISSION BRIEFING — SGC-001 ◆
+                    </Typography>
+                    <Typography sx={{
+                        fontSize: '0.78rem',
+                        fontFamily: "'Courier New', monospace",
+                        color: 'rgba(179,229,252,0.7)',
+                        lineHeight: 1.85,
+                        letterSpacing: '0.03em',
+                    }}>
+                        The Stargate is an alien ring-shaped device of Ancient construction, capable of
+                        establishing a stable wormhole between two points across the galaxy. Located on
+                        Sublevel 28 of the Cheyenne Mountain Complex, the SGC Stargate has facilitated
+                        over 1,000 off-world missions since its activation in 1997. Destinations are
+                        encoded using a sequence of 6 glyphs drawn from the 39-symbol Milky Way
+                        cartouche, with the 7th chevron locking on the origin point (Earth). All
+                        addresses listed in the GATE tab have been verified through active dial-out.
                     </Typography>
                 </Box>
 
