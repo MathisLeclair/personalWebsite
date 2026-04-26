@@ -680,7 +680,7 @@ export default function StargatePage() {
                 <Box sx={{ mb: 4, textAlign: 'center' }}>
                     {/* Animated gate */}
                     <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3 }}>
-                        <AnimatedStargate size={220} rpm={0.75} />
+                        <AnimatedStargate size={220} rpm={0.75} dialing />
                     </Box>
 
                     <Typography
