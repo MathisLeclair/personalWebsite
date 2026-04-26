@@ -28,11 +28,30 @@ function Lbl({ x, y, lines, size = 18 }) {
     ))
 }
 
+function wrapLabelLines(text, maxLines = 2) {
+    const words = text.split(/\s+/).filter(Boolean)
+    if (words.length <= maxLines) return words
+
+    const lines = Array.from({ length: maxLines }, () => '')
+    for (const word of words) {
+        let bestIdx = 0
+        for (let i = 1; i < maxLines; i++) {
+            if (lines[i].length < lines[bestIdx].length) bestIdx = i
+        }
+        lines[bestIdx] = lines[bestIdx] ? `${lines[bestIdx]} ${word}` : word
+    }
+    return lines
+}
+
 export default function Level28Plan({ selectedRoom, onRoomSelect }) {
     const { t } = useTranslation()
     const clk = id => () => onRoomSelect(id)
     const cls = id => `l28r${selectedRoom === id ? ' sel' : ''}`
     const f = () => FILL_D   // static debug fill, hover/sel handled by CSS
+    const roomLines = (id, fallback, maxLines = 2) => {
+        const translated = t(`stargate.rooms.${id}.name`, fallback.join(' '))
+        return wrapLabelLines(translated, maxLines)
+    }
 
     return (
         <svg
@@ -65,55 +84,55 @@ export default function Level28Plan({ selectedRoom, onRoomSelect }) {
             {/* ── Gate room ── */}
             <g id="room-l28-gateroom" className={cls('l28-gateroom')} onClick={clk('l28-gateroom')}>
                 <polygon className="f" points="114,266 504,266 547,315 549,421 514,462 513,488 111,485 115,267" />
-                <Lbl x={311} y={366} lines={['Gate', 'Room']} />
+                <Lbl x={311} y={366} lines={roomLines('l28-gateroom', ['Gate', 'Room'])} />
             </g>
 
             {/* ── Control room ── */}
             <g id="room-l28-control-room" className={cls('l28-control-room')} onClick={clk('l28-control-room')}>
                 <polygon className="f" points="512,264 520,236 717,235 714,312 753,324 751,429 711,439 714,481 697,480 697,496 517,493 518,459 553,421 550,312 551,312" />
-                <Lbl x={632} y={364} lines={['Control', 'Room']} />
+                <Lbl x={632} y={364} lines={roomLines('l28-control-room', ['Control', 'Room'])} />
             </g>
 
             {/* ── Laboratory ── */}
             <g id="room-l28-laboratory" className={cls('l28-laboratory')} onClick={clk('l28-laboratory')}>
                 <polygon className="f" points="112,756 285,757 291,920 109,921" />
-                <Lbl x={199} y={839} lines={['Laboratory']} size={14} />
+                <Lbl x={199} y={839} lines={roomLines('l28-laboratory', ['Laboratory'])} size={14} />
             </g>
 
             {/* ── Observation deck ── */}
             <g id="room-l28-observation-deck" className={cls('l28-observation-deck')} onClick={clk('l28-observation-deck')}>
                 <rect className="f" x={42} y={780} width={70} height={118} />
-                <Lbl x={77} y={839} lines={['Obs.']} size={11} />
+                <Lbl x={77} y={839} lines={roomLines('l28-observation-deck', ['Obs.'], 1)} size={11} />
             </g>
 
             {/* ── Staging room ── */}
             <g id="room-l28-staging-room" className={cls('l28-staging-room')} onClick={clk('l28-staging-room')}>
                 <rect className="f" x={316} y={485} width={192} height={129} />
-                <Lbl x={412} y={543} lines={['Staging', 'Room']} size={13} />
+                <Lbl x={412} y={543} lines={roomLines('l28-staging-room', ['Staging', 'Room'])} size={13} />
             </g>
 
             {/* ── Toilets ── */}
             <g id="room-l28-toilets" className={cls('l28-toilets')} onClick={clk('l28-toilets')}>
                 <polygon className="f" points="754,435 714,435 714,481 699,480 697,540 715,540 717,636 756,638" />
-                <Lbl x={721} y={523} lines={['WC']} size={11} />
+                <Lbl x={721} y={523} lines={roomLines('l28-toilets', ['WC'], 1)} size={11} />
             </g>
 
             {/* ── Round hallway ── */}
             <g id="room-l28-round-hallway" className={cls('l28-round-hallway')} onClick={clk('l28-round-hallway')}>
                 <polygon className="f" points="628,496 631,639 618,653 464,651 463,617 379,618 379,812 463,814 466,740 538,739 619,739 635,753 709,754 736,737 745,712 743,677 739,653 714,635 710,545 696,544 695,497" />
-                <Lbl x={608} y={657} lines={['Round', 'Hallway']} size={13} />
+                <Lbl x={608} y={657} lines={roomLines('l28-round-hallway', ['Round', 'Hallway'])} size={13} />
             </g>
 
             {/* ── Elevator — surface (left shaft, x=538) ── */}
             <g id="room-l28-elevator-surface" className={cls('l28-elevator-surface')} onClick={clk('l28-elevator-surface')}>
                 <rect className="f" x={538} y={740} width={56} height={76} />
-                <Lbl x={566} y={778} lines={['Elev.', 'Surface']} size={9} />
+                <Lbl x={566} y={778} lines={roomLines('l28-elevator-surface', ['Elev.', 'Surface'])} size={9} />
             </g>
 
             {/* ── Elevator — Level 27 (right shaft, x=650) ── */}
             <g id="room-l28-elevator-l27" className={cls('l28-elevator-l27')} onClick={clk('l28-elevator-l27')}>
                 <rect className="f" x={650} y={755} width={52} height={76} />
-                <Lbl x={676} y={793} lines={['Elev.', 'L27']} size={9} />
+                <Lbl x={676} y={793} lines={roomLines('l28-elevator-l27', ['Elev.', 'L27'])} size={9} />
             </g>
 
             {/* ── Outer corridor (multi-shape) ── */}
@@ -126,25 +145,25 @@ export default function Level28Plan({ selectedRoom, onRoomSelect }) {
                 <rect className="f" x={704} y={755} width={49} height={48} />
                 <rect className="f" x={706} y={797} width={42} height={83} />
                 <rect className="f" x={634} y={829} width={113} height={52} />
-                <Lbl x={280} y={227} lines={['Outer Corridor']} size={13} />
+                <Lbl x={280} y={227} lines={roomLines('l28-outer-corridor', ['Outer Corridor'])} size={13} />
             </g>
 
             {/* ── Armory ── */}
             <g id="room-l28-armory" className={cls('l28-armory')} onClick={clk('l28-armory')}>
                 <polygon className="f" points="512,495 626,497 627,638 614,651 469,651 466,617 512,619" />
-                <Lbl x={564} y={571} lines={['Armory']} size={13} />
+                <Lbl x={564} y={571} lines={roomLines('l28-armory', ['Armory'])} size={13} />
             </g>
 
             {/* ── Freight elevator ── */}
             <g id="room-l28-freight-elevator" className={cls('l28-freight-elevator')} onClick={clk('l28-freight-elevator')}>
                 <rect className="f" x={192} y={587} width={123} height={115} />
-                <Lbl x={254} y={640} lines={['Freight', 'Elev.']} size={11} />
+                <Lbl x={254} y={640} lines={roomLines('l28-freight-elevator', ['Freight', 'Elev.'])} size={11} />
             </g>
 
             {/* ── Storage room ── */}
             <g id="room-l28-storage-room" className={cls('l28-storage-room')} onClick={clk('l28-storage-room')}>
                 <rect className="f" x={466} y={739} width={71} height={78} />
-                <Lbl x={501} y={778} lines={['Storage']} size={10} />
+                <Lbl x={501} y={778} lines={roomLines('l28-storage-room', ['Storage'])} size={10} />
             </g>
 
             {/* ════ BLAST DOORS ════ */}
