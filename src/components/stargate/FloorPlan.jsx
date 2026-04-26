@@ -38,27 +38,44 @@ function CopyGlyphButton({ glyphs }) {
 }
 
 function GlyphBadge({ n }) {
+    const pad = String(n).padStart(2, '0')
+    // Each glyph number is unique per address row, so filter ID collisions are harmless
+    // (all same-n filters are identical; browser uses whichever it finds first).
+    const fid = `gbf-${n}`
     return (
         <Box
             component="span"
+            title={`Glyph ${n}`}
             sx={{
                 display: 'inline-flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: 22,
-                height: 22,
+                width: 26,
+                height: 26,
                 borderRadius: '50%',
                 border: '1px solid rgba(79,195,247,0.35)',
                 bgcolor: 'rgba(79,195,247,0.08)',
-                fontSize: '0.6rem',
-                fontFamily: "'Courier New', monospace",
-                color: '#4fc3f7',
-                fontWeight: 700,
-                lineHeight: 1,
                 flexShrink: 0,
             }}
         >
-            {n}
+            <svg width="18" height="18" viewBox="0 0 18 18" style={{ display: 'block' }}>
+                <defs>
+                    <filter id={fid} colorInterpolationFilters="sRGB"
+                        x="0%" y="0%" width="100%" height="100%">
+                        <feColorMatrix type="matrix" values={
+                            '0 0 0 0 0.31 ' +
+                            '0 0 0 0 0.76 ' +
+                            '0 0 0 0 0.97 ' +
+                            '-0.333 -0.333 -0.333 0 1'
+                        } />
+                    </filter>
+                </defs>
+                <image
+                    href={`/stargate/glyphs/glyph${pad}.png`}
+                    x="0" y="0" width="18" height="18"
+                    filter={`url(#${fid})`}
+                />
+            </svg>
         </Box>
     )
 }
