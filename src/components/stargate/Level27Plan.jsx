@@ -5,6 +5,8 @@
 // viewBox: "838 188 264 737" → shows x=838..1102, y=188..925 (5px margin)
 //
 // Set DEBUG=true to see coloured zones for calibration.
+import { useTranslation } from 'react-i18next'
+
 const DEBUG = false
 
 const TXT = '#b3e5fc'
@@ -24,9 +26,29 @@ function Lbl({ x, y, lines, size = 14 }) {
     ))
 }
 
+function wrapLabelLines(text, maxLines = 2) {
+    const words = text.split(/\s+/).filter(Boolean)
+    if (words.length <= maxLines) return words
+
+    const lines = Array.from({ length: maxLines }, () => '')
+    for (const word of words) {
+        let bestIdx = 0
+        for (let i = 1; i < maxLines; i++) {
+            if (lines[i].length < lines[bestIdx].length) bestIdx = i
+        }
+        lines[bestIdx] = lines[bestIdx] ? `${lines[bestIdx]} ${word}` : word
+    }
+    return lines
+}
+
 export default function Level27Plan({ selectedRoom, onRoomSelect }) {
+    const { t } = useTranslation()
     const clk = id => () => onRoomSelect(id)
     const cls = id => `l27r${selectedRoom === id ? ' sel' : ''}`
+    const roomLines = (id, fallback, maxLines = 2) => {
+        const translated = t(`stargate.rooms.${id}.name`, fallback.join(' '))
+        return wrapLabelLines(translated, maxLines)
+    }
 
     return (
         <svg
@@ -59,19 +81,19 @@ export default function Level27Plan({ selectedRoom, onRoomSelect }) {
             {/* ── Briefing room ── */}
             <g id="room-l27-briefing-room" className={cls('l27-briefing-room')} onClick={clk('l27-briefing-room')}>
                 <polygon className="f" points="868,291 866,460 877,460 878,489 1049,490 1048,431 1063,431 1083,411 1083,339 1063,318 1049,319 1049,251 911,248 887,256" />
-                <Lbl x={967} y={362} lines={['Briefing', 'Room']} />
+                <Lbl x={967} y={362} lines={roomLines('l27-briefing-room', ['Briefing', 'Room'])} />
             </g>
 
             {/* ── General's office ── */}
             <g id="room-l27-generals-office" className={cls('l27-generals-office')} onClick={clk('l27-generals-office')}>
                 <polygon className="f" points="991,492 878,490 879,596 993,599" />
-                <Lbl x={935} y={537} lines={["General's", 'Office']} size={12} />
+                <Lbl x={935} y={537} lines={roomLines('l27-generals-office', ["General's", 'Office'])} size={12} />
             </g>
 
             {/* ── Elevator ── */}
             <g id="room-l27-elevator" className={cls('l27-elevator')} onClick={clk('l27-elevator')}>
                 <rect className="f" x={887} y={711} width={45} height={58} />
-                <Lbl x={909} y={742} lines={['Elev.']} size={10} />
+                <Lbl x={909} y={742} lines={roomLines('l27-elevator', ['Elev.'], 1)} size={10} />
             </g>
 
             {/* @@ZONES_END@@ */}
