@@ -199,5 +199,104 @@
         "contact_title": "Contact",
         "contact_p": "Pour toute question concernant cette politique de confidentialité, vous pouvez contacter le développeur à :",
         "contact_footer": "© 2026 Mathis Leclair — FoodMatch — Package"
+    },
+    "stargate": {
+        "facility": "COMPLEXE DE CHEYENNE MOUNTAIN",
+        "subtitle": "Stargate Command — Plan interactif des niveaux 27 et 28",
+        "classified": "STARGATE COMMAND — CLASSIFIÉ",
+        "reference_footage": "IMAGES DE RÉFÉRENCE",
+        "close": "FERMER LE DOSSIER",
+        "rooms": {
+            "l27-briefing-room": {
+                "name": "Salle de Briefing",
+                "shortDesc": "Où les équipes SG reçoivent leurs briefings de mission du Général Hammond.",
+                "longDesc": "La salle de briefing se situe directement au-dessus de la salle de contrôle et est reliée par un escalier au bureau du Général Hammond. Elle dispose d'une grande table ovale autour de laquelle toutes les équipes SG actives se réunissent avant et après chaque mission. Ses grandes fenêtres donnent sur la Porte des étoiles en contrebas, offrant aux commandants une vue directe lors des activations. Les décisions critiques — faire face aux menaces extraterrestres, négocier avec de nouvelles civilisations ou monter des opérations de sauvetage — sont prises ici."
+            },
+            "l27-generals-office": {
+                "name": "Bureau du Général",
+                "shortDesc": "Bureau du commandant du SGC, accessible depuis la salle de briefing.",
+                "longDesc": "Le bureau du commandant est adjacent à la salle de briefing au niveau 27. Occupé pour la majeure partie de la série par le Major Général George Hammond, il constitue le centre administratif et de commandement du SGC. On y trouve le bureau du général, des lignes de communication sécurisées vers le Pentagone et le Président, ainsi qu'une fenêtre donnant sur la salle de briefing. Il devient plus tard le bureau du Général Landry."
+            },
+            "l27-elevator": {
+                "name": "Ascenseur",
+                "shortDesc": "Ascenseur interne reliant directement le niveau 27 au niveau 28 en dessous.",
+                "longDesc": "Cet ascenseur assure une liaison d'un seul niveau entre le niveau 27 — le niveau administratif abritant la salle de briefing et le bureau du général — et le niveau 28 en dessous, où se trouvent la Porte des étoiles et la salle de contrôle. C'est la voie la plus rapide entre le commandement et les opérations de la Porte, constamment utilisée par les chefs d'équipe SG, le commandant de la base et le personnel senior lors des missions actives."
+            },
+            "l28-gateroom": {
+                "name": "Salle de la Porte",
+                "shortDesc": "Le cœur du SGC — abrite la Porte des étoiles et sa rampe.",
+                "longDesc": "La salle de la Porte est l'endroit le plus emblématique du SGC. Elle abrite la Porte des étoiles Ancienne récupérée — un anneau de naquadah de 6,7 mètres capable de former des trous de ver stables vers d'autres planètes à travers la galaxie. La pièce est dominée par la Porte elle-même, montée sur une plateforme surélevée, avec une rampe métallique menant à l'horizon des événements. Le plafond s'ouvre pour permettre à la Porte d'être hissée via une grue dans le puits du silo à missiles au-dessus. Des portes blindées protègent la salle de contrôle et les zones adjacentes lors de l'activation de la Porte."
+            },
+            "l28-control-room": {
+                "name": "Salle de Contrôle",
+                "shortDesc": "Salle d'opérations vitrée surplombant la Porte des étoiles.",
+                "longDesc": "Positionnée un niveau au-dessus de la salle de la Porte avec de grandes fenêtres blindées, la salle de contrôle est l'endroit où le Sgt. Walter Harriman (et d'autres) opère l'ordinateur de composition et surveille toute l'activité de la Porte. La pièce contient l'interface de l'ordinateur DHD (Dial-Home Device), les systèmes de confirmation des connexions entrantes/sortantes et les relevés des capteurs. Le Général Hammond, puis le Général Landry, y observent fréquemment les activations de la Porte."
+            },
+            "l28-blast-door": {
+                "name": "Porte Blindée",
+                "shortDesc": "Énormes portes blindées protégeant l'intérieur de l'énergie de la Porte.",
+                "longDesc": "Les portes blindées constituent le principal mécanisme de défense protégeant l'intérieur du SGC d'une activation instable de la Porte ou de forces hostiles entrantes. Elles sont fabriquées en acier renforcé épais et en composite de titane, capables de résister à un tir d'arme à énergie directe. Les portes se ferment automatiquement lorsque l'iris est fermé et lors des conditions d'alerte rouge."
+            },
+            "l28-ramp": {
+                "name": "Rampe d'Accès",
+                "shortDesc": "La rampe métallique menant à l'horizon des événements de la Porte.",
+                "longDesc": "La rampe est les derniers mètres de la Terre que les équipes SG en partance parcourent avant de franchir la Porte des étoiles. Fabriquée dans un alliage métallique non réactif, elle mène directement du sol de la salle de la Porte jusqu'à l'horizon des événements. Les équipes en mission et les voyageurs arrivant d'autres mondes franchissent tous cette rampe. Au fil de la série, elle devient l'un des lieux les plus symboliquement significatifs."
+            },
+            "l28-laboratory": {
+                "name": "Laboratoire",
+                "shortDesc": "Laboratoire d'analyse scientifique pour étudier les artefacts et technologies extraterrestres.",
+                "longDesc": "Le laboratoire du niveau 28 est principalement utilisé par le Dr Daniel Jackson, le Dr Samantha Carter et des scientifiques invités pour analyser des artefacts extraterrestres, des échantillons biologiques et des technologies récupérées à travers la Porte. Il contient des équipements d'analyse spectrographique, chimique et électronique avancés. Plusieurs découvertes majeures — notamment le déchiffrement d'inscriptions en langue Ancienne et l'ingénierie inverse de technologies Goa'uld — ont eu lieu ici."
+            },
+            "l28-observation-deck": {
+                "name": "Pont d'Observation",
+                "shortDesc": "Point d'observation secondaire surplombant la salle de la Porte au niveau du sol.",
+                "longDesc": "Le pont d'observation offre une zone de visionnage au niveau du sol pour la salle de la Porte, séparé de la fenêtre de la salle de contrôle en hauteur. Il est utilisé lors des visites de personnalités, de réunions diplomatiques, ou lorsque du personnel supplémentaire doit surveiller les opérations de la Porte sans encombrer la salle de contrôle."
+            },
+            "l28-staging-room": {
+                "name": "Salle de Préparation",
+                "shortDesc": "Zone de rassemblement pré-mission adjacente à la salle de la Porte.",
+                "longDesc": "La salle de préparation est l'endroit où les équipes SG se forment immédiatement avant le départ. Les vérifications finales de l'équipement, les derniers briefings et les autorisations médicales pré-mission s'y déroulent. Elle se situe directement entre le couloir principal et les portes blindées de la salle de la Porte, constituant le dernier espace contrôlé avant que le personnel ne franchisse le trou de ver."
+            },
+            "l28-toilets": {
+                "name": "Sanitaires",
+                "shortDesc": "Sanitaires du niveau 28.",
+                "longDesc": "Sanitaires standard du SGC au niveau 28."
+            },
+            "l28-round-hallway": {
+                "name": "Couloir Circulaire",
+                "shortDesc": "Couloir courbé reliant les principales sections du niveau 28.",
+                "longDesc": "Le couloir circulaire est un corridor distinctif qui relie les principales zones du niveau 28 — la salle de contrôle, l'accès à la salle de la Porte et le tunnel menant aux ascenseurs. Sa forme arrondie est une caractéristique architecturale de la construction originale du silo à missiles. Il est fréquemment visible dans les scènes de poursuite et les confrontations tendues tout au long de la série."
+            },
+            "l28-elevator-surface": {
+                "name": "Ascenseur vers la Surface",
+                "shortDesc": "Cabine gauche — accès direct à la surface de Cheyenne Mountain.",
+                "longDesc": "Cet ascenseur relie le niveau 28 directement à la surface de Cheyenne Mountain. C'est la voie principale empruntée par les équipes SG arrivant de l'extérieur ou en partant, ainsi que pour les livraisons et les transferts de personnalités. En cas de confinement, cette cabine est scellée et gardée aux deux extrémités."
+            },
+            "l28-elevator-l27": {
+                "name": "Ascenseur vers le Niveau 27",
+                "shortDesc": "Cabine droite — relie le niveau 28 au niveau 27 et aux sous-niveaux supérieurs.",
+                "longDesc": "Cet ascenseur assure la liaison entre le niveau opérationnel de la Porte (niveau 28) et le niveau administratif supérieur (niveau 27), ainsi que tous les autres sous-niveaux du complexe. C'est la voie habituelle empruntée par le personnel se déplaçant entre la salle de briefing, le bureau du général et la salle de la Porte."
+            },
+            "l28-outer-corridor": {
+                "name": "Couloir Extérieur",
+                "shortDesc": "Couloir périmétrique parcourant tout l'extérieur du niveau 28.",
+                "longDesc": "Le couloir extérieur forme le périmètre complet du niveau 28, contournant la salle de la Porte, la salle de contrôle et toutes les sections adjacentes. Il sert de voie d'accès principale pour les patrouilles de sécurité, les sorties d'urgence et les déplacements logistiques entre sections sans passer par les salles intérieures à haute sécurité. De multiples portes blindées et points de contrôle segmentent le couloir en cas de confinement."
+            },
+            "l28-armory": {
+                "name": "Arsenal",
+                "shortDesc": "Stockage d'armes et point de distribution pour les équipes SG en mission.",
+                "longDesc": "L'arsenal du SGC au niveau 28 est le principal point de stockage et de distribution d'armes pour toutes les équipes SG. Le personnel y récupère armes de poing, mitraillettes P90 et munitions spécifiques à la mission avant de passer par la Porte Stellaire. La salle dispose d'un inventaire d'armes terrestres standards ainsi que de certaines armes extraterrestres récupérées et homologuées pour le terrain. Elle est adjacente au Couloir Rond pour un accès rapide avant le départ."
+            },
+            "l28-freight-elevator": {
+                "name": "Ascenseur de Fret",
+                "shortDesc": "Ascenseur grande capacité pour équipements lourds et artefacts extraterrestres.",
+                "longDesc": "L'ascenseur de fret assure le transport de charges lourdes au sein du SGC. Il est utilisé pour déplacer les grands artefacts extraterrestres, les armes lourdes, les véhicules et les fournitures en vrac entre les sous-niveaux sans mobiliser les ascenseurs du personnel. La plateforme est suffisamment large pour accueillir le fuselage d'un chasseur Goa'uld ou une cargaison de taille équivalente."
+            },
+            "l28-storage-room": {
+                "name": "Salle de Stockage",
+                "shortDesc": "Stockage polyvalent adjacent aux cages d'ascenseur.",
+                "longDesc": "La salle de stockage du niveau 28 sert de zone de transit général pour l'équipement, les fournitures et le matériel déposés près des accès aux ascenseurs. Elle permet un chargement et déchargement rapides depuis l'ascenseur de fret, et sert à préparer temporairement le matériel de mission avant son transfert vers l'Arsenal, le Laboratoire ou la Salle de Préparation."
+            }
+        }
     }
 }
