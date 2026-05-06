@@ -10,7 +10,34 @@ import AnimatedStargate from './AnimatedStargate'
 import { STARGATE_ADDRESSES } from '../../data/stargateAddresses'
 import { SGC_MEMBERS } from '../../data/sgcMembers'
 import { STARGATE_TIMELINE } from '../../data/stargateTimeline'
+import { facilityLevels, tierMeta } from '../../data/stargateRooms'
 import { useTranslation } from 'react-i18next'
+
+const DOOR_SWATCH = {
+    Red: '#e94560',
+    Yellow: '#f5c518',
+    White: '#e0f7fa',
+    Turquoise: '#00bcd4',
+    'Dark Blue': '#1565c0',
+    'Medium Blue': '#1e88e5',
+    'Light Blue': '#64b5f6',
+}
+const TUNNEL_SWATCH = {
+    White: '#e0f7fa',
+    Red: '#e94560',
+    Yellow: '#f5c518',
+    Amber: '#ffb300',
+    'Pale Green': '#a5d6a7',
+    'Pale Blue': '#90caf9',
+    Blue: '#42a5f5',
+    Green: '#66bb6a',
+}
+const TIER_BORDER = {
+    interface: 'rgba(233,69,96,0.35)',
+    support: 'rgba(245,197,24,0.35)',
+    sgc: 'rgba(79,195,247,0.35)',
+    'sgc-hl': 'rgba(255,255,255,0.45)',
+}
 
 const ORIGIN_GLYPH = 1
 const RANDOM_CONNECT_CHANCE = 0.22
@@ -448,11 +475,14 @@ export default function FloorPlan({ selectedRoom, onRoomSelect }) {
 
     return (
         <Box>
-            {/* Level switcher */}
+            {/* Top tab switcher */}
             <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
                 <Tabs
-                    value={level}
-                    onChange={(_, v) => setLevel(v)}
+                    value={[27, 28].includes(level) ? 'map' : level}
+                    onChange={(_, v) => {
+                        if (v === 'map') setLevel(28)
+                        else setLevel(v)
+                    }}
                     variant="scrollable"
                     scrollButtons
                     allowScrollButtonsMobile
@@ -479,36 +509,201 @@ export default function FloorPlan({ selectedRoom, onRoomSelect }) {
                         },
                     }}
                 >
-                    <Tab label={t('stargate.tabs.level28', 'LEVEL 28 - GATE OPS')} value={28} />
-                    <Tab label={t('stargate.tabs.level27', 'LEVEL 27 - ADMIN')} value={27} />
+                    <Tab label={t('stargate.tabs.facilityMap', 'FACILITY MAP')} value="map" />
                     <Tab label={t('stargate.tabs.addresses', 'GATE - KNOWN ADDRESSES')} value="gate" />
                     <Tab label={t('stargate.members.tabLabel', 'SGC — KNOWN PERSONNEL')} value="members" />
                     <Tab label={t('stargate.tabs.timeline', 'STARGATE TIMELINE')} value="timeline" />
                 </Tabs>
             </Box>
 
-            {/* SVG floor plan */}
+            {/* Floor plan bundle — Directory always on the left, floor plan on the right */}
             {(level === 27 || level === 28) && (
-                <>
+                <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, alignItems: 'flex-start', gap: 0 }}>
+
+                    {/* Directory sidebar */}
                     <Box
                         sx={{
-                            borderRadius: '8px',
+                            flexShrink: 0,
+                            width: { xs: '100%', md: 280 },
                             border: '1px solid rgba(79,195,247,0.18)',
+                            borderRight: { md: 'none' },
+                            borderBottom: { xs: 'none', md: '1px solid rgba(79,195,247,0.18)' },
+                            borderRadius: { xs: '8px 8px 0 0', md: '8px 0 0 8px' },
+                            background: '#030913',
                             overflow: 'hidden',
-                            background: '#060f1e',
-                            boxShadow: '0 0 40px rgba(79,195,247,0.06)',
+                            alignSelf: 'stretch',
                         }}
                     >
-                        {level === 27 ? (
-                            <Level27Plan selectedRoom={selectedRoom} onRoomSelect={onRoomSelect} />
-                        ) : (
-                            <Level28Plan selectedRoom={selectedRoom} onRoomSelect={onRoomSelect} />
-                        )}
+                        {/* Directory header */}
+                        <Box sx={{
+                            px: 2,
+                            py: 1.2,
+                            bgcolor: 'rgba(79,195,247,0.07)',
+                            borderBottom: '1px solid rgba(79,195,247,0.2)',
+                        }}>
+                            <Typography sx={{ fontSize: '0.58rem', fontFamily: "'Courier New', monospace", letterSpacing: '0.18em', color: 'rgba(79,195,247,0.6)', fontWeight: 700 }}>
+                                {t('stargate.directory.title', 'FACILITY SUBLEVEL DIRECTORY')}
+                            </Typography>
+                            <Typography sx={{ fontSize: '0.62rem', fontFamily: "'Courier New', monospace", letterSpacing: '0.08em', color: 'rgba(179,229,252,0.7)', mt: 0.3 }}>
+                                {t('stargate.directory.subtitle', 'CHEYENNE MOUNTAIN - 28 SUBLEVELS')}
+                            </Typography>
+                        </Box>
+
+                        {/* Directory rows */}
+                        <Box sx={{ overflowY: 'auto', maxHeight: { xs: 220, md: 'none' } }}>
+                            {['interface', 'support', 'sgc', 'sgc-hl'].map(tier => {
+                                const rows = facilityLevels.filter(l => l.tier === tier)
+                                const meta = tierMeta[tier]
+                                return (
+                                    <Box key={tier}>
+                                        {/* Tier header */}
+                                        <Box sx={{
+                                            borderLeft: `3px solid ${TIER_BORDER[tier]}`,
+                                            borderTop: '1px solid rgba(79,195,247,0.1)',
+                                            px: 1.5,
+                                            py: 0.7,
+                                            bgcolor: 'rgba(79,195,247,0.04)',
+                                        }}>
+                                            <Typography sx={{ fontSize: '0.65rem', color: 'rgba(179,229,252,0.92)', fontFamily: "'Courier New', monospace", letterSpacing: '0.12em', fontWeight: 700 }}>
+                                                {t(`stargate.directory.tiers.${tier}.label`, meta.label)}
+                                            </Typography>
+                                        </Box>
+
+                                        {/* Level rows */}
+                                        {rows.map((row) => {
+                                            const isFloorPlan = row.level === 27 || row.level === 28
+                                            const isSelected = row.level === level
+                                            return (
+                                                <Box
+                                                    key={row.level}
+                                                    onClick={isFloorPlan ? () => setLevel(row.level) : undefined}
+                                                    sx={{
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        gap: 1,
+                                                        px: 1.5,
+                                                        py: 0.65,
+                                                        borderTop: '1px solid rgba(79,195,247,0.06)',
+                                                        borderLeft: isSelected
+                                                            ? '3px solid #4fc3f7'
+                                                            : `3px solid ${TIER_BORDER[tier]}`,
+                                                        bgcolor: isSelected
+                                                            ? 'rgba(79,195,247,0.12)'
+                                                            : isFloorPlan
+                                                                ? 'rgba(79,195,247,0.05)'
+                                                                : 'transparent',
+                                                        cursor: isFloorPlan ? 'pointer' : 'default',
+                                                        transition: 'background 0.15s, border-color 0.15s',
+                                                        '&:hover': isFloorPlan ? { bgcolor: isSelected ? 'rgba(79,195,247,0.16)' : 'rgba(79,195,247,0.08)' } : {},
+                                                    }}
+                                                >
+                                                    {/* Level number */}
+                                                    <Typography sx={{
+                                                        fontSize: '0.75rem',
+                                                        fontFamily: "'Courier New', monospace",
+                                                        fontWeight: isFloorPlan ? 700 : 400,
+                                                        color: isSelected ? '#4fc3f7' : isFloorPlan ? '#e0f7fa' : 'rgba(179,229,252,0.75)',
+                                                        flexShrink: 0,
+                                                        minWidth: 22,
+                                                    }}>
+                                                        {String(row.level).padStart(2, '0')}
+                                                    </Typography>
+
+                                                    {/* Function label */}
+                                                    <Typography sx={{
+                                                        flex: 1,
+                                                        fontSize: '0.63rem',
+                                                        fontFamily: "'Courier New', monospace",
+                                                        color: row.function
+                                                            ? isSelected ? 'rgba(179,229,252,0.98)' : 'rgba(179,229,252,0.85)'
+                                                            : 'rgba(179,229,252,0.65)',
+                                                        fontStyle: row.function ? 'normal' : 'italic',
+                                                        lineHeight: 1.35,
+                                                    }}>
+                                                        {row.function
+                                                            ? t(`stargate.directory.levelFunctions.${row.level}`, row.function)
+                                                            : t('stargate.directory.redacted', '[REDACTED]')}
+                                                    </Typography>
+
+                                                    {/* Color swatches */}
+                                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, flexShrink: 0 }}>
+                                                        {row.doorColor && (
+                                                            <Tooltip
+                                                                title={`Door: ${t(`stargate.directory.colors.${String(row.doorColor).toLowerCase().replace(/\s+/g, '_')}`, row.doorColor)}`}
+                                                                placement="left"
+                                                                arrow
+                                                            >
+                                                                <Box sx={{
+                                                                    width: 8,
+                                                                    height: 8,
+                                                                    borderRadius: '2px',
+                                                                    bgcolor: DOOR_SWATCH[row.doorColor] ?? '#888',
+                                                                    border: '1px solid rgba(255,255,255,0.15)',
+                                                                    cursor: 'default',
+                                                                }} />
+                                                            </Tooltip>
+                                                        )}
+                                                        {row.tunnelLights && (
+                                                            <Tooltip
+                                                                title={`Tunnel: ${t(`stargate.directory.colors.${String(row.tunnelLights).toLowerCase().replace(/\s+/g, '_')}`, row.tunnelLights)}`}
+                                                                placement="left"
+                                                                arrow
+                                                            >
+                                                                <Box sx={{
+                                                                    width: 8,
+                                                                    height: 8,
+                                                                    borderRadius: '50%',
+                                                                    bgcolor: TUNNEL_SWATCH[row.tunnelLights] ?? '#888',
+                                                                    boxShadow: `0 0 4px ${TUNNEL_SWATCH[row.tunnelLights] ?? '#888'}`,
+                                                                    cursor: 'default',
+                                                                }} />
+                                                            </Tooltip>
+                                                        )}
+                                                    </Box>
+
+                                                    {isFloorPlan && (
+                                                        <Typography sx={{ fontSize: '0.6rem', color: isSelected ? '#4fc3f7' : 'rgba(79,195,247,0.7)', flexShrink: 0 }}>
+                                                            ▶
+                                                        </Typography>
+                                                    )}
+                                                </Box>
+                                            )
+                                        })}
+                                    </Box>
+                                )
+                            })}
+
+                            {/* Footer */}
+                            <Box sx={{ px: 1.5, py: 1, borderTop: '1px solid rgba(79,195,247,0.12)', bgcolor: 'rgba(233,69,96,0.04)' }}>
+                                <Typography sx={{ fontSize: '0.6rem', color: 'rgba(233,69,96,0.75)', fontFamily: "'Courier New', monospace", letterSpacing: '0.08em', lineHeight: 1.5 }}>
+                                    {t('stargate.directory.footer', 'DISSEMINATION RESTRICTED - HANDLE VIA SCI CHANNELS ONLY')}
+                                </Typography>
+                            </Box>
+                        </Box>
                     </Box>
-                    <Box sx={{ textAlign: 'center', mt: 1.5, color: 'rgba(179,229,252,0.4)', fontSize: '0.72rem', letterSpacing: '0.06em' }}>
-                        {t('stargate.ui.clickRoomHint', 'CLICK A ROOM TO ACCESS CLASSIFIED INFORMATION')}
+
+                    {/* Floor plan */}
+                    <Box sx={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
+                        <Box
+                            sx={{
+                                borderRadius: { xs: '0 0 8px 8px', md: '0 8px 8px 0' },
+                                border: '1px solid rgba(79,195,247,0.18)',
+                                overflow: 'hidden',
+                                background: '#060f1e',
+                                boxShadow: '0 0 40px rgba(79,195,247,0.06)',
+                            }}
+                        >
+                            {level === 27 ? (
+                                <Level27Plan selectedRoom={selectedRoom} onRoomSelect={onRoomSelect} />
+                            ) : (
+                                <Level28Plan selectedRoom={selectedRoom} onRoomSelect={onRoomSelect} />
+                            )}
+                        </Box>
+                        <Box sx={{ textAlign: 'center', mt: 1.5, color: 'rgba(179,229,252,0.65)', fontSize: '0.72rem', letterSpacing: '0.06em' }}>
+                            {t('stargate.ui.clickRoomHint', 'CLICK A ROOM TO ACCESS CLASSIFIED INFORMATION')}
+                        </Box>
                     </Box>
-                </>
+                </Box>
             )}
 
             {/* Gate + known addresses tab */}
@@ -605,10 +800,10 @@ export default function FloorPlan({ selectedRoom, onRoomSelect }) {
                                     t('stargate.addresses.columns.glyphs', 'ADDRESS GLYPHS'),
                                 ].map((h, hi) => (
                                     <Typography key={h} sx={{
-                                        fontSize: '0.5rem',
+                                        fontSize: '0.62rem',
                                         fontFamily: "'Courier New', monospace",
                                         letterSpacing: '0.16em',
-                                        color: 'rgba(79,195,247,0.55)',
+                                        color: 'rgba(79,195,247,0.85)',
                                         fontWeight: 700,
                                         display: hi === 1 ? { xs: 'none', sm: 'block' } : 'block',
                                     }}>{h}</Typography>
@@ -662,7 +857,7 @@ export default function FloorPlan({ selectedRoom, onRoomSelect }) {
                                             <Typography sx={{
                                                 fontSize: '0.62rem',
                                                 fontFamily: "'Courier New', monospace",
-                                                color: 'rgba(179,229,252,0.4)',
+                                                color: 'rgba(179,229,252,0.65)',
                                                 letterSpacing: '0.04em',
                                                 fontStyle: 'italic',
                                                 pr: 1,
@@ -681,7 +876,7 @@ export default function FloorPlan({ selectedRoom, onRoomSelect }) {
                                                         size="small"
                                                         onClick={(e) => openLoreDrawer(addr, e)}
                                                         sx={{
-                                                            color: 'rgba(79,195,247,0.35)',
+                                                            color: 'rgba(79,195,247,0.65)',
                                                             p: '3px',
                                                             '&:hover': { color: '#4fc3f7' },
                                                         }}
@@ -702,17 +897,17 @@ export default function FloorPlan({ selectedRoom, onRoomSelect }) {
 
                             <Box sx={{ mt: 1.5, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 1 }}>
                                 <Typography sx={{
-                                    fontSize: '0.5rem',
+                                    fontSize: '0.65rem',
                                     fontFamily: "'Courier New', monospace",
-                                    color: 'rgba(79,195,247,0.4)',
+                                    color: 'rgba(79,195,247,0.75)',
                                     letterSpacing: '0.1em',
                                 }}>
                                     {t('stargate.addresses.hint', 'CLICK ROW TO DIAL // BOOK ICON OPENS LORE FILE')}
                                 </Typography>
                                 <Typography sx={{
-                                    fontSize: '0.5rem',
+                                    fontSize: '0.65rem',
                                     fontFamily: "'Courier New', monospace",
-                                    color: 'rgba(233,69,96,0.45)',
+                                    color: 'rgba(233,69,96,0.75)',
                                     letterSpacing: '0.1em',
                                 }}>
                                     {t('stargate.addresses.footer', {
@@ -748,7 +943,7 @@ export default function FloorPlan({ selectedRoom, onRoomSelect }) {
                                     }}>
                                         {manualGlyphs[i]
                                             ? <GlyphBadge n={manualGlyphs[i]} />
-                                            : <Typography sx={{ fontSize: '0.58rem', color: 'rgba(79,195,247,0.35)' }}>{i === 6 ? 'O' : i + 1}</Typography>}
+                                            : <Typography sx={{ fontSize: '0.58rem', color: 'rgba(79,195,247,0.7)' }}>{i === 6 ? 'O' : i + 1}</Typography>}
                                     </Box>
                                 ))}
                             </Box>
@@ -944,17 +1139,17 @@ export default function FloorPlan({ selectedRoom, onRoomSelect }) {
 
                     <Box sx={{ mt: 1.4, display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: 1 }}>
                         <Typography sx={{
-                            fontSize: '0.5rem',
+                            fontSize: '0.65rem',
                             fontFamily: "'Courier New', monospace",
-                            color: 'rgba(79,195,247,0.4)',
+                            color: 'rgba(79,195,247,0.75)',
                             letterSpacing: '0.1em',
                         }}>
                             {t('stargate.members.footerLeft', 'ROSTER CONSOLIDATED FROM KNOWN SGC ERA PERSONNEL RECORDS')}
                         </Typography>
                         <Typography sx={{
-                            fontSize: '0.5rem',
+                            fontSize: '0.65rem',
                             fontFamily: "'Courier New', monospace",
-                            color: 'rgba(233,69,96,0.45)',
+                            color: 'rgba(233,69,96,0.75)',
                             letterSpacing: '0.1em',
                         }}>
                             {t('stargate.members.footerRight', {
@@ -1076,10 +1271,10 @@ export default function FloorPlan({ selectedRoom, onRoomSelect }) {
                         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 1 }}>
                             <Box>
                                 <Typography sx={{
-                                    fontSize: '0.54rem',
+                                    fontSize: '0.65rem',
                                     fontFamily: "'Courier New', monospace",
                                     letterSpacing: '0.18em',
-                                    color: 'rgba(79,195,247,0.55)',
+                                    color: 'rgba(79,195,247,0.85)',
                                     mb: 0.5,
                                 }}>
                                     {t('stargate.lore.fileTitle', 'DESTINATION INTELLIGENCE FILE')}
@@ -1097,7 +1292,7 @@ export default function FloorPlan({ selectedRoom, onRoomSelect }) {
                                     fontSize: '0.65rem',
                                     fontFamily: "'Courier New', monospace",
                                     letterSpacing: '0.05em',
-                                    color: 'rgba(179,229,252,0.45)',
+                                    color: 'rgba(179,229,252,0.75)',
                                     fontStyle: 'italic',
                                     mt: 0.4,
                                 }}>
@@ -1110,7 +1305,7 @@ export default function FloorPlan({ selectedRoom, onRoomSelect }) {
                             <IconButton
                                 onClick={closeLoreDrawer}
                                 size="small"
-                                sx={{ color: 'rgba(179,229,252,0.45)' }}
+                                sx={{ color: 'rgba(179,229,252,0.75)' }}
                             >
                                 <CloseIcon sx={{ fontSize: 18 }} />
                             </IconButton>
@@ -1127,10 +1322,10 @@ export default function FloorPlan({ selectedRoom, onRoomSelect }) {
 
                         <Box sx={{ mt: 2.1 }}>
                             <Typography sx={{
-                                fontSize: '0.56rem',
+                                fontSize: '0.65rem',
                                 fontFamily: "'Courier New', monospace",
                                 letterSpacing: '0.16em',
-                                color: 'rgba(79,195,247,0.55)',
+                                color: 'rgba(79,195,247,0.85)',
                                 mb: 0.7,
                             }}>
                                 {t('stargate.lore.labels.intelSummary', 'INTELLIGENCE SUMMARY')}
@@ -1150,10 +1345,10 @@ export default function FloorPlan({ selectedRoom, onRoomSelect }) {
 
                         <Box sx={{ mt: 2.1 }}>
                             <Typography sx={{
-                                fontSize: '0.56rem',
+                                fontSize: '0.65rem',
                                 fontFamily: "'Courier New', monospace",
                                 letterSpacing: '0.16em',
-                                color: 'rgba(79,195,247,0.55)',
+                                color: 'rgba(79,195,247,0.85)',
                                 mb: 0.7,
                             }}>
                                 {t('stargate.lore.labels.sources', 'CANON SOURCES')}
@@ -1231,10 +1426,10 @@ function LoreField({ label, value }) {
     return (
         <Box>
             <Typography sx={{
-                fontSize: '0.52rem',
+                fontSize: '0.64rem',
                 fontFamily: "'Courier New', monospace",
                 letterSpacing: '0.14em',
-                color: 'rgba(79,195,247,0.5)',
+                color: 'rgba(79,195,247,0.85)',
                 mb: 0.2,
             }}>
                 {label}
@@ -1254,10 +1449,10 @@ function MemberField({ label, value }) {
     return (
         <Box sx={{ mb: 0.45 }}>
             <Typography sx={{
-                fontSize: '0.5rem',
+                fontSize: '0.62rem',
                 fontFamily: "'Courier New', monospace",
                 letterSpacing: '0.12em',
-                color: 'rgba(79,195,247,0.5)',
+                color: 'rgba(79,195,247,0.85)',
                 mb: 0.1,
             }}>
                 {label}

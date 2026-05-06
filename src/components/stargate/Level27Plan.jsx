@@ -54,7 +54,7 @@ export default function Level27Plan({ selectedRoom, onRoomSelect }) {
         <svg
             viewBox="838 188 264 737"
             xmlns="http://www.w3.org/2000/svg"
-            style={{ height: '72vh', width: 'auto', maxWidth: '100%', display: 'block', margin: '0 auto', background: '#050d1a' }}
+            style={{ height: '78vh', width: 'auto', maxWidth: '100%', display: 'block', margin: '0 auto', background: '#050d1a' }}
             aria-label={t('stargate.plans.level27Aria', 'SGC Level 27 Floor Plan')}
         >
             <defs>
