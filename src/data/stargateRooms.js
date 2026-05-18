@@ -18,6 +18,8 @@ export const rooms = [
             '/stargate/screenshots/briefing-room-1.png',
             '/stargate/screenshots/briefing-room-2.jpg',
             '/stargate/screenshots/briefing-room-3.jpg',
+            '/stargate/screenshots/briefing-room-4.png',
+            '/stargate/screenshots/briefing-room-5.jpg',
         ],
     },
     {
@@ -40,7 +42,9 @@ export const rooms = [
         shortDesc: 'Main elevator shaft serving all 28 sublevels of Cheyenne Mountain.',
         longDesc:
             'The elevator system connects all 28 sublevels of the Cheyenne Mountain Complex. The upper levels (1–6) are accessible to general military and civilian personnel, while deeper sublevels require progressively higher security clearances. The elevator is the primary transit point for personnel, equipment, and — occasionally — alien visitors under escort.',
-        screenshots: [],
+        screenshots: [
+            '/stargate/screenshots/elevator-1.jpg',
+        ],
     },
 
     // ─── LEVEL 28 ────────────────────────────────────────────────────────────
@@ -69,6 +73,10 @@ export const rooms = [
             'Positioned one level above the Gateroom with large reinforced windows, the Control Room is where Sgt. Walter Harriman (and others) operates the dialing computer and monitors all gate activity. The room contains the DHD (Dial-Home Device) computer interface, incoming/outgoing wormhole confirmation systems, and sensor readouts. General Hammond and later General Landry frequently observe gate activations from this room. It is connected directly to the Briefing Room above via the internal staircase.',
         screenshots: [
             '/stargate/screenshots/control-room-1.png',
+            '/stargate/screenshots/control-room-2.jpg',
+            '/stargate/screenshots/control-room-3.png',
+            '/stargate/screenshots/control-room-4.png',
+            '/stargate/screenshots/control-room-5.png',
         ],
     },
     {
@@ -103,7 +111,9 @@ export const rooms = [
         shortDesc: 'Scientific analysis lab for studying alien artefacts and technology.',
         longDesc:
             "The laboratory on Level 28 is primarily used by Dr. Daniel Jackson, Dr. Samantha Carter, and visiting scientists to analyse alien artefacts, biological samples, and recovered technology brought back through the Stargate. It contains advanced spectrographic, chemical, and electronic analysis equipment. Several major discoveries — including decoding Ancient tablet inscriptions and reverse-engineering Goa'uld technology — took place here.",
-        screenshots: [],
+        screenshots: [
+            '/stargate/screenshots/laboratory-1.jpg',
+        ],
     },
     {
         id: 'l28-observation-deck',
@@ -113,7 +123,9 @@ export const rooms = [
         shortDesc: 'Secondary observation point overlooking the Gateroom from ground level.',
         longDesc:
             'The Observation Deck provides a ground-level viewing area for the Gateroom, separate from the elevated Control Room window. It is used during VIP visits, diplomatic meetings, or when additional personnel need to monitor gate operations without crowding the Control Room. Government officials, Pentagon liaisons, and alien allies have observed gate activations from this position.',
-        screenshots: [],
+        screenshots: [
+            '/stargate/screenshots/observation-deck-1.jpg',
+        ],
     },
     {
         id: 'l28-staging-room',
@@ -145,6 +157,8 @@ export const rooms = [
         screenshots: [
             '/stargate/screenshots/round-hallway-1.png',
             '/stargate/screenshots/round-hallway-2.jpg',
+            '/stargate/screenshots/round-hallway-3.jpg',
+            '/stargate/screenshots/round-hallway-4.jpg',
         ],
     },
     {
@@ -180,6 +194,9 @@ export const rooms = [
         screenshots: [
             '/stargate/screenshots/outer-corridor-1.png',
             '/stargate/screenshots/outer-corridor-2.png',
+            '/stargate/screenshots/outer-corridor-3.jpg',
+            '/stargate/screenshots/outer-corridor-4.jpg',
+            '/stargate/screenshots/outer-corridor-5.jpg',
         ],
     },
     {
