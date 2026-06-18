@@ -80,7 +80,7 @@ export const projects = [
     {
         title: 'Heat flow - Simulation of heat diffusion in your home',
         tags: ['React', 'Material UI', 'Vitest', 'WebGL'],
-        github: 'https://github.com/MathisLeclair/heatFlow',
+        github: 'https://github.com/MathisLeclair.fr/heatFlow',
         demo: 'https://mathisleclair/heatflow/',
     }
 ]
