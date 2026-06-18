@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { STARGATE_ADDRESSES } from '../../data/stargateAddresses'
+import { useTranslation } from 'react-i18next'
 
 /**
  * AnimatedStargate — accurate Milky Way Stargate SVG.
@@ -26,10 +27,10 @@ const R_TRACK_O = 158
 const R_TRACK_I = 118
 const R_GATE = 114
 const R_TRACK_MID = (R_TRACK_O + R_TRACK_I) / 2  // 138
+const N_IRIS = 10          // number of iris blades
+const IRIS_OPEN_DEG = 65   // degrees each blade rotates around its own rim pivot to open
 
 const CHEVRON_ANGLES = Array.from({ length: 9 }, (_, i) => -90 + i * 40)
-
-const CHEVRON_WORDS = ['ONE', 'TWO', 'THREE', 'FOUR', 'FIVE', 'SIX', 'SEVEN']
 
 // 7-chevron address: 6 side chevrons encode in order, top (0) locks on the origin glyph.
 // Bottom two chevrons (indices 4 @ 70° and 5 @ 110°) are NEVER used for 7-symbol addresses.
@@ -54,6 +55,23 @@ function glyphStopAngle(glyphNum, fromAngle) {
 function pt(r, angleDeg) {
     const rad = (angleDeg * Math.PI) / 180
     return [CX + r * Math.cos(rad), CY + r * Math.sin(rad)]
+}
+
+/**
+ * Each iris blade pivots from a point just OUTSIDE the clip boundary (R_GATE+2 vs clip R_GATE-2).
+ * The wide outer base is therefore always hidden behind the gate ring — only the diagonal
+ * body crossing the aperture is visible, making blades appear to emerge from behind the ring.
+ * 10 blades × 36° span each, with 180° inner offset, gives full overlapping aperture coverage.
+ */
+function irisBladePoints(base) {
+    const step = 360 / N_IRIS
+    // Outer corners outside the clip — never visible, hidden behind gate ring
+    const [a0x, a0y] = pt(R_GATE + 2, base)
+    const [a1x, a1y] = pt(R_GATE + 2, base + step)
+    // Inner corners on the opposite side of the aperture — creates diagonal petal coverage
+    const [a2x, a2y] = pt(18, base + step + 180)
+    const [a3x, a3y] = pt(18, base + 180)
+    return `${a0x},${a0y} ${a1x},${a1y} ${a2x},${a2y} ${a3x},${a3y}`
 }
 
 /**
@@ -135,10 +153,12 @@ export default function AnimatedStargate({
     lockedChevrons = [],
     rpm = 0.75,
     dialing = false,
+    irisClosed = false,
     forcedAddress = null,   // address object to dial immediately
     dialKey = 0,            // increment to restart/interrupt current cycle
     onAddressChange = null, // callback(name) when a new address starts being dialed
 }) {
+    const { t } = useTranslation()
     // ── Dialing sequence state ──
     const [lockedChevs, setLockedChevs] = useState([])
     const [flashTop, setFlashTop] = useState(false)
@@ -197,11 +217,23 @@ export default function AnimatedStargate({
                 // ── Lock ──
                 setTrackDur(0)
                 setFlashTop(true)
-                const word = CHEVRON_WORDS[step]
+                const chevronWords = [
+                    t('stargate.gate.words.one', 'ONE'),
+                    t('stargate.gate.words.two', 'TWO'),
+                    t('stargate.gate.words.three', 'THREE'),
+                    t('stargate.gate.words.four', 'FOUR'),
+                    t('stargate.gate.words.five', 'FIVE'),
+                    t('stargate.gate.words.six', 'SIX'),
+                    t('stargate.gate.words.seven', 'SEVEN'),
+                ]
+                const word = chevronWords[step]
                 setStatusText(
                     step === DIAL_SEQUENCE.length - 1
-                        ? 'CHEVRON SEVEN... LOCKED'
-                        : `CHEVRON ${word} ENCODED`
+                        ? t('stargate.gate.chevronSevenLocked', 'CHEVRON SEVEN... LOCKED')
+                        : t('stargate.gate.chevronEncoded', {
+                            defaultValue: 'CHEVRON {{word}} ENCODED',
+                            word,
+                        })
                 )
                 clearTimeout(flashTimerRef.current)
                 flashTimerRef.current = setTimeout(
@@ -214,7 +246,7 @@ export default function AnimatedStargate({
             }
 
             // ── Event horizon + kawoosh ──
-            setStatusText('WORMHOLE ESTABLISHED')
+            setStatusText(t('stargate.gate.wormholeEstablished', 'WORMHOLE ESTABLISHED'))
             setHorizonOpen(true)      // horizon and burst start together
             setKawoosh(true)
             await sleep(900)          // kawoosh animation duration
@@ -248,7 +280,7 @@ export default function AnimatedStargate({
             clearTimeout(mainTimerRef.current)
             clearTimeout(flashTimerRef.current)
         }
-    }, [dialing, dialKey])  // dialKey restarts cycle when user selects an address
+    }, [dialing, dialKey, t])  // dialKey restarts cycle when user selects an address
 
     // ── Computed render values ──
     const lockedSet = dialing ? lockedChevs : lockedChevrons
@@ -370,6 +402,10 @@ export default function AnimatedStargate({
                         100% { transform: scale(2.4);  opacity: 0; }
                     }
                 `}</style>
+
+                <clipPath id="sgIrisClip">
+                    <circle cx={CX} cy={CY} r={R_GATE - 2} />
+                </clipPath>
             </defs>
 
             {/* ── 1. Dark aperture background ── */}
@@ -455,6 +491,35 @@ export default function AnimatedStargate({
                     />
                 </>
             )}
+
+            {/* ── Iris diaphragm ──
+                 Pivot is at R_GATE+2, just outside the clip boundary at R_GATE-2.
+                 The wide blade base is clipped and hidden behind the gate ring.
+                 Only the diagonal body crossing the aperture is visible. */}
+            <g style={{ pointerEvents: 'none' }} clipPath="url(#sgIrisClip)">
+                {Array.from({ length: N_IRIS }, (_, i) => {
+                    const base = i * (360 / N_IRIS)
+                    const [px, py] = pt(R_GATE + 2, base)
+                    return (
+                        <polygon
+                            key={`iris-blade-${i}`}
+                            points={irisBladePoints(base)}
+                            fill="rgba(88,108,124,0.97)"
+                            stroke="rgba(200,218,232,0.45)"
+                            strokeWidth="0.75"
+                            style={{
+                                transformOrigin: `${px}px ${py}px`,
+                                transform: `rotate(${irisClosed ? 0 : IRIS_OPEN_DEG}deg)`,
+                                opacity: irisClosed ? 1 : 0,
+                                transitionProperty: 'transform, opacity',
+                                transitionDuration: '700ms, 480ms',
+                                transitionTimingFunction: 'cubic-bezier(0.22, 1, 0.36, 1), ease-in',
+                                transitionDelay: '0ms, 0ms',
+                            }}
+                        />
+                    )
+                })}
+            </g>
 
             {/* ── 4. Outer ring donut (even-odd, overlaps the track edge) ── */}
             <path d={donutD} fillRule="evenodd" fill="url(#sgRingG)" />

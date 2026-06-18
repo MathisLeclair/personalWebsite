@@ -16,7 +16,7 @@ import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos'
 import OpenInFullIcon from '@mui/icons-material/OpenInFull'
 import FloorPlan from '../components/stargate/FloorPlan'
 import AnimatedStargate from '../components/stargate/AnimatedStargate'
-import { getRoomById, facilityLevels, tierMeta } from '../data/stargateRooms'
+import { getRoomById } from '../data/stargateRooms'
 import LanguageSwitcher from '../components/LanguageSwitcher'
 
 /* ─── Lightbox ─── */
@@ -115,6 +115,7 @@ function Lightbox({ screenshots, index, onClose }) {
 
 /* ─── Screenshot with graceful fallback ─── */
 function Screenshot({ src, alt, onClick }) {
+    const { t } = useTranslation()
     const [broken, setBroken] = useState(false)
 
     if (broken) {
@@ -134,7 +135,7 @@ function Screenshot({ src, alt, onClick }) {
                     letterSpacing: '0.05em',
                 }}
             >
-                NO IMAGE
+                {t('stargate.page.noImage', 'NO IMAGE')}
             </Box>
         )
     }
@@ -233,7 +234,7 @@ function RoomDialog({ room, onClose }) {
                         fontFamily: "'Courier New', monospace",
                     }}
                 >
-                    ◆ TOP SECRET // SCI // NOFORN ◆
+                    {t('stargate.dialog.topSecretBanner', '◆ TOP SECRET // SCI // NOFORN ◆')}
                 </Typography>
             </Box>
 
@@ -242,19 +243,19 @@ function RoomDialog({ room, onClose }) {
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1.5 }}>
                     <Box>
                         <Typography sx={{ fontSize: '0.52rem', color: 'rgba(79,195,247,0.38)', letterSpacing: '0.18em', fontFamily: "'Courier New', monospace", mb: 0.25 }}>
-                            DEPARTMENT OF HOMEWORLD SECURITY
+                            {t('stargate.dialog.letterheadDepartment', 'DEPARTMENT OF HOMEWORLD SECURITY')}
                         </Typography>
                         <Typography sx={{ fontSize: '0.78rem', color: '#4fc3f7', letterSpacing: '0.1em', fontWeight: 700, fontFamily: "'Courier New', monospace" }}>
-                            STARGATE COMMAND
+                            {t('stargate.dialog.letterheadCommand', 'STARGATE COMMAND')}
                         </Typography>
                     </Box>
                     <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'flex-start' }}>
                         <Box sx={{ textAlign: 'right' }}>
                             <Typography sx={{ fontSize: '0.52rem', color: 'rgba(79,195,247,0.35)', fontFamily: "'Courier New', monospace", letterSpacing: '0.06em' }}>
-                                FILE: SGC-{room.id.replace(/-/g, '').toUpperCase()}
+                                {t('stargate.dialog.file', { defaultValue: 'FILE: {{file}}', file: `SGC-${room.id.replace(/-/g, '').toUpperCase()}` })}
                             </Typography>
                             <Typography sx={{ fontSize: '0.52rem', color: 'rgba(79,195,247,0.35)', fontFamily: "'Courier New', monospace", letterSpacing: '0.06em' }}>
-                                LVL {room.level} // CLEARANCE: TS/SCI
+                                {t('stargate.dialog.levelClearance', { defaultValue: 'LVL {{level}} // CLEARANCE: TS/SCI', level: room.level })}
                             </Typography>
                         </Box>
                         <IconButton onClick={onClose} size="small" sx={{ color: 'rgba(179,229,252,0.35)', p: 0.25, mt: -0.25 }}>
@@ -268,7 +269,7 @@ function RoomDialog({ room, onClose }) {
                 {/* Subject line */}
                 <Box>
                     <Typography sx={{ fontSize: '0.5rem', color: 'rgba(79,195,247,0.35)', letterSpacing: '0.18em', fontFamily: "'Courier New', monospace", mb: 0.5 }}>
-                        RE: LOCATION DESIGNATION
+                        {t('stargate.dialog.reLocationDesignation', 'RE: LOCATION DESIGNATION')}
                     </Typography>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                         <LockIcon sx={{ color: 'rgba(79,195,247,0.5)', fontSize: 14 }} />
@@ -284,7 +285,7 @@ function RoomDialog({ room, onClose }) {
                 {/* 1. Summary */}
                 <Box sx={{ mb: 2.5 }}>
                     <Typography sx={{ fontSize: '0.5rem', color: 'rgba(79,195,247,0.35)', letterSpacing: '0.18em', fontFamily: "'Courier New', monospace", mb: 0.75 }}>
-                        1. SUMMARY
+                        {t('stargate.dialog.sections.summary', '1. SUMMARY')}
                     </Typography>
                     <Box sx={{ borderLeft: '2px solid rgba(79,195,247,0.3)', pl: 1.5 }}>
                         <Typography sx={{ fontSize: '0.82rem', color: '#4fc3f7', fontFamily: "'Courier New', monospace", lineHeight: 1.65 }}>
@@ -296,7 +297,7 @@ function RoomDialog({ room, onClose }) {
                 {/* 2. Location details */}
                 <Box sx={{ mb: room.screenshots?.length ? 2.5 : 0 }}>
                     <Typography sx={{ fontSize: '0.5rem', color: 'rgba(79,195,247,0.35)', letterSpacing: '0.18em', fontFamily: "'Courier New', monospace", mb: 0.75 }}>
-                        2. LOCATION DETAILS
+                        {t('stargate.dialog.sections.locationDetails', '2. LOCATION DETAILS')}
                     </Typography>
                     <Typography sx={{ fontSize: '0.82rem', color: 'rgba(179,229,252,0.75)', fontFamily: "'Courier New', monospace", lineHeight: 1.8 }}>
                         {roomLongDesc}
@@ -307,7 +308,7 @@ function RoomDialog({ room, onClose }) {
                 {room.screenshots?.length > 0 && (
                     <Box sx={{ borderTop: '1px dashed rgba(79,195,247,0.15)', pt: 2 }}>
                         <Typography sx={{ fontSize: '0.5rem', color: 'rgba(79,195,247,0.35)', letterSpacing: '0.18em', fontFamily: "'Courier New', monospace", mb: 1.5 }}>
-                            3. {t('stargate.reference_footage', 'REFERENCE FOOTAGE')}
+                            {t('stargate.dialog.sections.reference', { defaultValue: '3. {{label}}', label: t('stargate.reference_footage', 'REFERENCE FOOTAGE') })}
                         </Typography>
                         <Box
                             sx={{
@@ -341,7 +342,7 @@ function RoomDialog({ room, onClose }) {
                 }}
             >
                 <Typography sx={{ flex: 1, fontSize: '0.5rem', color: 'rgba(233,69,96,0.5)', letterSpacing: '0.14em', fontFamily: "'Courier New', monospace" }}>
-                    TOP SECRET // HANDLE VIA SCI CHANNELS ONLY
+                    {t('stargate.dialog.bottomBanner', 'TOP SECRET // HANDLE VIA SCI CHANNELS ONLY')}
                 </Typography>
                 <Button
                     onClick={onClose}
@@ -374,226 +375,9 @@ function RoomDialog({ room, onClose }) {
     )
 }
 
-/* ─── Colour helpers for the directory ─── */
-const DOOR_SWATCH = {
-    Red: '#e94560',
-    Yellow: '#f5c518',
-    White: '#e0f7fa',
-    Turquoise: '#00bcd4',
-    'Dark Blue': '#1565c0',
-    'Medium Blue': '#1e88e5',
-    'Light Blue': '#64b5f6',
-}
-const TUNNEL_SWATCH = {
-    White: '#e0f7fa',
-    Red: '#e94560',
-    Yellow: '#f5c518',
-    Amber: '#ffb300',
-    'Pale Green': '#a5d6a7',
-    'Pale Blue': '#90caf9',
-    Blue: '#42a5f5',
-    Green: '#66bb6a',
-}
-const TIER_BORDER = {
-    interface: 'rgba(233,69,96,0.35)',
-    support: 'rgba(245,197,24,0.35)',
-    sgc: 'rgba(79,195,247,0.35)',
-    'sgc-hl': 'rgba(255,255,255,0.45)',
-}
-
-/* ─── Facility Directory ─── */
-function FacilityDirectory() {
-    const [open, setOpen] = useState(false)
-
-    // Group levels by tier, preserving order
-    const tiers = ['interface', 'support', 'sgc', 'sgc-hl']
-
-    return (
-        <Box sx={{ mt: 5 }}>
-            {/* Section header — click to expand */}
-            <Box
-                onClick={() => setOpen(o => !o)}
-                sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 2,
-                    cursor: 'pointer',
-                    border: '1px solid rgba(79,195,247,0.25)',
-                    borderBottom: open ? '1px solid rgba(79,195,247,0.1)' : '1px solid rgba(79,195,247,0.25)',
-                    borderRadius: open ? '4px 4px 0 0' : '4px',
-                    py: 1.75,
-                    px: 2.5,
-                    userSelect: 'none',
-                    bgcolor: 'rgba(79,195,247,0.04)',
-                    transition: 'background 0.15s',
-                    '&:hover': { bgcolor: 'rgba(79,195,247,0.08)' },
-                    '&:hover .dir-title': { color: '#4fc3f7' },
-                    '&:hover .dir-chevron': { color: '#4fc3f7' },
-                }}
-            >
-                <Typography sx={{ fontSize: '0.75rem', color: 'rgba(79,195,247,0.5)', fontFamily: "'Courier New', monospace", flexShrink: 0 }}>
-                    ⊞
-                </Typography>
-                <Typography
-                    className="dir-title"
-                    sx={{
-                        flex: 1,
-                        fontSize: '0.65rem',
-                        fontFamily: "'Courier New', monospace",
-                        letterSpacing: '0.18em',
-                        color: 'rgba(179,229,252,0.75)',
-                        fontWeight: 700,
-                        transition: 'color 0.15s',
-                    }}
-                >
-                    FACILITY SUBLEVEL DIRECTORY
-                </Typography>
-                <Typography sx={{ fontSize: '0.55rem', color: 'rgba(179,229,252,0.35)', fontFamily: "'Courier New', monospace", letterSpacing: '0.08em', mr: 1.5 }}>
-                    CHEYENNE MOUNTAIN — 28 SUBLEVELS
-                </Typography>
-                <Typography className="dir-chevron" sx={{ fontSize: '0.65rem', color: 'rgba(79,195,247,0.5)', fontFamily: "'Courier New', monospace", letterSpacing: '0.1em', transition: 'color 0.15s' }}>
-                    {open ? '▲' : '▼'}
-                </Typography>
-            </Box>
-
-            {open && (
-                <Box
-                    sx={{
-                        border: '1px solid rgba(79,195,247,0.25)',
-                        borderTop: 'none',
-                        borderRadius: '0 0 4px 4px',
-                        overflow: 'hidden',
-                        bgcolor: '#030913',
-                    }}
-                >
-                    {/* Column headers */}
-                    <Box
-                        sx={{
-                            display: 'grid',
-                            gridTemplateColumns: '56px 1fr 110px 110px',
-                            gap: 0,
-                            bgcolor: 'rgba(79,195,247,0.07)',
-                            borderBottom: '1px solid rgba(79,195,247,0.2)',
-                            px: 2.5,
-                            py: 1,
-                        }}
-                    >
-                        {['LVL', 'FUNCTION / DESIGNATION', 'DOOR COLOR', 'TUNNEL LIGHTS'].map(h => (
-                            <Typography key={h} sx={{ fontSize: '0.55rem', color: 'rgba(79,195,247,0.6)', fontFamily: "'Courier New', monospace", letterSpacing: '0.14em', fontWeight: 700 }}>
-                                {h}
-                            </Typography>
-                        ))}
-                    </Box>
-
-                    {tiers.map(tier => {
-                        const rows = facilityLevels.filter(l => l.tier === tier)
-                        const meta = tierMeta[tier]
-                        return (
-                            <Box key={tier}>
-                                {/* Tier header */}
-                                <Box
-                                    sx={{
-                                        borderLeft: `3px solid ${TIER_BORDER[tier]}`,
-                                        borderTop: '1px solid rgba(79,195,247,0.1)',
-                                        px: 2.5,
-                                        py: 1,
-                                        bgcolor: 'rgba(79,195,247,0.04)',
-                                    }}
-                                >
-                                    <Typography sx={{ fontSize: '0.6rem', color: 'rgba(179,229,252,0.8)', fontFamily: "'Courier New', monospace", letterSpacing: '0.14em', fontWeight: 700 }}>
-                                        {meta.label}
-                                    </Typography>
-                                    <Typography sx={{ fontSize: '0.52rem', color: 'rgba(179,229,252,0.4)', fontFamily: "'Courier New', monospace", letterSpacing: '0.08em', mt: 0.25 }}>
-                                        {meta.clearance}
-                                    </Typography>
-                                </Box>
-
-                                {/* Level rows */}
-                                {rows.map((row, i) => (
-                                    <Box
-                                        key={row.level}
-                                        sx={{
-                                            display: 'grid',
-                                            gridTemplateColumns: '56px 1fr 110px 110px',
-                                            gap: 0,
-                                            px: 2.5,
-                                            py: 0.85,
-                                            borderTop: '1px solid rgba(79,195,247,0.06)',
-                                            borderLeft: `3px solid ${TIER_BORDER[tier]}`,
-                                            bgcolor: row.level === 27 || row.level === 28
-                                                ? 'rgba(79,195,247,0.07)'
-                                                : i % 2 === 0 ? 'transparent' : 'rgba(79,195,247,0.025)',
-                                        }}
-                                    >
-                                        {/* Level number */}
-                                        <Typography sx={{
-                                            fontSize: '0.82rem',
-                                            color: row.level >= 26 ? '#e0f7fa' : 'rgba(179,229,252,0.6)',
-                                            fontFamily: "'Courier New', monospace",
-                                            fontWeight: row.level >= 26 ? 700 : 400,
-                                        }}>
-                                            {String(row.level).padStart(2, '0')}
-                                        </Typography>
-
-                                        {/* Function */}
-                                        <Typography sx={{
-                                            fontSize: '0.75rem',
-                                            color: row.function ? 'rgba(179,229,252,0.8)' : 'rgba(179,229,252,0.25)',
-                                            fontFamily: "'Courier New', monospace",
-                                            fontStyle: row.function ? 'normal' : 'italic',
-                                            pr: 2,
-                                            lineHeight: 1.5,
-                                        }}>
-                                            {row.function ?? '[REDACTED]'}
-                                        </Typography>
-
-                                        {/* Door swatch */}
-                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                            {row.doorColor ? (
-                                                <>
-                                                    <Box sx={{ width: 10, height: 10, borderRadius: '2px', bgcolor: DOOR_SWATCH[row.doorColor] ?? '#888', flexShrink: 0 }} />
-                                                    <Typography sx={{ fontSize: '0.68rem', color: 'rgba(179,229,252,0.6)', fontFamily: "'Courier New', monospace" }}>
-                                                        {row.doorColor}
-                                                    </Typography>
-                                                </>
-                                            ) : (
-                                                <Typography sx={{ fontSize: '0.68rem', color: 'rgba(179,229,252,0.2)', fontFamily: "'Courier New', monospace" }}>—</Typography>
-                                            )}
-                                        </Box>
-
-                                        {/* Tunnel swatch */}
-                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                            {row.tunnelLights ? (
-                                                <>
-                                                    <Box sx={{ width: 10, height: 10, borderRadius: '50%', bgcolor: TUNNEL_SWATCH[row.tunnelLights] ?? '#888', flexShrink: 0, boxShadow: `0 0 5px ${TUNNEL_SWATCH[row.tunnelLights] ?? '#888'}` }} />
-                                                    <Typography sx={{ fontSize: '0.68rem', color: 'rgba(179,229,252,0.6)', fontFamily: "'Courier New', monospace" }}>
-                                                        {row.tunnelLights}
-                                                    </Typography>
-                                                </>
-                                            ) : (
-                                                <Typography sx={{ fontSize: '0.68rem', color: 'rgba(179,229,252,0.2)', fontFamily: "'Courier New', monospace" }}>—</Typography>
-                                            )}
-                                        </Box>
-                                    </Box>
-                                ))}
-                            </Box>
-                        )
-                    })}
-
-                    {/* Footer note */}
-                    <Box sx={{ px: 2.5, py: 1.25, borderTop: '1px solid rgba(79,195,247,0.12)', bgcolor: 'rgba(233,69,96,0.05)' }}>
-                        <Typography sx={{ fontSize: '0.52rem', color: 'rgba(233,69,96,0.5)', fontFamily: "'Courier New', monospace", letterSpacing: '0.1em' }}>
-                            DISSEMINATION RESTRICTED — HANDLE VIA SCI CHANNELS ONLY — DO NOT REPRODUCE WITHOUT WRITTEN AUTHORISATION FROM THE DEPARTMENT OF HOMEWORLD SECURITY
-                        </Typography>
-                    </Box>
-                </Box>
-            )}
-        </Box>
-    )
-}
-
 /* ─── Page ─── */
 export default function StargatePage() {
+    const { t } = useTranslation()
     const [selectedRoomId, setSelectedRoomId] = useState(null)
     const selectedRoom = selectedRoomId ? getRoomById(selectedRoomId) : null
 
@@ -640,18 +424,18 @@ export default function StargatePage() {
                             lineHeight: 1.2,
                         }}
                     >
-                        STARGATE COMMAND
+                        {t('stargate.page.headerTitle', 'STARGATE COMMAND')}
                     </Typography>
                     <Typography
                         variant="caption"
                         sx={{ color: 'rgba(79,195,247,0.5)', letterSpacing: '0.1em', fontSize: '0.65rem' }}
                     >
-                        CHEYENNE MOUNTAIN COMPLEX — INTERACTIVE FACILITY MAP
+                        {t('stargate.page.headerSubtitle', 'CHEYENNE MOUNTAIN COMPLEX - INTERACTIVE FACILITY MAP')}
                     </Typography>
                 </Box>
 
                 <Chip
-                    label="TOP SECRET"
+                    label={t('stargate.page.topSecretChip', 'TOP SECRET')}
                     size="small"
                     sx={{
                         bgcolor: 'rgba(233,69,96,0.12)',
@@ -669,9 +453,9 @@ export default function StargatePage() {
             <Box
                 sx={{
                     flex: 1,
-                    px: { xs: 2, sm: 4, md: 8 },
+                    px: { xs: 2, sm: 3, md: 5 },
                     py: { xs: 3, md: 5 },
-                    maxWidth: 1100,
+                    maxWidth: 1440,
                     width: '100%',
                     mx: 'auto',
                 }}
@@ -688,13 +472,13 @@ export default function StargatePage() {
                             mb: 0.75,
                         }}
                     >
-                        CHEYENNE MOUNTAIN COMPLEX
+                        {t('stargate.page.heroTitle', 'CHEYENNE MOUNTAIN COMPLEX')}
                     </Typography>
                     <Typography
                         variant="body2"
                         sx={{ color: 'rgba(179,229,252,0.5)', letterSpacing: '0.05em', fontSize: '0.82rem' }}
                     >
-                        Colorado Springs, CO — 28 sublevels — Stargate on Sublevel 28
+                        {t('stargate.page.heroSubtitle', 'Colorado Springs, CO - 28 sublevels - Stargate on Sublevel 28')}
                     </Typography>
                 </Box>
 
@@ -717,7 +501,7 @@ export default function StargatePage() {
                         mb: 1.5,
                         fontWeight: 700,
                     }}>
-                        ◆ CLASSIFIED — MISSION BRIEFING — SGC-001 ◆
+                        {t('stargate.page.briefingHeader', '◆ CLASSIFIED - MISSION BRIEFING - SGC-001 ◆')}
                     </Typography>
                     <Typography sx={{
                         fontSize: '0.78rem',
@@ -726,21 +510,12 @@ export default function StargatePage() {
                         lineHeight: 1.85,
                         letterSpacing: '0.03em',
                     }}>
-                        The Stargate is an alien ring-shaped device of Ancient construction, capable of
-                        establishing a stable wormhole between two points across the galaxy. Located on
-                        Sublevel 28 of the Cheyenne Mountain Complex, the SGC Stargate has facilitated
-                        over 1,000 off-world missions since its activation in 1997. Destinations are
-                        encoded using a sequence of 6 glyphs drawn from the 39-symbol Milky Way
-                        cartouche, with the 7th chevron locking on the origin point (Earth). All
-                        addresses listed in the GATE tab have been verified through active dial-out.
+                        {t('stargate.page.briefingBody', 'The Stargate is an alien ring-shaped device of Ancient construction, capable of establishing a stable wormhole between two points across the galaxy. Located on Sublevel 28 of the Cheyenne Mountain Complex, the SGC Stargate has facilitated over 1,000 off-world missions since its activation in 1997. Destinations are encoded using a sequence of 6 glyphs drawn from the 39-symbol Milky Way cartouche, with the 7th chevron locking on the origin point (Earth). All addresses listed in the GATE tab have been verified through active dial-out.')}
                     </Typography>
                 </Box>
 
                 {/* Floor plan */}
                 <FloorPlan selectedRoom={selectedRoomId} onRoomSelect={setSelectedRoomId} />
-
-                {/* Facility Directory */}
-                <FacilityDirectory />
             </Box>
 
             {/* Footer bar */}
@@ -754,7 +529,11 @@ export default function StargatePage() {
                     gap: 4,
                 }}
             >
-                {['NORAD', 'U.S. AIR FORCE', 'CLASSIFIED LEVEL 28'].map((label) => (
+                {[
+                    t('stargate.page.footer.norad', 'NORAD'),
+                    t('stargate.page.footer.usaf', 'U.S. AIR FORCE'),
+                    t('stargate.page.footer.classifiedLevel', 'CLASSIFIED LEVEL 28'),
+                ].map((label) => (
                     <Typography
                         key={label}
                         variant="caption"

@@ -206,6 +206,213 @@
         "classified": "STARGATE COMMAND — CLASSIFIED",
         "reference_footage": "REFERENCE FOOTAGE",
         "close": "CLOSE FILE",
+        "tabs": {
+            "level28": "LEVEL 28 - GATE OPS",
+            "level27": "LEVEL 27 - ADMIN",
+            "addresses": "GATE - KNOWN ADDRESSES"
+        },
+        "ui": {
+            "clickRoomHint": "CLICK A ROOM TO ACCESS CLASSIFIED INFORMATION"
+        },
+        "addresses": {
+            "title": "MILKY WAY GATE NETWORK - VERIFIED COORDINATES",
+            "columns": {
+                "designation": "DESIGNATION",
+                "episode": "EPISODE REF",
+                "glyphs": "ADDRESS GLYPHS"
+            },
+            "openIntel": "Open intel file",
+            "copyGlyphs": "Copy glyphs",
+            "copied": "Copied!",
+            "glyphTitle": "Glyph {{n}}",
+            "hint": "CLICK ROW TO DIAL // BOOK ICON OPENS LORE FILE",
+            "footer": "{{count}} VERIFIED ADDRESSES - CLASSIFIED // SCI CHANNELS ONLY"
+        },
+        "lore": {
+            "fileTitle": "DESTINATION INTELLIGENCE FILE",
+            "episodeReference": "Episode reference: {{episode}}",
+            "dialDestination": "DIAL DESTINATION",
+            "close": "CLOSE",
+            "fallback": {
+                "worldType": "Uncatalogued world profile",
+                "faction": "Mixed / unknown local actors",
+                "risk": "MEDIUM",
+                "intel": "Documented gate destination referenced in {{episode}}. Additional anthropological and strategic reconnaissance pending.",
+                "tactical": "Treat as limited-intelligence deployment. Use standard SG perimeter and first-contact protocol."
+            },
+            "entries": {
+                "abydos": {
+                    "worldType": "Desert world / Ancient cultural nexus",
+                    "faction": "Abydonians, Tau'ri allied",
+                    "risk": "MEDIUM",
+                    "intel": "First off-world destination reached by Earth in the modern Stargate era. Historical inscriptions here were key to decoding gate travel.",
+                    "tactical": "Population generally friendly. Maintain cultural protocols and avoid contaminating local political structures."
+                },
+                "chulak": {
+                    "worldType": "Goa'uld-controlled feudal world",
+                    "faction": "Jaffa of Apophis (historical)",
+                    "risk": "HIGH",
+                    "intel": "Major operational theater tied to Apophis and early resistance contacts including Teal'c.",
+                    "tactical": "Expect patrols, heavy staff-weapon presence, and rapid escalation if identity is compromised."
+                },
+                "tollan": {
+                    "worldType": "Advanced technocratic world",
+                    "faction": "Tollan",
+                    "risk": "LOW",
+                    "intel": "Technologically superior but politically isolationist civilization with strict non-interference doctrine.",
+                    "tactical": "Diplomatic posture recommended. Technical exchange is highly restricted."
+                },
+                "tollana": {
+                    "worldType": "Relocated Tollan colony world",
+                    "faction": "Tollan survivors",
+                    "risk": "MEDIUM",
+                    "intel": "Successor settlement after Tollan evacuation. Politically sensitive and vulnerable to Goa'uld manipulation.",
+                    "tactical": "Intel value high. Prioritize political threat assessment over direct engagement."
+                },
+                "kheb": {
+                    "worldType": "Sacred ascension site",
+                    "faction": "Unaffiliated spiritual enclave",
+                    "risk": "LOW",
+                    "intel": "Rarely visited world associated with Ancient knowledge and ascension-era mythology.",
+                    "tactical": "Minimal force posture. Scientific and cultural teams preferred."
+                },
+                "tartarus": {
+                    "worldType": "Industrial prison and labor world",
+                    "faction": "Goa'uld / Jaffa infrastructure",
+                    "risk": "EXTREME",
+                    "intel": "Critical enemy logistics and detention location linked to high-value prisoner and military movement.",
+                    "tactical": "Hostile environment. Covert infiltration only with extraction window pre-planned."
+                },
+                "praclarush_taonas": {
+                    "worldType": "Ancient city-world ruin",
+                    "faction": "Ancient infrastructure remnants",
+                    "risk": "HIGH",
+                    "intel": "Site tied to strategic Ancient systems and long-range defense assets.",
+                    "tactical": "Ancient tech can be unstable. Bring technical containment and hazard response kits."
+                },
+                "euronda": {
+                    "worldType": "Militarized authoritarian state world",
+                    "faction": "Eurondan regime",
+                    "risk": "HIGH",
+                    "intel": "Contact scenario demonstrated severe ideological and humanitarian risk factors.",
+                    "tactical": "Strict engagement controls and deep political vetting mandatory."
+                },
+                "edora": {
+                    "worldType": "Agrarian world with stellar anomaly exposure",
+                    "faction": "Edoran civilians",
+                    "risk": "MEDIUM",
+                    "intel": "Known for periodic environmental hazards linked to unusual stellar behavior.",
+                    "tactical": "Deploy atmospheric and radiation monitoring on arrival."
+                },
+                "earth_beta_gate": {
+                    "worldType": "Earth-linked alternate gate scenario",
+                    "faction": "Tau'ri internal",
+                    "risk": "LOW",
+                    "intel": "Important historical incident for understanding dual-gate routing and inbound/outbound edge cases.",
+                    "tactical": "Primary value is procedural validation, not field conflict."
+                }
+            },
+            "labels": {
+                "worldType": "WORLD TYPE",
+                "faction": "PRIMARY FACTION",
+                "risk": "THREAT RATING",
+                "intelSummary": "INTELLIGENCE SUMMARY",
+                "tacticalNotes": "TACTICAL NOTES"
+            }
+        },
+        "gate": {
+            "chevronSevenLocked": "CHEVRON SEVEN... LOCKED",
+            "chevronEncoded": "CHEVRON {{word}} ENCODED",
+            "wormholeEstablished": "WORMHOLE ESTABLISHED",
+            "words": {
+                "one": "ONE",
+                "two": "TWO",
+                "three": "THREE",
+                "four": "FOUR",
+                "five": "FIVE",
+                "six": "SIX",
+                "seven": "SEVEN"
+            }
+        },
+        "plans": {
+            "level27Aria": "SGC Level 27 Floor Plan",
+            "level28Aria": "SGC Level 28 Floor Plan",
+            "level27Footer": "SGC - LEVEL 27",
+            "level28Footer": "SGC - LEVEL 28"
+        },
+        "dialog": {
+            "topSecretBanner": "◆ TOP SECRET // SCI // NOFORN ◆",
+            "letterheadDepartment": "DEPARTMENT OF HOMEWORLD SECURITY",
+            "letterheadCommand": "STARGATE COMMAND",
+            "file": "FILE: {{file}}",
+            "levelClearance": "LVL {{level}} // CLEARANCE: TS/SCI",
+            "reLocationDesignation": "RE: LOCATION DESIGNATION",
+            "bottomBanner": "TOP SECRET // HANDLE VIA SCI CHANNELS ONLY",
+            "sections": {
+                "summary": "1. SUMMARY",
+                "locationDetails": "2. LOCATION DETAILS",
+                "reference": "3. {{label}}"
+            }
+        },
+        "directory": {
+            "title": "FACILITY SUBLEVEL DIRECTORY",
+            "subtitle": "CHEYENNE MOUNTAIN - 28 SUBLEVELS",
+            "redacted": "[REDACTED]",
+            "footer": "DISSEMINATION RESTRICTED - HANDLE VIA SCI CHANNELS ONLY - DO NOT REPRODUCE WITHOUT WRITTEN AUTHORISATION FROM THE DEPARTMENT OF HOMEWORLD SECURITY",
+            "headers": {
+                "level": "LVL",
+                "function": "FUNCTION / DESIGNATION",
+                "door": "DOOR COLOR",
+                "tunnel": "TUNNEL LIGHTS"
+            },
+            "tiers": {
+                "interface": {
+                    "label": "INTERFACE TO THE OUTSIDE WORLD",
+                    "clearance": "General Security - Military and Civilian Personnel"
+                },
+                "support": {
+                    "label": "FACILITY SUPPORT",
+                    "clearance": "Medium Security - Military Personnel Only"
+                },
+                "sgc": {
+                    "label": "STARGATE PROJECT SUPPORT",
+                    "clearance": "High Security - SGC Personnel"
+                },
+                "sgc-hl": {
+                    "label": "STARGATE PROJECT SUPPORT",
+                    "clearance": "High Level Security - SGC Personnel Only"
+                }
+            },
+            "colors": {
+                "red": "Red",
+                "yellow": "Yellow",
+                "white": "White",
+                "turquoise": "Turquoise",
+                "dark_blue": "Dark Blue",
+                "medium_blue": "Medium Blue",
+                "light_blue": "Light Blue",
+                "amber": "Amber",
+                "pale_green": "Pale Green",
+                "pale_blue": "Pale Blue",
+                "blue": "Blue",
+                "green": "Green"
+            }
+        },
+        "page": {
+            "noImage": "NO IMAGE",
+            "headerTitle": "STARGATE COMMAND",
+            "headerSubtitle": "CHEYENNE MOUNTAIN COMPLEX - INTERACTIVE FACILITY MAP",
+            "topSecretChip": "TOP SECRET",
+            "heroTitle": "CHEYENNE MOUNTAIN COMPLEX",
+            "heroSubtitle": "Colorado Springs, CO - 28 sublevels - Stargate on Sublevel 28",
+            "briefingHeader": "◆ CLASSIFIED - MISSION BRIEFING - SGC-001 ◆",
+            "briefingBody": "The Stargate is an alien ring-shaped device of Ancient construction, capable of establishing a stable wormhole between two points across the galaxy. Located on Sublevel 28 of the Cheyenne Mountain Complex, the SGC Stargate has facilitated over 1,000 off-world missions since its activation in 1997. Destinations are encoded using a sequence of 6 glyphs drawn from the 39-symbol Milky Way cartouche, with the 7th chevron locking on the origin point (Earth). All addresses listed in the GATE tab have been verified through active dial-out.",
+            "footer": {
+                "norad": "NORAD",
+                "usaf": "U.S. AIR FORCE",
+                "classifiedLevel": "CLASSIFIED LEVEL 28"
+            }
+        },
         "rooms": {
             "l27-briefing-room": {
                 "name": "Briefing Room",
@@ -296,6 +503,139 @@
                 "name": "Storage Room",
                 "shortDesc": "General-purpose storage adjacent to the elevator shafts.",
                 "longDesc": "The storage room on Level 28 serves as a general-purpose holding area for equipment, supplies, and gear staged near the elevator access points. It provides quick access for loading and unloading cargo from the freight elevator and is used to temporarily stage mission equipment before it is moved to the Armory, Laboratory, or Staging Room."
+            }
+        },
+        "members": {
+            "tabLabel": "SGC - KNOWN PERSONNEL",
+            "title": "STARGATE COMMAND PERSONNEL INDEX - KNOWN MEMBERS",
+            "labels": {
+                "assignment": "ASSIGNMENT",
+                "specialty": "SPECIALTY",
+                "status": "STATUS"
+            },
+            "footerLeft": "ROSTER CONSOLIDATED FROM KNOWN SGC ERA PERSONNEL RECORDS",
+            "footerRight": "{{count}} KNOWN MEMBERS - CLASSIFIED // PERSONNEL CHANNEL",
+            "entries": {
+                "hammond": {
+                    "rank": "Major General",
+                    "assignment": "Commanding Officer, SGC",
+                    "specialty": "Command and strategic operations",
+                    "status": "Active command (historical)"
+                },
+                "oneill": {
+                    "rank": "Colonel / Brigadier General / Major General",
+                    "assignment": "SG-1 / SGC command / Homeworld Security",
+                    "specialty": "Team leadership and field operations",
+                    "status": "Senior command transfer"
+                },
+                "carter": {
+                    "rank": "Captain / Major / Lt. Colonel / Colonel",
+                    "assignment": "SG-1 / Science and command roles",
+                    "specialty": "Astrophysics, gate systems, engineering",
+                    "status": "Active (multi-command assignments)"
+                },
+                "jackson": {
+                    "rank": "Civilian Specialist",
+                    "assignment": "SG-1",
+                    "specialty": "Linguistics, archaeology, diplomacy",
+                    "status": "Active mission specialist"
+                },
+                "tealc": {
+                    "rank": "Jaffa Warrior",
+                    "assignment": "SG-1 liaison",
+                    "specialty": "Combat operations and Jaffa intelligence",
+                    "status": "Allied off-world operative"
+                },
+                "mitchell": {
+                    "rank": "Lt. Colonel",
+                    "assignment": "SG-1 Team Leader",
+                    "specialty": "Tactical command and flight operations",
+                    "status": "Active command (historical)"
+                },
+                "vala": {
+                    "rank": "Civilian Operative",
+                    "assignment": "SG-1 associate",
+                    "specialty": "Infiltration and off-world trade networks",
+                    "status": "Conditional SGC asset"
+                },
+                "fraiser": {
+                    "rank": "Captain, USAF",
+                    "assignment": "Chief Medical Officer, SGC",
+                    "specialty": "Military medicine and alien pathology",
+                    "status": "KIA (service honored)"
+                },
+                "beckett": {
+                    "rank": "Civilian Medical Officer",
+                    "assignment": "Atlantis expedition (SGC allied)",
+                    "specialty": "Ancient gene therapy and surgery",
+                    "status": "External allied command"
+                },
+                "lam": {
+                    "rank": "Lt. Colonel, USAF",
+                    "assignment": "Chief Medical Officer, SGC",
+                    "specialty": "Trauma medicine and mission recovery",
+                    "status": "Active medical command (historical)"
+                },
+                "harriman": {
+                    "rank": "Chief Master Sergeant",
+                    "assignment": "Gate Operations Control",
+                    "specialty": "Dialing control and mission telemetry",
+                    "status": "Active operations"
+                },
+                "kawalsky": {
+                    "rank": "Major",
+                    "assignment": "Early Abydos mission team",
+                    "specialty": "Infantry command and field leadership",
+                    "status": "KIA (service honored)"
+                },
+                "davis": {
+                    "rank": "Major",
+                    "assignment": "Pentagon liaison to SGC",
+                    "specialty": "Military coordination and policy interface",
+                    "status": "Active liaison"
+                },
+                "lorne": {
+                    "rank": "Major",
+                    "assignment": "SG teams / Atlantis detachment",
+                    "specialty": "Recon and tactical deployment",
+                    "status": "Active off-world assignment"
+                },
+                "colson": {
+                    "rank": "Civilian (contractor contact)",
+                    "assignment": "External technology stakeholder",
+                    "specialty": "Industrial program interface",
+                    "status": "Restricted access"
+                },
+                "jonas": {
+                    "rank": "Civilian Specialist",
+                    "assignment": "SG-1 (temporary assignment)",
+                    "specialty": "Scientific analysis and cultural liaison",
+                    "status": "Returned to Kelowna"
+                },
+                "landry": {
+                    "rank": "Major General",
+                    "assignment": "Commanding Officer, SGC",
+                    "specialty": "Strategic command and interagency operations",
+                    "status": "Active command (historical)"
+                },
+                "siler": {
+                    "rank": "Chief Warrant Officer",
+                    "assignment": "SGC Engineering",
+                    "specialty": "Mechanical systems and gate hardware",
+                    "status": "Active engineering support"
+                },
+                "makepeace": {
+                    "rank": "Captain",
+                    "assignment": "SG-3",
+                    "specialty": "Field command and security operations",
+                    "status": "Removed from command"
+                },
+                "ferretti": {
+                    "rank": "Colonel",
+                    "assignment": "SG team command",
+                    "specialty": "Off-world mission command",
+                    "status": "Active (historical)"
+                }
             }
         }
     }
