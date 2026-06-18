@@ -10,6 +10,7 @@
   # Only skip rewrite for actual files (images, js, css, etc.)
   # Do NOT skip for directories — React Router must handle /stargate/, etc.
   RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
   RewriteRule . /index.html [L]
 </IfModule>
 
